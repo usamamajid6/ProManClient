@@ -16,7 +16,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React (By Kamran)
+          Learn React (By Kamran) 2nd Commit
         </a>
       </header>
     </div>
