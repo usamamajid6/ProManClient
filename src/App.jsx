@@ -10,6 +10,9 @@ class App extends Component {
         <Col span={24}>
           <Modal width="70vw" centered={true} visible={true}>
             <UCP />
+            <UCP /> 
+            <UCP /> 
+            <UCP />
           </Modal>
         </Col>
       </Row>
