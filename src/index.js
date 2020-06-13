@@ -7,14 +7,18 @@ import { Provider } from "react-redux";
 import reducer from "./Reducers";
 import * as serviceWorker from "./serviceWorker";
 import App from "./App.jsx";
+import 'antd/dist/antd.css';
+// import 'antd/dist/;
+
+
 
 const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));
 
 ReactDOM.render(
   <Provider store={store}>
     <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+      <App />
+    </React.StrictMode>
   </Provider>,
   document.getElementById("root")
 );
