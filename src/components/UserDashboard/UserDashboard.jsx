@@ -49,7 +49,7 @@ class UserDashboard extends Component {
     add_project_modal: false,
     project_type: "",
     loader: false,
-    add_team_modal: true,
+    add_team_modal: false,
   };
 
   componentDidMount = () => {
