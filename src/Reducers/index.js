@@ -6,8 +6,8 @@ import UAW from "./UCPReducers/UAWReducer";
 import TCF from "./UCPReducers/TCFReducer";
 import ECF from "./UCPReducers/ECFReducer";
 import UCP from "./UCPReducers/UCPReducer";
-import LoginReducer from "./LoginReducer";
-import RegisterReducer from "./RegisterReducer";
+import loginUser from "./LoginReducer";
+import registerUser from "./RegisterReducer";
 import userData from "./userDataReducer";
 import addProject from "./addProjectReducer";
 import addTeam from "./addTeamReducer";
@@ -19,8 +19,8 @@ export default combineReducers({
   TCF,
   ECF,
   UCP,
-  LoginReducer,
-  RegisterReducer
+  loginUser,
+  registerUser,
   userData,
   addProject,
   addTeam,

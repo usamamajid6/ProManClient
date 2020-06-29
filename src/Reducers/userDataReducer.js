@@ -392,10 +392,11 @@ const state = {
 };
 
 const initialState = {
-  data: state.data,
+  data: {},
 };
 
 const userDataReducer = (state = initialState, action) => {
+
   switch (action.type) {
     case GET_USER_DATA:
       return {

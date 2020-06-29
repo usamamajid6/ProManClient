@@ -115,9 +115,10 @@ export const getUserData = (data) => async (dispatch) => {
     payload: response.data,
   });
 };
-export const saveUserData = () => {
+export const saveUserData = (data) => {
   return {
     type: SAVE_USER_DATA,
+    payload: data,
   };
 };
 export const removeUserData = () => {

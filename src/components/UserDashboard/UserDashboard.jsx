@@ -53,6 +53,9 @@ class UserDashboard extends Component {
   };
 
   componentDidMount = () => {
+    console.log('====================================');
+    console.log(this.props.userData);
+    console.log('====================================');
     this.setState({
       userData: this.props.userData.data.result,
       projects: this.props.userData.data.projects,

@@ -3,8 +3,9 @@ import { connect } from "react-redux";
 import FacebookLogin from "react-facebook-login";
 import GoogleLogin from "react-google-login";
 import "./Login.css";
-import { Form, Input, Button, Checkbox, Row, Col } from "antd";
+import { Form, Input, Button, Checkbox, Row, Col, message } from "antd";
 import { loginUser } from "../../Actions/LoginAction";
+import { saveUserData } from "../../Actions/userDataAction";
 
 const layout = {
   labelCol: {
@@ -37,11 +38,16 @@ const responseGoogle = (response) => {
 };
 
 class Login extends Component {
-
-  onFinish =async (values) => {
-    await this.props.loginUser(values);
-    console.log(this.props.response);
-    
+  onFinish = async (values) => {
+    try {
+      await this.props.loginUser(values);
+      let response = this.props.response;
+      message.success(response.message);
+     this.props.saveUserData(response.data);
+      this.props.history.push("/userDashboard");
+    } catch (error) {
+      message.error("Some Problem Occur!");
+    }
   };
 
   onFinishFailed = (errorInfo) => {
@@ -54,8 +60,7 @@ class Login extends Component {
         <Col span={24} className="mainTitle">
           Login
         </Col>
-        <Col lg={6} md={4} sm={2} xs={1}>
-        </Col>
+        <Col lg={6} md={4} sm={2} xs={1}></Col>
         <Col lg={12} md={16} sm={20} xs={22}>
           <Form
             {...layout}
@@ -147,12 +152,11 @@ class Login extends Component {
   }
 }
 
-
-const mapStateToProps = (state)=>({
-response: state.loginUser,
+const mapStateToProps = (state) => ({
+  response: state.loginUser,
 });
 
-const mapDispatchToProps = { loginUser };
+const mapDispatchToProps = { loginUser, saveUserData };
 Login = connect(mapStateToProps, mapDispatchToProps)(Login);
 
 export default Login;
