@@ -5,19 +5,24 @@ import Login from './components/Login/Login';
 import Register from './components/Signup/Register';
 import Dashboard from "./components/Dashboard/Dashboard";
 import UCP from "./components/UCP/UCP";
+import UserDashboard from "./components/UserDashboard/UserDashboard";
+import Navbar from "./components/Navbar/Navbar";
+
 import "./App.css";
 class App extends Component {
   state = {};
   render() {
     return (
       <Row>
-        <Col span={24}>
+        <Col span={24}> <Navbar />
         <Router> 
              <Route path="/login" component={Login} /> 
              <Route path="/register" component={Register} />  
              <Route path="/dashboard" component={Dashboard} /> 
            </Router>
+         
         </Col>
+       
       </Row>
     );
   }

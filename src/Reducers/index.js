@@ -8,6 +8,9 @@ import ECF from "./UCPReducers/ECFReducer";
 import UCP from "./UCPReducers/UCPReducer";
 import LoginReducer from "./LoginReducer";
 import RegisterReducer from "./RegisterReducer";
+import userData from "./userDataReducer";
+import addProject from "./addProjectReducer";
+import addTeam from "./addTeamReducer";
 
 export default combineReducers({
   counter,
@@ -18,4 +21,7 @@ export default combineReducers({
   UCP,
   LoginReducer,
   RegisterReducer
+  userData,
+  addProject,
+  addTeam,
 });

@@ -200,7 +200,7 @@ class UUCW extends Component {
                       },
                     ]}
                   >
-                    <InputNumber className="formItem" />
+                    <InputNumber className="formItem" min={0} />
                   </Form.Item>
                   <Form.Item
                     className="formItem"
@@ -220,7 +220,7 @@ class UUCW extends Component {
                       },
                     ]}
                   >
-                    <InputNumber className="formItem" />
+                    <InputNumber className="formItem" min={0} />
                   </Form.Item>
 
                   <Form.Item className="formItem">

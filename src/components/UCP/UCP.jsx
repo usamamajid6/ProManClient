@@ -39,11 +39,6 @@ class UCP extends Component {
   };
 
   handleNext = () => {
-    console.log("====================================");
-    console.log(this.props);
-    console.log(this.state);
-    console.log("====================================");
-
     if (this.state.currentKey === "1") {
       if (!this.props.uucwStatus) {
         message.info("You must calculate UUCW first then proceed!");
