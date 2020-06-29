@@ -197,7 +197,7 @@ class UAW extends Component {
                       },
                     ]}
                   >
-                    <InputNumber className="formItem" />
+                    <InputNumber className="formItem" min={0} />
                   </Form.Item>
                   <Form.Item
                     className="formItem"
@@ -217,7 +217,7 @@ class UAW extends Component {
                       },
                     ]}
                   >
-                    <InputNumber className="formItem" />
+                    <InputNumber className="formItem" min={0} />
                   </Form.Item>
 
                   <Form.Item className="formItem">

@@ -1,0 +1,286 @@
+.UserDashboard {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  /* background-color: antiquewhite; */
+  /* margin: 1rem; */
+}
+
+.UserDashboard .mainContainer {
+  background-color: blueviolet;
+  height: 99vh;
+}
+
+.UserDashboard .menuContainer {
+  background-color: dodgerblue;
+  margin: 3rem 0 0 0;
+}
+
+.UserDashboard .subMenuContainer {
+  background-color: dodgerblue;
+}
+
+.UserDashboard .menuItem {
+  background-color: dodgerblue;
+}
+
+.UserDashboard .headContainer {
+  /* float: right; */
+}
+
+.UserDashboard .headButtonsContainer {
+  float: right;
+}
+
+.UserDashboard .addProject {
+  width: 15vw;
+  margin: 0 1rem 0 0;
+  font-size: 1.2rem;
+  border-radius: 10px;
+  height: 100%;
+}
+
+.UserDashboard .addTeam {
+  width: 15vw;
+  /* margin: 0 1rem 0 0; */
+  font-size: 1.2rem;
+  border-radius: 10px;
+  height: 100%;
+}
+
+.UserDashboard .searchProjectContainer {
+  text-align: -webkit-center;
+  margin: 1rem 0 0 0;
+}
+
+.UserDashboard .searchProjectForm {
+  height: 9vh;
+  width: 80%;
+  /* position: relative; */
+  border-radius: 1rem;
+  border: 2px solid black;
+}
+
+.UserDashboard .searchProjectInput {
+  width: 80%;
+  height: 100%;
+  border-radius: 5rem;
+  color: dodgerblue;
+  text-indent: 2rem;
+  border: none;
+  outline: none;
+  font-size: 1.5rem;
+}
+
+.UserDashboard .searchProjectButton {
+  width: 19%;
+  height: 80%;
+  padding: 0.2rem;
+  margin-right: 0.2rem;
+  border-radius: 1rem;
+  background-color: dodgerblue;
+  border: white;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.UserDashboard .searchProjectButton:hover {
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.UserDashboard .searchProjectButton:active {
+  border: none;
+  outline: none;
+}
+
+.UserDashboard .searchProjectButton:after {
+  border: none;
+  outline: none;
+}
+
+.UserDashboard .searchProjectButton:focus {
+  border: none;
+  outline: none;
+}
+
+.UserDashboard .projectsContainer {
+  /* background-color: blueviolet; */
+  /* height: 600vh; */
+  margin: 3rem;
+  text-align: center;
+  justify-content: center;
+  /* border: 2px solid black; */
+  border-radius: 4rem;
+}
+
+.UserDashboard .emptyStyles {
+  margin-top: 3rem;
+  height: 40vh;
+  width: 40vw;
+}
+
+.UserDashboard .emptyStyles p {
+  text-align: center;
+  justify-content: center;
+}
+
+.UserDashboard .projectContainer {
+  height: 50vh;
+  margin: 2rem;
+  background-color: dodgerblue;
+
+  border-radius: 3rem;
+}
+
+.UserDashboard .projectHead {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  height: 20%;
+  overflow: hidden;
+}
+
+.UserDashboard .projectDescription {
+  font-size: 1.5rem;
+  font-weight: 800;
+  padding: 0.5em;
+  overflow: auto;
+  height: 60%;
+  border-bottom: 1px solid white;
+  border-top: 1px solid white;
+  text-align: justify;
+  text-indent: 2em;
+  padding: 0.6em;
+}
+
+.UserDashboard .projectButton button {
+  font-size: 1.2rem;
+  height: 20%;
+  border: 1px solid white;
+  margin-top: 0.5rem;
+  border-radius: 2rem;
+}
+
+.UserDashboard .projectDescription::-webkit-scrollbar {
+  width: 10px;
+  color: white;
+}
+
+.UserDashboard .projectHead::-webkit-scrollbar {
+  width: 0px;
+  color: white;
+}
+
+.UserDashboard .projectDescription::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(180, 19, 19, 0.3);
+  border-radius: 10px;
+}
+
+.UserDashboard projectDescription::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(238, 36, 36, 0.5);
+}
+
+.addProjectContainer {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: #80bffa;
+  border-radius: 2rem;
+  padding-top: 2rem;
+}
+.addProjectContainer .formItemAddProject {
+  margin: 1rem;
+  text-align: center;
+}
+
+.addProjectContainer .formItemAddProject .formInputAddProject {
+  border-radius: 1rem;
+  width: 100%;
+}
+
+.addProjectContainer
+  .formItemAddProject
+  .formInputAddProject
+  .ant-select-selector {
+  border-radius: 1rem;
+}
+
+.addProjectContainer ::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: red;
+  opacity: 1; /* Firefox */
+}
+
+.addProjectContainer :-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: red;
+}
+
+.addProjectContainer ::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: red;
+}
+
+.addProjectContainer .formButtonAddProject {
+  justify-content: center;
+  text-align: center;
+  width: 50%;
+  font-size: 1.3rem;
+  height: 10%;
+  font-weight: bold;
+  border: 1px solid white;
+  border-radius: 2rem;
+  color: #80bffa;
+  letter-spacing: 0.2rem;
+}
+
+.addTeamContainer {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: #80bffa;
+  border-radius: 2rem;
+  padding-top: 2rem;
+}
+.addTeamContainer .formItemAddTeam {
+  margin: 1rem;
+  text-align: center;
+}
+
+.addTeamContainer .formItemAddTeam .formInputAddTeam {
+  border-radius: 1rem;
+  width: 100%;
+}
+
+.addTeamContainer .formItemAddTeam .formInputAddTeam .ant-select-selector {
+  border-radius: 1rem;
+}
+
+.addTeamContainer ::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: red;
+  opacity: 1; /* Firefox */
+}
+
+.addTeamContainer :-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: red;
+}
+
+.addTeamContainer ::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: red;
+}
+
+.addTeamContainer .formButtonAddTeam {
+  justify-content: center;
+  text-align: center;
+  width: 50%;
+  font-size: 1.3rem;
+  height: 10%;
+  font-weight: bold;
+  border: 1px solid white;
+  border-radius: 2rem;
+  color: #80bffa;
+  letter-spacing: 0.2rem;
+}

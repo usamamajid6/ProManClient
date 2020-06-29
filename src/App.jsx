@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Row, Col, Modal } from "antd";
 import UCP from "./components/UCP/UCP";
+import UserDashboard from "./components/UserDashboard/UserDashboard";
 import "./App.css";
 class App extends Component {
   state = {};
@@ -8,18 +9,7 @@ class App extends Component {
     return (
       <Row>
         <Col span={24}>
-          <Modal width="70vw" centered={true} visible={true}>
-            <UCP />
-<<<<<<< HEAD
-            <div>
-              Usama
-            </div>
-=======
-            <UCP /> 
-            <UCP /> 
-            <UCP />
->>>>>>> kamran
-          </Modal>
+          <UserDashboard />
         </Col>
       </Row>
     );
