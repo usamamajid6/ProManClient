@@ -1,5 +1,9 @@
 import React, { Component } from "react";
 import { Row, Col, Modal } from "antd";
+import {BrowserRouter as Router,Route} from "react-router-dom";
+import Login from './components/Login/Login';
+import Register from './components/Signup/Register';
+import Dashboard from "./components/Dashboard/Dashboard";
 import UCP from "./components/UCP/UCP";
 import "./App.css";
 class App extends Component {
@@ -8,12 +12,11 @@ class App extends Component {
     return (
       <Row>
         <Col span={24}>
-          <Modal width="70vw" centered={true} visible={true}>
-            <UCP />
-            <UCP /> 
-            <UCP /> 
-            <UCP />
-          </Modal>
+        <Router> 
+             <Route path="/login" component={Login} /> 
+             <Route path="/register" component={Register} />  
+             <Route path="/dashboard" component={Dashboard} /> 
+           </Router>
         </Col>
       </Row>
     );

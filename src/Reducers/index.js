@@ -6,6 +6,8 @@ import UAW from "./UCPReducers/UAWReducer";
 import TCF from "./UCPReducers/TCFReducer";
 import ECF from "./UCPReducers/ECFReducer";
 import UCP from "./UCPReducers/UCPReducer";
+import LoginReducer from "./LoginReducer";
+import RegisterReducer from "./RegisterReducer";
 
 export default combineReducers({
   counter,
@@ -14,4 +16,6 @@ export default combineReducers({
   TCF,
   ECF,
   UCP,
+  LoginReducer,
+  RegisterReducer
 });

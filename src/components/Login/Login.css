@@ -1,0 +1,35 @@
+.mainDiv {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem;
+  }
+  
+  .mainTitle {
+    font-size: 6rem;
+    font-weight: bolder;
+    padding-bottom: 2rem;
+    text-transform: uppercase;
+  }
+  
+  .formItem {
+    font-size: 2rem;
+  }
+  
+  .loginButton {
+    width: 50%;
+  }
+  
+  .googleButton {
+    padding: 0.4rem;
+    width: 50%;
+    color: white;
+  }
+
+  .fbButton {
+    border-style: none;
+    padding: 0.4rem;
+    width: 50%;
+    color: white;
+    background-color: dodgerblue;
+  }
