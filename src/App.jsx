@@ -5,8 +5,8 @@ import Login from "./components/Login/Login";
 import Register from "./components/Signup/Register";
 import UCP from "./components/UCP/UCP";
 import UserDashboard from "./components/UserDashboard/UserDashboard";
-import Navbar from "./components/Navbar/Navbar";
-
+import Logout from "./components/Logout/logout";
+import Homepage from "./components/Homepage/Homepage";
 import "./App.css";
 class App extends Component {
   state = {};
@@ -14,12 +14,12 @@ class App extends Component {
     return (
       <Row>
         <Col span={24}>
-          {" "}
-          <Navbar />
           <Router>
+            <Route exact path="/" component={Homepage} />
             <Route path="/login" component={Login} />
             <Route path="/register" component={Register} />
             <Route path="/userDashboard" component={UserDashboard} />
+            <Route path="/logout" component={Logout} />
           </Router>
         </Col>
       </Row>
