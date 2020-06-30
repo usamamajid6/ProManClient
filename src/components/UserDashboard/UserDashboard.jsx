@@ -139,6 +139,7 @@ class UserDashboard extends Component {
 
   displayTeams = () => {
     return this.state.teams.map((team, index) => {
+      console.log(team);
       return (
         <Menu.Item
           onClick={() => {
@@ -201,6 +202,7 @@ class UserDashboard extends Component {
       });
       await this.props.createNewProject(data);
 
+
       this.setState({
         loader: false,
         add_project_modal: false,
@@ -212,7 +214,7 @@ class UserDashboard extends Component {
       this.setState({
         loader: false,
       });
-      message.success("Some Problem Ocurr!");
+      message.error("Some Problem Ocurr!");
     }
   };
 
