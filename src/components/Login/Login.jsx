@@ -60,98 +60,100 @@ class Login extends Component {
     return (
       <div>
         <Navbar />
-        <Row className="mainDiv">
-          <Col span={24} className="mainTitle">
-            Login
-          </Col>
-          <Col lg={6} md={4} sm={2} xs={1}></Col>
-          <Col lg={12} md={16} sm={20} xs={22}>
-            <Form
-              {...layout}
-              name="nest-messages"
-              onFinish={this.onFinish}
-              validateMessages={validateMessages}
-            >
-              <Row>
-                <Col span={24}>
-                  <Form.Item
-                    name="email"
-                    label="Email"
-                    rules={[
-                      {
-                        type: "email",
-                        message: "The input is not valid E-mail!",
-                      },
-                      {
-                        required: true,
-                        message: "Please input your E-mail!",
-                      },
-                    ]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Col>
+        <div className="Login">
+          <Row className="mainDiv">
+            <Col span={24} className="mainTitle">
+              Login
+            </Col>
+            <Col lg={6} md={4} sm={2} xs={1}></Col>
+            <Col lg={12} md={16} sm={20} xs={22}>
+              <Form
+                {...layout}
+                name="nest-messages"
+                onFinish={this.onFinish}
+                validateMessages={validateMessages}
+              >
+                <Row>
+                  <Col span={24}>
+                    <Form.Item
+                      name="email"
+                      label="Email"
+                      rules={[
+                        {
+                          type: "email",
+                          message: "The input is not valid E-mail!",
+                        },
+                        {
+                          required: true,
+                          message: "Please input your E-mail!",
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
 
-                <Col span={24}>
-                  <Form.Item
-                    label="Password"
-                    name="password"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input your password!",
-                      },
-                    ]}
-                  >
-                    <Input.Password />
-                  </Form.Item>
-                </Col>
+                  <Col span={24}>
+                    <Form.Item
+                      label="Password"
+                      name="password"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your password!",
+                        },
+                      ]}
+                    >
+                      <Input.Password />
+                    </Form.Item>
+                  </Col>
 
-                <Col span={24}>
-                  <Form.Item
-                    {...tailLayout}
-                    name="remember"
-                    valuePropName="checked"
-                  >
-                    <Checkbox>Remember me</Checkbox>
-                  </Form.Item>
-                </Col>
+                  <Col span={24}>
+                    <Form.Item
+                      {...tailLayout}
+                      name="remember"
+                      valuePropName="checked"
+                    >
+                      <Checkbox>Remember me</Checkbox>
+                    </Form.Item>
+                  </Col>
 
-                <Col span={24}>
-                  <Button
-                    className="loginButton"
-                    type="primary"
-                    htmlType="submit"
-                  >
-                    LOGIN
-                  </Button>
-                </Col>
+                  <Col span={24}>
+                    <Button
+                      className="loginButton"
+                      type="primary"
+                      htmlType="submit"
+                    >
+                      LOGIN
+                    </Button>
+                  </Col>
 
-                <Col span={24}>
-                  <GoogleLogin
-                    clientId="180157925992-c9jacg15oi7rsspb5t9t64lg9um74nuq.apps.googleusercontent.com"
-                    buttonText="Login With Google"
-                    cssClass="googleButton"
-                    onSuccess={responseGoogle}
-                    onFailure={responseGoogle}
-                    cookiePolicy={"single_host_origin"}
-                  />
-                </Col>
-                <Col span={24}>
-                  <FacebookLogin
-                    appId="708444756657461"
-                    autoLoad={true}
-                    fields="name,email,picture"
-                    onClick={this.componentClicked}
-                    cssClass="fbButton"
-                    callback={responseFacebook}
-                  />
-                </Col>
-              </Row>
-            </Form>
-          </Col>
-          <Col lg={6} md={4} sm={2} xs={1}></Col>
-        </Row>
+                  {/* <Col span={24}>
+                    <GoogleLogin
+                      clientId="180157925992-c9jacg15oi7rsspb5t9t64lg9um74nuq.apps.googleusercontent.com"
+                      buttonText="Login With Google"
+                      cssClass="googleButton"
+                      onSuccess={responseGoogle}
+                      onFailure={responseGoogle}
+                      cookiePolicy={"single_host_origin"}
+                    />
+                  </Col>
+                  <Col span={24}>
+                    <FacebookLogin
+                      appId="708444756657461"
+                      autoLoad={true}
+                      fields="name,email,picture"
+                      onClick={this.componentClicked}
+                      cssClass="fbButton"
+                      callback={responseFacebook}
+                    />
+                  </Col> */}
+                </Row>
+              </Form>
+            </Col>
+            <Col lg={6} md={4} sm={2} xs={1}></Col>
+          </Row>
+        </div>
       </div>
     );
   }

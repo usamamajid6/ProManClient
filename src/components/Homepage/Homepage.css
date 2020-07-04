@@ -14,10 +14,14 @@
 
 .Homepage .mainTitleContainer {
   height: 80vh;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
 }
 
 .Homepage .mainTitle {
   padding: 5rem 0 0 1rem;
+  /* display: table; */
   font-size: 6rem;
   font-weight: bolder;
   color: white;
@@ -25,8 +29,9 @@
 
 .Homepage .subTitle {
   font-size: 1.5rem;
-  padding: 0 0 0 1rem;
+  padding: 0 0 0 1.5rem;
   color: white;
+  /* display: table; */
 }
 
 .Homepage .mainImageContainer {
