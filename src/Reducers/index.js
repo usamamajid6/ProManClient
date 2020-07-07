@@ -11,7 +11,7 @@ import registerUser from "./RegisterReducer";
 import userData from "./userDataReducer";
 import addProject from "./addProjectReducer";
 import addTeam from "./addTeamReducer";
-
+import projectData from "./projectDataReducer";
 export default combineReducers({
   counter,
   UUCW,
@@ -24,4 +24,5 @@ export default combineReducers({
   userData,
   addProject,
   addTeam,
+  projectData,
 });

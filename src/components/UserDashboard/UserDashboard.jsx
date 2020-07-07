@@ -56,7 +56,7 @@ class UserDashboard extends Component {
   componentDidMount = async () => {
     if (!localStorage.getItem("userId")) {
       this.props.history.push("/login");
-      return; 
+      return;
     }
     try {
       await this.props.getUserData({
@@ -278,7 +278,7 @@ class UserDashboard extends Component {
                     onClick={this.handleProjectClick}
                     icon={<ProjectFilled />}
                   >
-                    Project(s)
+                    All Project(s)
                   </Menu.Item>
                   <Menu.Item
                     onClick={() => {
@@ -289,7 +289,11 @@ class UserDashboard extends Component {
                   >
                     Add Project
                   </Menu.Item>
-                  <SubMenu key="teams" icon={<TeamOutlined />} title="Team(s)">
+                  <SubMenu
+                    key="teams"
+                    icon={<TeamOutlined />}
+                    title="Project By Team(s)"
+                  >
                     {this.displayTeams()}
                   </SubMenu>
                   <Menu.Item
@@ -364,7 +368,7 @@ class UserDashboard extends Component {
           <Col span={24}>
             <Modal
               centered={true}
-              width="70vw"
+              width="60vw"
               title="Add Project"
               visible={this.state.add_project_modal}
               onOk={this.handleAddProjectModalOk}
@@ -519,7 +523,7 @@ class UserDashboard extends Component {
           <Col span={24}>
             <Modal
               centered={true}
-              width="70vw"
+              width="60vw"
               title="Add Team"
               visible={this.state.add_team_modal}
               onOk={this.handleAddTeamModalOk}

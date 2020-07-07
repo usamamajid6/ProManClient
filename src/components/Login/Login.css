@@ -11,10 +11,17 @@
 }
 
 .Login .mainTitle {
-  font-size: 6rem;
+  font-size: 4rem;
   font-weight: bolder;
   padding-bottom: 2rem;
   text-transform: uppercase;
+}
+
+.Login .formContainer {
+  background-color: #80bffa;
+  border-radius: 2rem;
+  color: white;
+  padding: 2rem;
 }
 
 .Login .formItem {
@@ -23,6 +30,9 @@
 
 .Login .loginButton {
   width: 50%;
+  height: 8vh;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .Login .googleButton {

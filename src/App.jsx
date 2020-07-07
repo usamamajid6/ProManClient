@@ -8,6 +8,7 @@ import UserDashboard from "./components/UserDashboard/UserDashboard";
 import Logout from "./components/Logout/logout";
 import Homepage from "./components/Homepage/Homepage";
 import Footer from "./components/Footer/Footer";
+import ProjectDashboard from "./components/ProjectDashboard/ProjectDashboard";
 import "./App.css";
 class App extends Component {
   state = {};
@@ -21,6 +22,7 @@ class App extends Component {
             <Route path="/register" component={Register} />
             <Route path="/userDashboard" component={UserDashboard} />
             <Route path="/logout" component={Logout} />
+            <Route path="/projectDashboard" component={ProjectDashboard} />
           </Router>
         </Col>
         <Col span={24}>

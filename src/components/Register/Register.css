@@ -11,18 +11,28 @@
 }
 
 .Register .mainTitle {
-  font-size: 6rem;
+  font-size: 4rem;
   font-weight: bolder;
   padding-bottom: 2rem;
   text-transform: uppercase;
+}
+
+.Register .formContainer {
+  background-color: #80bffa;
+  border-radius: 2rem;
+  color: white;
+  padding: 2rem;
 }
 
 .Register .formItem {
   font-size: 2rem;
 }
 
-.Register .loginButton {
+.Register .registerButton {
   width: 50%;
+  height: 8vh;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .Register .googleButton {
