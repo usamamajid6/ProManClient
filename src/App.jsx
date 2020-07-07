@@ -8,6 +8,9 @@ import UserDashboard from "./components/UserDashboard/UserDashboard";
 import Logout from "./components/Logout/logout";
 import Homepage from "./components/Homepage/Homepage";
 import "./App.css";
+import AddNewTask from "./components/AddNewTask/AddNewTask.jsx";
+import AddNewTaskList from "./components/AddNewTaskList/AddNewTaskList";
+import ViewTaskDetails from "./components/ViewTaskDetails/ViewTaskDetails";
 class App extends Component {
   state = {};
   render() {
@@ -20,6 +23,9 @@ class App extends Component {
             <Route path="/register" component={Register} />
             <Route path="/userDashboard" component={UserDashboard} />
             <Route path="/logout" component={Logout} />
+            <Route path="/addNewTask" component={AddNewTask} />
+            <Route path="/addNewTaskList" component={AddNewTaskList} />
+            <Route path="/viewTaskDetails" component={ViewTaskDetails} />
           </Router>
         </Col>
       </Row>
