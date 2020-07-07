@@ -12,6 +12,9 @@ import userData from "./userDataReducer";
 import addProject from "./addProjectReducer";
 import addTeam from "./addTeamReducer";
 import projectData from "./projectDataReducer";
+import addTask from "./AddTaskReducer";
+import addTaskList from "./AddTaskListReducer";
+
 export default combineReducers({
   counter,
   UUCW,
@@ -25,4 +28,6 @@ export default combineReducers({
   addProject,
   addTeam,
   projectData,
+  addTask,
+  addTaskList,
 });
