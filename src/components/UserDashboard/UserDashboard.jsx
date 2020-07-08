@@ -30,8 +30,10 @@ import UCP from "../UCP/UCP";
 import { createNewProject } from "../../Actions/addProjectAction";
 import { getUserData } from "../../Actions/userDataAction";
 import { createNewTeam } from "../../Actions/addTeamAction";
+import { setProjectId } from "../../Actions/setProjectIdAction";
 import LoadingOverlay from "react-loading-overlay";
 import BounceLoader from "react-spinners/BounceLoader";
+import Navbar from "../Navbar/Navbar";
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 const { TextArea } = Input;
@@ -52,10 +54,19 @@ class UserDashboard extends Component {
     add_team_modal: false,
   };
 
-  componentDidMount = () => {
-    console.log('====================================');
+  componentDidMount = async () => {
+    if (!localStorage.getItem("userId")) {
+      this.props.history.push("/login");
+      return;
+    }
+    try {
+      await this.props.getUserData({
+        _id: parseInt(localStorage.getItem("userId")),
+      });
+    } catch (error) {
+      message.info("Some Problem Occur!");
+    }
     console.log(this.props.userData);
-    console.log('====================================');
     this.setState({
       userData: this.props.userData.data.result,
       projects: this.props.userData.data.projects,
@@ -72,9 +83,6 @@ class UserDashboard extends Component {
     } catch (error) {
       message.info("Some Problem Occur!");
     }
-    console.log("====================================");
-    console.log(this.props.userData.data);
-    console.log("====================================");
     this.setState({
       userData: this.props.userData.data.result,
       projects: this.props.userData.data.projects,
@@ -120,8 +128,14 @@ class UserDashboard extends Component {
               <div className="projectHead">{project.name}</div>
               <div className="projectDescription"> {project.description}</div>
               <div className="projectButton">
-                <Button type="primary" onClick={() => {}}>
-                  Open
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    this.props.setProjectId(project._id);
+                    this.props.history.push("/projectDashboard");
+                  }}
+                >
+                  Proceed
                 </Button>
               </div>
             </div>
@@ -257,47 +271,53 @@ class UserDashboard extends Component {
 
   render() {
     return (
-      <Row className="UserDashboard">
-        <Col span={24}>
-          <Layout style={{ minHeight: "100vh" }}>
-            <Sider
-              collapsible
-              collapsed={this.state.collapsed}
-              onCollapse={this.onCollapse}
-            >
-              <Menu className="menuContainer" theme="dark" mode="inline">
-                <Menu.Item
-                  key="projects"
-                  onClick={this.handleProjectClick}
-                  icon={<ProjectFilled />}
-                >
-                  Project(s)
-                </Menu.Item>
-                <Menu.Item
-                  onClick={() => {
-                    this.setState({ add_project_modal: true });
-                  }}
-                  key="addprojects"
-                  icon={<PlusSquareOutlined />}
-                >
-                  Add Project
-                </Menu.Item>
-                <SubMenu key="teams" icon={<TeamOutlined />} title="Team(s)">
-                  {this.displayTeams()}
-                </SubMenu>
-                <Menu.Item
-                  onClick={() => {
-                    this.setState({ add_team_modal: true });
-                  }}
-                  key="addteam"
-                  icon={<PlusSquareOutlined />}
-                >
-                  Add Team
-                </Menu.Item>
-              </Menu>
-            </Sider>
-            <Layout className="site-layout">
-              {/* <Header
+      <div>
+        <Navbar />
+        <Row className="UserDashboard">
+          <Col span={24}>
+            <Layout style={{ minHeight: "100vh" }}>
+              <Sider
+                collapsible
+                collapsed={this.state.collapsed}
+                onCollapse={this.onCollapse}
+              >
+                <Menu className="menuContainer" theme="dark" mode="inline">
+                  <Menu.Item
+                    key="projects"
+                    onClick={this.handleProjectClick}
+                    icon={<ProjectFilled />}
+                  >
+                    All Project(s)
+                  </Menu.Item>
+                  <Menu.Item
+                    onClick={() => {
+                      this.setState({ add_project_modal: true });
+                    }}
+                    key="addprojects"
+                    icon={<PlusSquareOutlined />}
+                  >
+                    Add Project
+                  </Menu.Item>
+                  <SubMenu
+                    key="teams"
+                    icon={<TeamOutlined />}
+                    title="Project By Team(s)"
+                  >
+                    {this.displayTeams()}
+                  </SubMenu>
+                  <Menu.Item
+                    onClick={() => {
+                      this.setState({ add_team_modal: true });
+                    }}
+                    key="addteam"
+                    icon={<PlusSquareOutlined />}
+                  >
+                    Add Team
+                  </Menu.Item>
+                </Menu>
+              </Sider>
+              <Layout className="site-layout">
+                {/* <Header
                 className="headContainer"
                 // className="site-layout-background"
               >
@@ -311,284 +331,285 @@ class UserDashboard extends Component {
                   hjkn
                 </div>
               </Header> */}
-              <Content>
-                <Row>
-                  <Col span={24}>
-                    <div className="searchProjectContainer">
-                      <form className="searchProjectForm">
-                        <input
-                          className="searchProjectInput"
-                          type="text"
-                          placeholder="Search Project By Name!"
-                          value={this.state.searchText}
-                          onChange={(e) => {
-                            this.setState({
-                              searchText: e.target.value,
-                            });
-                            if (e.target.value === "") {
+                <Content>
+                  <Row>
+                    <Col span={24}>
+                      <div className="searchProjectContainer">
+                        <form className="searchProjectForm">
+                          <input
+                            className="searchProjectInput"
+                            type="text"
+                            placeholder="Search Project By Name!"
+                            value={this.state.searchText}
+                            onChange={(e) => {
                               this.setState({
-                                projects: this.state.orignalProjectsList,
+                                searchText: e.target.value,
                               });
-                            }
-                          }}
-                        />
-                        <Button
-                          className="searchProjectButton"
-                          type="primary"
-                          htmlType="submit"
-                          onClick={this.handleSearchProject}
-                        >
-                          Search
-                        </Button>
-                      </form>
-                    </div>
-                  </Col>
-                  <Col span={24}>
-                    <Row className="projectsContainer">
-                      {this.displayProjects()}
-                    </Row>
-                  </Col>
-                </Row>
-              </Content>
+                              if (e.target.value === "") {
+                                this.setState({
+                                  projects: this.state.orignalProjectsList,
+                                });
+                              }
+                            }}
+                          />
+                          <Button
+                            className="searchProjectButton"
+                            type="primary"
+                            htmlType="submit"
+                            onClick={this.handleSearchProject}
+                          >
+                            Search
+                          </Button>
+                        </form>
+                      </div>
+                    </Col>
+                    <Col span={24}>
+                      <Row className="projectsContainer">
+                        {this.displayProjects()}
+                      </Row>
+                    </Col>
+                  </Row>
+                </Content>
+              </Layout>
             </Layout>
-          </Layout>
-        </Col>
+          </Col>
 
-        <Col span={24}>
-          <Modal
-            centered={true}
-            width="70vw"
-            title="Add Project"
-            visible={this.state.add_project_modal}
-            onOk={this.handleAddProjectModalOk}
-            onCancel={this.handleAddProjectModalOk}
-          >
-            <LoadingOverlay
-              styles={{
-                overlay: (base) => ({
-                  ...base,
-                  borderRadius: "2rem",
-                }),
-              }}
-              active={this.state.loader}
-              spinner
-              text="Creating The Project..."
+          <Col span={24}>
+            <Modal
+              centered={true}
+              width="60vw"
+              title="Add Project"
+              visible={this.state.add_project_modal}
+              onOk={this.handleAddProjectModalOk}
+              onCancel={this.handleAddProjectModalOk}
             >
-              <Form
-                name="add_project"
-                className="addProjectContainer"
-                initialValues={{
-                  remember: true,
+              <LoadingOverlay
+                styles={{
+                  overlay: (base) => ({
+                    ...base,
+                    borderRadius: "2rem",
+                  }),
                 }}
-                onFinish={this.handleAddProject}
+                active={this.state.loader}
+                spinner
+                text="Creating The Project..."
               >
-                <Row>
-                  <Col span={24}>
-                    <Form.Item
-                      className="formItemAddProject"
-                      name="name"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Required!",
-                        },
-                      ]}
-                    >
-                      <Input
-                        className="formInputAddProject"
-                        // prefix={<UserOutlined className="site-form-item-icon" />}
-                        placeholder="Project Name..."
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={24}>
-                    <Form.Item
-                      className="formItemAddProject"
-                      name="description"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Required!",
-                        },
-                      ]}
-                    >
-                      <TextArea
-                        rows={4}
-                        className="formInputAddProject"
-                        // prefix={<LockOutlined className="site-form-item-icon" />}
-                        placeholder="Description..."
-                      />
-                    </Form.Item>
-                  </Col>
-
-                  <Col span={24}>
-                    <Form.Item
-                      className="formItemAddProject"
-                      name="date"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Required!",
-                        },
-                      ]}
-                    >
-                      <RangePicker
-                        className="formInputAddProject"
-                        format={dateFormat}
-                        // prefix={<LockOutlined className="site-form-item-icon" />}
-                      />
-                    </Form.Item>
-                  </Col>
-
-                  <Col span={24}>
-                    <Form.Item
-                      className="formItemAddProject"
-                      name="team"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Required!",
-                        },
-                      ]}
-                    >
-                      <Select
-                        key="1"
-                        className="formInputAddProject"
-                        placeholder="Select A Team"
+                <Form
+                  name="add_project"
+                  className="addProjectContainer"
+                  initialValues={{
+                    remember: true,
+                  }}
+                  onFinish={this.handleAddProject}
+                >
+                  <Row>
+                    <Col span={24}>
+                      <Form.Item
+                        className="formItemAddProject"
+                        name="name"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Required!",
+                          },
+                        ]}
                       >
-                        <Option value="no-team">No Team</Option>
-                        {this.state.teams.map((team, index) => (
-                          <Option value={team._id}>{team.name}</Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-
-                  <Col span={24}>
-                    <Form.Item
-                      className="formItemAddProject"
-                      name="project_type"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Required!",
-                        },
-                      ]}
-                    >
-                      <Select
-                        key="2"
-                        className="formInputAddProject"
-                        placeholder="Project Type"
-                        onChange={(value) => {
-                          this.setState({
-                            project_type: value,
-                          });
-                        }}
+                        <Input
+                          className="formInputAddProject"
+                          // prefix={<UserOutlined className="site-form-item-icon" />}
+                          placeholder="Project Name..."
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                      <Form.Item
+                        className="formItemAddProject"
+                        name="description"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Required!",
+                          },
+                        ]}
                       >
-                        <Option value="software">Software Project</Option>
-                        <Option value="other">
-                          Other(any project other than software) Project
-                        </Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                  <Col span={24}>{this.showUCPOrNot()}</Col>
-                  <Col span={24}>
-                    <Form.Item className="formItemAddProject ">
-                      <Button
-                        className="formButtonAddProject"
-                        htmlType="submit"
-                      >
-                        CREATE
-                      </Button>
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Form>{" "}
-            </LoadingOverlay>
-          </Modal>
-        </Col>
+                        <TextArea
+                          rows={4}
+                          className="formInputAddProject"
+                          // prefix={<LockOutlined className="site-form-item-icon" />}
+                          placeholder="Description..."
+                        />
+                      </Form.Item>
+                    </Col>
 
-        <Col span={24}>
-          <Modal
-            centered={true}
-            width="70vw"
-            title="Add Team"
-            visible={this.state.add_team_modal}
-            onOk={this.handleAddTeamModalOk}
-            onCancel={this.handleAddTeamModalOk}
-          >
-            <LoadingOverlay
-              styles={{
-                overlay: (base) => ({
-                  ...base,
-                  borderRadius: "2rem",
-                }),
-              }}
-              active={this.state.loader}
-              spinner
-              text="Creating The Team..."
+                    <Col span={24}>
+                      <Form.Item
+                        className="formItemAddProject"
+                        name="date"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Required!",
+                          },
+                        ]}
+                      >
+                        <RangePicker
+                          className="formInputAddProject"
+                          format={dateFormat}
+                          // prefix={<LockOutlined className="site-form-item-icon" />}
+                        />
+                      </Form.Item>
+                    </Col>
+
+                    <Col span={24}>
+                      <Form.Item
+                        className="formItemAddProject"
+                        name="team"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Required!",
+                          },
+                        ]}
+                      >
+                        <Select
+                          key="1"
+                          className="formInputAddProject"
+                          placeholder="Select A Team"
+                        >
+                          <Option value="no-team">No Team</Option>
+                          {this.state.teams.map((team, index) => (
+                            <Option value={team._id}>{team.name}</Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+
+                    <Col span={24}>
+                      <Form.Item
+                        className="formItemAddProject"
+                        name="project_type"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Required!",
+                          },
+                        ]}
+                      >
+                        <Select
+                          key="2"
+                          className="formInputAddProject"
+                          placeholder="Project Type"
+                          onChange={(value) => {
+                            this.setState({
+                              project_type: value,
+                            });
+                          }}
+                        >
+                          <Option value="software">Software Project</Option>
+                          <Option value="other">
+                            Other(any project other than software) Project
+                          </Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    <Col span={24}>{this.showUCPOrNot()}</Col>
+                    <Col span={24}>
+                      <Form.Item className="formItemAddProject ">
+                        <Button
+                          className="formButtonAddProject"
+                          htmlType="submit"
+                        >
+                          CREATE
+                        </Button>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Form>
+              </LoadingOverlay>
+            </Modal>
+          </Col>
+
+          <Col span={24}>
+            <Modal
+              centered={true}
+              width="60vw"
+              title="Add Team"
+              visible={this.state.add_team_modal}
+              onOk={this.handleAddTeamModalOk}
+              onCancel={this.handleAddTeamModalOk}
             >
-              <Form
-                name="add_team"
-                className="addTeamContainer"
-                initialValues={{
-                  remember: true,
+              <LoadingOverlay
+                styles={{
+                  overlay: (base) => ({
+                    ...base,
+                    borderRadius: "2rem",
+                  }),
                 }}
-                onFinish={this.handleAddTeam}
+                active={this.state.loader}
+                spinner
+                text="Creating The Team..."
               >
-                <Row>
-                  <Col span={24}>
-                    <Form.Item
-                      className="formItemAddTeam"
-                      name="name"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Required!",
-                        },
-                      ]}
-                    >
-                      <Input
-                        className="formInputAddTeam"
-                        // prefix={<UserOutlined className="site-form-item-icon" />}
-                        placeholder="Team Name..."
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={24}>
-                    <Form.Item
-                      className="formItemAddTeam"
-                      name="description"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Required!",
-                        },
-                      ]}
-                    >
-                      <TextArea
-                        rows={4}
-                        className="formInputAddTeam"
-                        // prefix={<LockOutlined className="site-form-item-icon" />}
-                        placeholder="Description..."
-                      />
-                    </Form.Item>
-                  </Col>
+                <Form
+                  name="add_team"
+                  className="addTeamContainer"
+                  initialValues={{
+                    remember: true,
+                  }}
+                  onFinish={this.handleAddTeam}
+                >
+                  <Row>
+                    <Col span={24}>
+                      <Form.Item
+                        className="formItemAddTeam"
+                        name="name"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Required!",
+                          },
+                        ]}
+                      >
+                        <Input
+                          className="formInputAddTeam"
+                          // prefix={<UserOutlined className="site-form-item-icon" />}
+                          placeholder="Team Name..."
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                      <Form.Item
+                        className="formItemAddTeam"
+                        name="description"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Required!",
+                          },
+                        ]}
+                      >
+                        <TextArea
+                          rows={4}
+                          className="formInputAddTeam"
+                          // prefix={<LockOutlined className="site-form-item-icon" />}
+                          placeholder="Description..."
+                        />
+                      </Form.Item>
+                    </Col>
 
-                  <Col span={24}>
-                    <Form.Item className="formItemAddTeam">
-                      <Button className="formButtonAddTeam" htmlType="submit">
-                        CREATE
-                      </Button>
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Form>
-            </LoadingOverlay>
-          </Modal>
-        </Col>
-      </Row>
+                    <Col span={24}>
+                      <Form.Item className="formItemAddTeam">
+                        <Button className="formButtonAddTeam" htmlType="submit">
+                          CREATE
+                        </Button>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Form>
+              </LoadingOverlay>
+            </Modal>
+          </Col>
+        </Row>
+      </div>
     );
   }
 }
@@ -604,6 +625,7 @@ const mapDispatchToProps = {
   createNewProject,
   getUserData,
   createNewTeam,
+  setProjectId,
 };
 
 UserDashboard = connect(mapStateToProps, mapDispatchToProps)(UserDashboard);

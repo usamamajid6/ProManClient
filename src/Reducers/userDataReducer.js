@@ -396,7 +396,6 @@ const initialState = {
 };
 
 const userDataReducer = (state = initialState, action) => {
-
   switch (action.type) {
     case GET_USER_DATA:
       return {
