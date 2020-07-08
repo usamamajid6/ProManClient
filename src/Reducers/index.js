@@ -13,6 +13,7 @@ import addProject from "./addProjectReducer";
 import addTeam from "./addTeamReducer";
 import addTask from "./AddTaskReducer";
 import addTaskList from "./AddTaskListReducer";
+import addComment from "./addCommentReducer";
 
 export default combineReducers({
   counter,
@@ -28,4 +29,5 @@ export default combineReducers({
   addTeam,
   addTask,
   addTaskList,
+  addComment
 });

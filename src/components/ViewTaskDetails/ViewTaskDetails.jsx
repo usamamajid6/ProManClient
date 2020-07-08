@@ -9,9 +9,12 @@ import {
   Checkbox,
   Progress,
   Input,
+  Form,
+  message,
 } from "antd";
+import { connect } from "react-redux";
 import { InboxOutlined } from "@ant-design/icons";
-
+import { addComment } from "../../Actions/addCommentAction";
 import "./ViewTaskDetails.css";
 
 const { TextArea } = Input;
@@ -198,13 +201,27 @@ class ViewTaskDetails extends Component {
     console.log(`checked = ${e.target.checked}`);
   }
 
-  postComment() {
-    console.log("You posted a comment..!");
-  }
-
   addSubTask() {
     console.log("Task will be added later..!");
   }
+
+  onFinish = async (values) => {
+    console.log(values);
+    let data = {
+      message: values.comment,
+      member_id:1,
+      task_id:1,
+    };
+
+    try {
+      await this.props.addComment(data);
+      let response = this.props.response;
+      console.log(response);
+      message.success(response.message);
+    } catch (error) {
+      message.error("Some Problem Occur!");
+    }
+  };
 
   render() {
     return (
@@ -222,7 +239,15 @@ class ViewTaskDetails extends Component {
           <Row className="viewTaskDetails">
             <Col span={24} className="statusContainer">
               <b>Status:</b>{" "}
-              <span style={{ textTransform: "capitalize" }}>{data.status}</span>
+              <span style={{ textTransform: "capitalize" }}>
+                <b> {data.status}</b>{" "}
+              </span>
+            </Col>
+            <Col span={24} className="statusContainer">
+              <span>
+                {" "}
+                <b>{data.due_on}</b>
+              </span>
             </Col>
             <Col span={16} className="colDesign">
               <Row className="viewTaskDetails">
@@ -265,21 +290,36 @@ class ViewTaskDetails extends Component {
                 </Col>
                 <Col span={24} className="otherContainers">
                   <b>Comments: </b>
-                  <Row>
-                    <Col span={18}>
-                      <TextArea rows={1} className="innerContainers" />
-                    </Col>
 
-                    <Col span={6}>
-                      <Button
-                        type="primary"
-                        className="buttonStyle"
-                        onClick={this.postComment}
-                      >
-                        Post Comment
-                      </Button>
-                    </Col>
-                  </Row>
+                  <Form
+                    name="add_new_comment"
+                    className="addTaskListContainer"
+                    initialValues={{
+                      remember: true,
+                    }}
+                    onFinish={this.onFinish}
+                  >
+                    <Row>
+                      <Col span={18}>
+                        <Form.Item
+                          className="formItemAddTaskList"
+                          name="comment"
+                        >
+                          <TextArea rows={1} className="innerContainers" />
+                        </Form.Item>
+                      </Col>
+
+                      <Col span={6}>
+                        <Button
+                          type="primary"
+                          htmlType="submit"
+                          className="buttonStyle"
+                        >
+                          Post Comment
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
 
                   {data.comments.map((comments, index) => (
                     <Row className="innerContainers">
@@ -309,7 +349,7 @@ class ViewTaskDetails extends Component {
                 <Col span="24" className="otherContainers">
                   <b>Members: </b>
                   {data.members.map((members, index) => (
-                    <Col span="24" className="innerContainers">
+                    <Col span="24" className="membersAttachmentDesign">
                       {members.name}
                     </Col>
                   ))}
@@ -318,12 +358,19 @@ class ViewTaskDetails extends Component {
                 <Col className="otherContainers">
                   <b>Attachment: </b>{" "}
                   {data.attachments.map((attachments, index) => (
-                    <Col> {attachments.name} </Col>
+                    <Col className="membersAttachmentDesign">
+                      {" "}
+                      {attachments.name}{" "}
+                    </Col>
                   ))}
                 </Col>
 
                 <Col>
-                  <Upload.Dragger name="files" action="/upload.do" className="draggerDesign">
+                  <Upload.Dragger
+                    name="files"
+                    action="/upload.do"
+                    className="draggerDesign"
+                  >
                     <p className="ant-upload-drag-icon">
                       <InboxOutlined />
                     </p>
@@ -340,5 +387,12 @@ class ViewTaskDetails extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => ({
+  response: state.addComment,
+});
+
+const mapDispatchToProps = { addComment };
+ViewTaskDetails = connect(mapStateToProps, mapDispatchToProps)(ViewTaskDetails);
 
 export default ViewTaskDetails;

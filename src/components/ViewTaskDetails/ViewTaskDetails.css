@@ -8,7 +8,7 @@
 
 .viewTaskDetails .statusContainer {
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
 }
 
 .viewTaskDetails .otherContainers {
@@ -18,8 +18,8 @@
 .viewTaskDetails .innerContainers {
     margin: 0.1rem;
   border: solid;
-  padding: 1rem;
-  font-size: 1.2rem;
+  padding: 0.8rem;
+  font-size: 1rem;
   border-color: #80bffa;
   border-radius: 1rem;
   background-color: white;
@@ -35,15 +35,20 @@
 } 
 
 .viewTaskDetails .colDesign{
-    padding: 0.5rem;   
+    padding: 1rem;   
 }
 
 .viewTaskDetails .subTaskDesign{
     padding: 0.4rem;
     color: white;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
 }
 
 .viewTaskDetails .draggerDesign{
-    padding: 2rem;
+    padding: 3rem;
+}
+
+.viewTaskDetails .membersAttachmentDesign{
+    margin: 0.1rem;
+  font-size: 1rem;
 }
