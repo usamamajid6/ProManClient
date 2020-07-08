@@ -11,6 +11,7 @@ import {
   Collapse,
   Table,
   Tag,
+  message,
 } from "antd";
 import Navbar from "../Navbar/Navbar";
 import { connect } from "react-redux";
@@ -25,6 +26,10 @@ import Icon, {
 } from "@ant-design/icons";
 import Sidebar from "react-sidebar";
 import Homepage from "../Homepage/Homepage";
+import AddNewTaskList from "../AddNewTaskList/AddNewTaskList";
+import Server from "../../ServerPath";
+import io from "socket.io-client";
+
 const { Panel } = Collapse;
 
 const columns = [
@@ -122,7 +127,7 @@ const columns = [
     align: "center",
   },
 ];
-
+const socket = io.connect(Server);
 const boardSVG = () => (
   <svg
     enable-background="new 0 0 33.8 21.2"
@@ -147,22 +152,56 @@ class ProjectDashboard extends Component {
     data: [],
     view_type: "board",
     sidebar_status: false,
-    text:
-      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Recusandae ex praesentium harum ipsum iure aut impedit expedita officia facilis quis, tempora architecto voluptatum, hic tenetur quae blanditiis a libero. Consequuntur!",
+    add_new_task_list_modal: false,
+    interval: null,
+  };
+
+  componentWillUnmount = () => {
+    clearInterval(this.state.interval);
   };
 
   componentDidMount = async () => {
-    await this.props.getProjectData({
-      _id: 1,
-      user_id: 1,
+    if (!localStorage.getItem("userId")) {
+      this.props.history.push("/login");
+      return;
+    }
+    if (this.props.project_id === null) {
+      this.props.history.push("/userDashboard");
+      return;
+    }
+    const user_id = parseInt(localStorage.getItem("userId"));
+    this.setState({ user_id });
+    await this.updateData();
+
+    socket.emit("joinTheProjectRoom", this.state.project_data);
+
+    socket.on("updateProjectData", () => {
+      this.updateData();
     });
+  };
+
+  updateData = async () => {
+    console.log("====================================");
+    console.log("Update Data");
+    console.log("====================================");
+    try {
+      await this.props.getProjectData({
+        _id: parseInt(this.props.project_id.data),
+        user_id: this.state.user_id,
+      });
+    } catch (error) {}
     this.setState({
       project_data: this.props.project_data.data.result,
       data: this.props.project_data.data,
     });
-    console.log("====================================");
-    console.log(this.state.data.taskList);
-    console.log("====================================");
+  };
+
+  componentWillUnmount = () => {
+    socket.emit("leaveTheProjectRoom", this.state.project_data);
+  };
+
+  tellServerToUpdateData = () => {
+    socket.emit("tellRoomMatesToUpdateProject", this.state.project_data);
   };
 
   displayProject = () => {
@@ -190,23 +229,32 @@ class ProjectDashboard extends Component {
           <Row>
             <Col span={24}>
               <Collapse defaultActiveKey={["0"]} ghost>
-                {this.state.data.taskList.map((task_list, index) => {
-                  return (
-                    <Panel header={task_list.name} key={index}>
-                      <Table
-                        // style={{ backgroundColor: "steelblue", color: "white" }}
-                        bordered
-                        size="small"
-                        columns={columns}
-                        dataSource={task_list.tasks}
-                        key={index}
-                        rowClassName="tableRowClass"
-                        className="tableStyles"
-                        pagination="4"
-                      />
-                    </Panel>
-                  );
-                })}
+                {this.state.data.taskList.length !== 0 ? (
+                  this.state.data.taskList.map((task_list, index) => {
+                    return (
+                      <Panel header={task_list.name} key={index}>
+                        <Table
+                          // style={{ backgroundColor: "steelblue", color: "white" }}
+                          bordered
+                          size="small"
+                          columns={columns}
+                          dataSource={task_list.tasks}
+                          key={index}
+                          rowClassName="tableRowClass"
+                          className="tableStyles"
+                          pagination="4"
+                        />
+                      </Panel>
+                    );
+                  })
+                ) : (
+                  <Empty
+                    imageStyle={{ height: "inherit", width: "inherit" }}
+                    description="No Any Tasks"
+                    image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+                    // className="emptyStyles"
+                  />
+                )}
               </Collapse>
               ,
             </Col>
@@ -226,17 +274,24 @@ class ProjectDashboard extends Component {
     console.log("====================================");
     console.log(task_list_id);
     console.log("====================================");
+    this.setState({
+      task_list_id_to_add: task_list_id,
+    });
   };
 
   handleAddNewTaskList = () => {
-    console.log("====================================");
-    console.log("Calls");
-    console.log("====================================");
+    this.setState({
+      add_new_task_list_modal: true,
+    });
   };
 
   displayLeaderButton = () => {
     if (true) {
-      return <Button type="primary">Open Leader Dashboard</Button>;
+      return (
+        <Button type="primary" onClick={() => {}}>
+          Open Leader Dashboard
+        </Button>
+      );
     }
   };
 
@@ -244,6 +299,19 @@ class ProjectDashboard extends Component {
     this.setState({ sidebar_status: open });
   };
 
+  handelAddNewTaskListModalCancel = (e) => {
+   
+    this.setState({
+      add_new_task_list_modal: false,
+    });
+  };
+
+  closeAddNewTaskListModal=()=>{
+    this.setState({
+      add_new_task_list_modal: false,
+    });
+    this.tellServerToUpdateData()
+  }
   render() {
     return (
       <div>
@@ -306,12 +374,26 @@ class ProjectDashboard extends Component {
           </Col>
           <Col span={24}>{this.displayProject()}</Col>
         </Row>
+
+        <Modal
+          title="Add New Task List"
+          width="60vw"
+          visible={this.state.add_new_task_list_modal}
+          onCancel={this.handelAddNewTaskListModalCancel}
+          onOk={this.handelAddNewTaskListModalCancel}
+        >
+          <AddNewTaskList
+            closeAddNewTaskListModal={this.closeAddNewTaskListModal}
+            project_id={this.state.project_data._id}
+          />
+        </Modal>
       </div>
     );
   }
 }
 
 const mapStateToProps = (state) => ({
+  project_id: state.projectId,
   project_data: state.projectData,
 });
 

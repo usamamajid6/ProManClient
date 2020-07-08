@@ -14,6 +14,7 @@ import addTeam from "./addTeamReducer";
 import projectData from "./projectDataReducer";
 import addTask from "./AddTaskReducer";
 import addTaskList from "./AddTaskListReducer";
+import projectId from "./setProjectIdReducer";
 
 export default combineReducers({
   counter,
@@ -30,4 +31,5 @@ export default combineReducers({
   projectData,
   addTask,
   addTaskList,
+  projectId,
 });

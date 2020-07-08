@@ -11,8 +11,8 @@ import Footer from "./components/Footer/Footer";
 import ProjectDashboard from "./components/ProjectDashboard/ProjectDashboard";
 import "./App.css";
 import AddNewTask from "./components/AddNewTask/AddNewTask.jsx";
-import AddNewTaskList from "./components/AddNewTaskList/AddNewTaskList";
-import ViewTaskDetails from "./components/ViewTaskDetails/ViewTaskDetails";
+import AddNewTaskList from "./components/AddNewTaskList/AddNewTaskList.jsx";
+import ViewTaskDetails from "./components/ViewTaskDetails/ViewTaskDetails.jsx";
 class App extends Component {
   state = {};
   render() {

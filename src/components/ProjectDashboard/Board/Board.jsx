@@ -10,6 +10,10 @@ class Board extends Component {
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({ data: nextProps.data });
+  }
+
   displayBoard = () => {
     return this.state.data.map((taskList) => {
       return (

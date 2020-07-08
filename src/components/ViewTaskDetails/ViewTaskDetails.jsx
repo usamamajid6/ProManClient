@@ -303,7 +303,6 @@ class ViewTaskDetails extends Component {
                 </Col>
               </Row>
             </Col>
-
             <Col span={8} className="colDesign">
               <Row className="viewTaskDetails">
                 <Col span="24" className="otherContainers">
@@ -323,7 +322,11 @@ class ViewTaskDetails extends Component {
                 </Col>
 
                 <Col>
-                  <Upload.Dragger name="files" action="/upload.do" className="draggerDesign">
+                  <Upload.Dragger
+                    name="files"
+                    action="/upload.do"
+                    className="draggerDesign"
+                  >
                     <p className="ant-upload-drag-icon">
                       <InboxOutlined />
                     </p>

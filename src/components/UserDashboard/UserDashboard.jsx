@@ -30,6 +30,7 @@ import UCP from "../UCP/UCP";
 import { createNewProject } from "../../Actions/addProjectAction";
 import { getUserData } from "../../Actions/userDataAction";
 import { createNewTeam } from "../../Actions/addTeamAction";
+import { setProjectId } from "../../Actions/setProjectIdAction";
 import LoadingOverlay from "react-loading-overlay";
 import BounceLoader from "react-spinners/BounceLoader";
 import Navbar from "../Navbar/Navbar";
@@ -127,8 +128,14 @@ class UserDashboard extends Component {
               <div className="projectHead">{project.name}</div>
               <div className="projectDescription"> {project.description}</div>
               <div className="projectButton">
-                <Button type="primary" onClick={() => {}}>
-                  Open
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    this.props.setProjectId(project._id);
+                    this.props.history.push("/projectDashboard");
+                  }}
+                >
+                  Proceed
                 </Button>
               </div>
             </div>
@@ -616,6 +623,7 @@ const mapDispatchToProps = {
   createNewProject,
   getUserData,
   createNewTeam,
+  setProjectId,
 };
 
 UserDashboard = connect(mapStateToProps, mapDispatchToProps)(UserDashboard);
