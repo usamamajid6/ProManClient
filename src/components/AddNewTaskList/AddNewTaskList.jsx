@@ -41,7 +41,7 @@ class AddNewTaskList extends Component {
         onFinish={this.onFinish}
       >
         <Row>
-          <Col span={24}>
+          <Col span={24}> 
             <Form.Item
               className="formItemAddTaskList"
               label=""

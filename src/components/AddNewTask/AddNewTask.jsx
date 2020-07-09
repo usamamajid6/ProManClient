@@ -229,32 +229,6 @@ function onChange(date, dateString) {
 }
 
 class AddNewTask extends Component {
-  state = { visible: false };
-
-  showModal = () => {
-    this.setState({
-      visible: true,
-    });
-  };
-
-  handleOk = (e) => {
-    console.log(e);
-    this.setState({
-      visible: false,
-    });
-  };
-
-  handleCancel = (e) => {
-    console.log(e);
-    this.setState({
-      visible: false,
-    });
-  };
-
-  handleAddTask = () => {
-    this.setState({});
-  };
-
   onFinish = async (values) => {
     let data = {
       name: values.taskname,
@@ -262,7 +236,7 @@ class AddNewTask extends Component {
       pre_req_id: values.preRequsite,
       due_date: values.due_date._d,
       member_id_array: values.addMembers,
-      task_list_id: 1,
+      task_list_id: this.props.task_list_id,
     };
 
     try {
@@ -270,6 +244,7 @@ class AddNewTask extends Component {
       let response = this.props.response;
       console.log(response);
       message.success(response.message);
+      this.props.closeAddNewTaskModal();
     } catch (error) {
       message.error("Some Problem Occur!");
     }
@@ -279,18 +254,15 @@ class AddNewTask extends Component {
     console.log("Failed:", errorInfo);
   };
 
+
+  componentDidMount=()=>{
+    console.log(this.props.project_data.data);
+  }
+
   render() {
+
     return (
       <div id="components-dropdown-demo-dropdown-button">
-        <Button type="primary" onClick={this.showModal}>
-          Open Modal
-        </Button>
-        <Modal
-          title="Add New Task"
-          visible={this.state.visible}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-        >
           <Form
             name="add_new_task"
             className="addTaskContainer"
@@ -353,9 +325,9 @@ class AddNewTask extends Component {
                     placeholder="Please Enter Pre Requsite, if any..!"
                   >
                     <Option value="0">No Prerequsite</Option>
-                    {data.taskList.map((taskList, index) =>
+                    {this.props.project_data.data.taskList.map((taskList, index) =>
                       taskList.tasks.map((tasks, index) => (
-                        <Option value={tasks.pre_req}>{tasks.pre_req}</Option>
+                        <Option value={tasks._id}>{tasks.name}</Option>
                       ))
                     )}
                   </Select>
@@ -397,7 +369,7 @@ class AddNewTask extends Component {
                     className="formInputAddTask"
                     placeholder="Add Members"
                   >
-                    {data.result.members.map((members, index) => (
+                    {this.props.project_data.data.result.members.map((members, index) => (
                       <Option value={members.member._id}>
                         {members.member.name}
                       </Option>
@@ -415,13 +387,13 @@ class AddNewTask extends Component {
               </Col>
             </Row>
           </Form>
-        </Modal>
       </div>
     );
   }
 }
 
 const mapStateToProps = (state) => ({
+  project_data:state.projectData,
   response: state.addTask,
 });
 

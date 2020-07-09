@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import TimeAgo from "react-timeago";
 import {
   Modal,
   Button,
@@ -175,42 +176,15 @@ const data = {
 };
 
 class ViewTaskDetails extends Component {
-  state = { visible: true };
-
-  showModal = () => {
-    this.setState({
-      visible: true,
-    });
-  };
-
-  handleOk = (e) => {
-    console.log(e);
-    this.setState({
-      visible: false,
-    });
-  };
-
-  handleCancel = (e) => {
-    console.log(e);
-    this.setState({
-      visible: false,
-    });
-  };
-
   onChange(e) {
     console.log(`checked = ${e.target.checked}`);
   }
 
-  addSubTask() {
-    console.log("Task will be added later..!");
-  }
-
   onFinish = async (values) => {
-    console.log(values);
     let data = {
       message: values.comment,
-      member_id:1,
-      task_id:1,
+      member_id: values.members._id,
+      task_id: values._id,
     };
 
     try {
@@ -218,170 +192,158 @@ class ViewTaskDetails extends Component {
       let response = this.props.response;
       console.log(response);
       message.success(response.message);
+      this.props.closeViewTaskDetailsModal();
     } catch (error) {
       message.error("Some Problem Occur!");
     }
   };
 
   render() {
+    
     return (
       <div>
-        <Button type="primary" onClick={this.showModal}>
-          Open Modal
-        </Button>
-        <Modal
-          title="Task Details"
-          visible={this.state.visible}
-          width="70vw"
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-        >
-          <Row className="viewTaskDetails">
-            <Col span={24} className="statusContainer">
-              <b>Status:</b>{" "}
-              <span style={{ textTransform: "capitalize" }}>
-                <b> {data.status}</b>{" "}
-              </span>
-            </Col>
-            <Col span={24} className="statusContainer">
-              <span>
+        <Row className="viewTaskDetails">
+          <Col span={24} className="statusContainer">
+            <b>Status:</b>{" "}
+            <span style={{ textTransform: "capitalize" }}>
+              <b> {this.props.task.status}</b>{" "}
+            </span>
+          </Col>
+          <Col span={24} className="statusContainer">
+            <span>
+              {" "}
+              <b> <TimeAgo date={this.props.task.due_date} /></b>
+            </span>
+          </Col>
+          <Col span={16} className="colDesign">
+            <Row className="viewTaskDetails">
+              <Col span={24} className="otherContainers">
                 {" "}
-                <b>{data.due_on}</b>
-              </span>
-            </Col>
-            <Col span={16} className="colDesign">
-              <Row className="viewTaskDetails">
-                <Col span={24} className="otherContainers">
-                  {" "}
-                  <b>Name: </b>
-                  <div className="innerContainers"> {data.name} </div>
-                </Col>{" "}
-                <Col span={24} className="otherContainers">
-                  <b>Description: </b>
-                  <br></br>
-                  <div className="innerContainers">{data.description} </div>
-                </Col>
-                <Col span={24} className="otherContainers">
-                  <b>Subtask </b>
-                  <Button
-                    className="buttonStyle"
-                    type="primary"
-                    onClick={this.addSubTask}
-                  >
-                    Add SubTask
-                  </Button>
-                </Col>
-                <Col span={24}>
-                  <Row className="subTaskDesign">
+                <b>Name: </b>
+                <div className="innerContainers"> {this.props.task.name} </div>
+              </Col>{" "}
+              <Col span={24} className="otherContainers">
+                <b>Description: </b>
+                <br></br>
+                <div className="innerContainers">{this.props.task.description} </div>
+              </Col>
+              <Col span={24} className="otherContainers">
+                <b>Subtask </b>
+                <Button
+                  className="buttonStyle"
+                  type="primary"
+                  onClick={this.addSubTask}
+                >
+                  Add SubTask
+                </Button>
+              </Col>
+              <Col span={24}>
+                <Row className="subTaskDesign">
+                  <Col span={24}>
+                    {" "}
+                    <Progress strokeWidth={20} percent={100} />
+                  </Col>
+
+                  {this.props.task.sub_tasks.map((sub_tasks, index) => (
                     <Col span={24}>
-                      {" "}
-                      <Progress strokeWidth={20} percent={100} />
+                      <Checkbox onChange={this.onChange}>
+                        {" "}
+                        {sub_tasks.name}
+                      </Checkbox>
+                    </Col>
+                  ))}
+                </Row>
+              </Col>
+              <Col span={24} className="otherContainers">
+                <b>Comments: </b>
+
+                <Form
+                  name="add_new_comment"
+                  className="addTaskListContainer"
+                  initialValues={{
+                    remember: true,
+                  }}
+                  onFinish={this.onFinish}
+                >
+                  <Row>
+                    <Col span={18}>
+                      <Form.Item className="formItemAddTaskList" name="comment">
+                        <TextArea rows={1} className="innerContainers" />
+                      </Form.Item>
                     </Col>
 
-                    {data.sub_tasks.map((sub_tasks, index) => (
-                      <Col span={24}>
-                        <Checkbox onChange={this.onChange}>
-                          {" "}
-                          {sub_tasks.name}
-                        </Checkbox>
-                      </Col>
-                    ))}
+                    <Col span={6}>
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        className="buttonStyle"
+                      >
+                        Post Comment
+                      </Button>
+                    </Col>
                   </Row>
-                </Col>
-                <Col span={24} className="otherContainers">
-                  <b>Comments: </b>
+                </Form>
 
-                  <Form
-                    name="add_new_comment"
-                    className="addTaskListContainer"
-                    initialValues={{
-                      remember: true,
-                    }}
-                    onFinish={this.onFinish}
-                  >
-                    <Row>
-                      <Col span={18}>
-                        <Form.Item
-                          className="formItemAddTaskList"
-                          name="comment"
-                        >
-                          <TextArea rows={1} className="innerContainers" />
-                        </Form.Item>
-                      </Col>
-
-                      <Col span={6}>
-                        <Button
-                          type="primary"
-                          htmlType="submit"
-                          className="buttonStyle"
-                        >
-                          Post Comment
-                        </Button>
-                      </Col>
-                    </Row>
-                  </Form>
-
-                  {data.comments.map((comments, index) => (
-                    <Row className="innerContainers">
-                      {" "}
-                      <Col span={2}>
-                        <Avatar
-                          style={{
-                            color: "#f56a00",
-                            backgroundColor: "#fde3cf",
-                          }}
-                        >
-                          {comments.member.name.substring(0, 1)}
-                        </Avatar>
-                      </Col>
-                      <Col span={22}>
-                        <div>{comments.member.name} </div>
-                        <div> {comments.message}</div>
-                      </Col>
-                    </Row>
-                  ))}
-                </Col>
-              </Row>
-            </Col>
-            <Col span={8} className="colDesign">
-              <Row className="viewTaskDetails">
-                <Col span="24" className="otherContainers">
-                  <b>Members: </b>
-                  {data.members.map((members, index) => (
-                    <Col span="24" className="membersAttachmentDesign">
-                      {members.name}
+                {this.props.task.comments.map((comments, index) => (
+                  <Row className="innerContainers">
+                    {" "}
+                    <Col span={2}>
+                      <Avatar
+                        style={{
+                          color: "#f56a00",
+                          backgroundColor: "#fde3cf",
+                        }}
+                      >
+                        {comments.member.name.substring(0, 1)}
+                      </Avatar>
                     </Col>
-                  ))}
-                </Col>
-
-                <Col className="otherContainers">
-                  <b>Attachment: </b>{" "}
-                  {data.attachments.map((attachments, index) => (
-                    <Col className="membersAttachmentDesign">
-                      {" "}
-                      {attachments.name}{" "}
+                    <Col span={22}>
+                      <div>{comments.member.name} </div>
+                      <div> {comments.message}</div>
                     </Col>
-                  ))}
-                </Col>
+                  </Row>
+                ))}
+              </Col>
+            </Row>
+          </Col>
+          <Col span={8} className="colDesign">
+            <Row className="viewTaskDetails">
+              <Col span="24" className="otherContainers">
+                <b>Members: </b>
+                {this.props.task.members.map((members, index) => (
+                  <Col span="24" className="membersAttachmentDesign">
+                    {members.name}
+                  </Col>
+                ))}
+              </Col>
 
-                <Col>
-                  <Upload.Dragger
-                    name="files"
-                    action="/upload.do"
-                    className="draggerDesign"
-                  >
-                    <p className="ant-upload-drag-icon">
-                      <InboxOutlined />
-                    </p>
-                    <p className="ant-upload-text">
-                      Click or drag files to this area to upload
-                    </p>
-                  </Upload.Dragger>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </Modal>
+              <Col className="otherContainers">
+                <b>Attachment: </b>{" "}
+                {this.props.task.attachments.map((attachments, index) => (
+                  <Col className="membersAttachmentDesign">
+                    {" "}
+                    {attachments.name}{" "}
+                  </Col>
+                ))}
+              </Col>
+
+              <Col>
+                <Upload.Dragger
+                  name="files"
+                  action="/upload.do"
+                  className="draggerDesign"
+                >
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">
+                    Click or drag files to this area to upload
+                  </p>
+                </Upload.Dragger>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
       </div>
     );
   }

@@ -18,6 +18,8 @@ import { connect } from "react-redux";
 import { getProjectData } from "../../Actions/projectDataAction";
 import Board from "./Board/Board";
 import "./ProjectDashboard.css";
+import AddNewTask from "../AddNewTask/AddNewTask";
+import ViewTaskDetails from "../ViewTaskDetails/ViewTaskDetails";
 import Icon, {
   MenuFoldOutlined,
   TableOutlined,
@@ -154,6 +156,7 @@ class ProjectDashboard extends Component {
     sidebar_status: false,
     add_new_task_list_modal: false,
     interval: null,
+    task_list_id_to_add: null,
   };
 
   componentWillUnmount = () => {
@@ -268,6 +271,13 @@ class ProjectDashboard extends Component {
     console.log("====================================");
     console.log(task);
     console.log("====================================");
+    this.setState({
+     view_task:task,
+    });
+
+    this.setState({
+      view_taskdetails_modal: true,
+    });
   };
 
   handleAddNewTask = (task_list_id) => {
@@ -276,6 +286,10 @@ class ProjectDashboard extends Component {
     console.log("====================================");
     this.setState({
       task_list_id_to_add: task_list_id,
+    });
+
+    this.setState({
+      add_new_task_modal: true,
     });
   };
 
@@ -300,18 +314,44 @@ class ProjectDashboard extends Component {
   };
 
   handelAddNewTaskListModalCancel = (e) => {
-   
     this.setState({
       add_new_task_list_modal: false,
     });
   };
 
-  closeAddNewTaskListModal=()=>{
+  closeAddNewTaskListModal = () => {
     this.setState({
       add_new_task_list_modal: false,
     });
-    this.tellServerToUpdateData()
-  }
+    this.tellServerToUpdateData();
+  };
+
+  handelAddNewTaskModalCancel = (e) => {
+    this.setState({
+      add_new_task_modal: false,
+    });
+  };
+
+  closeAddNewTaskModal = () => {
+    this.setState({
+      add_new_task_modal: false,
+    });
+    this.tellServerToUpdateData();
+  };
+
+  handelViewTaskDetailsCancel = (e) => {
+    this.setState({
+      view_taskdetails_modal: false,
+    });
+  };
+
+  closeViewTaskDetailsModal = () => {
+    this.setState({
+      view_taskdetails_modal: false,
+    });
+    this.tellServerToUpdateData();
+  };
+
   render() {
     return (
       <div>
@@ -387,6 +427,36 @@ class ProjectDashboard extends Component {
             project_id={this.state.project_data._id}
           />
         </Modal>
+
+        <Modal
+          title="Add New Task"
+          width="60vw"
+          visible={this.state.add_new_task_modal}
+          onCancel={this.handelAddNewTaskModalCancel}
+          onOk={this.handelAddNewTaskModalCancel}
+        >
+          <AddNewTask
+            closeAddNewTaskModal={this.closeAddNewTaskModal}
+            project_id={this.state.project_data._id}
+            task_list_id={this.state.task_list_id_to_add}
+          />
+        </Modal>
+
+
+        <Modal
+          title="View Task Details"
+          width="60vw"
+          visible={this.state.view_taskdetails_modal}
+          onCancel={this.handelViewTaskDetailsCancel}
+          onOk={this.handelViewTaskDetailsCancel}
+        >
+          <ViewTaskDetails
+            closeViewTaskDetailsModal={this.closeViewTaskDetailsModal}
+            project_id={this.state.project_data._id}
+            task={this.state.view_task}
+          />
+        </Modal>
+
       </div>
     );
   }
