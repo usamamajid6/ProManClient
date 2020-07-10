@@ -13,6 +13,7 @@ import "./App.css";
 import AddNewTask from "./components/AddNewTask/AddNewTask.jsx";
 import AddNewTaskList from "./components/AddNewTaskList/AddNewTaskList.jsx";
 import ViewTaskDetails from "./components/ViewTaskDetails/ViewTaskDetails.jsx";
+import Profile from "./components/Profile/Profile";
 class App extends Component {
   state = {};
   render() {
@@ -29,6 +30,7 @@ class App extends Component {
             <Route path="/addNewTask" component={AddNewTask} />
             <Route path="/addNewTaskList" component={AddNewTaskList} />
             <Route path="/viewTaskDetails" component={ViewTaskDetails} />
+            <Route path="/profile" component={Profile} />
           </Router>
         </Col>
         <Col span={24}>

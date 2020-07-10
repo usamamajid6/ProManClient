@@ -36,7 +36,14 @@ class Navbar extends Component {
     return (
       <Menu>
         <Menu.Item>
-          <Button type="link">PROFILE</Button>
+          <Button
+            type="link"
+            onClick={() => {
+              this.props.history.push("/Profile");
+            }}
+          >
+            PROFILE
+          </Button>
         </Menu.Item>
         <Menu.Item>
           <Button

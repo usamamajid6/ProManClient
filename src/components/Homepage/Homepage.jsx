@@ -26,7 +26,6 @@ class Homepage extends Component {
                     className="mainImage"
                     viewBox="0 0 1036.89861 660"
                   >
-                    <title>quiz</title>
                     <rect
                       x="45.02923"
                       y="494.17018"
