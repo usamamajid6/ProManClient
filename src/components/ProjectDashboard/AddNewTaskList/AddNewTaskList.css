@@ -1,0 +1,70 @@
+.addTaskListContainer {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: #80bffa;
+  border-radius: 2rem;
+  padding-top: 2rem;
+}
+.addTaskListContainer .formItemAddTaskList {
+  margin: 1rem;
+  text-align: center;
+}
+
+.addTaskListContainer .formItemAddTaskList .formInputAddTaskList {
+  border-radius: 1rem;
+  width: 100%;
+}
+
+.addTaskListContainer
+  .formItemAddProject
+  .formInputAddProject
+  .ant-select-selector {
+  border-radius: 1rem;
+}
+
+.addTaskListContainer ::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: red;
+  opacity: 1; /* Firefox */
+}
+
+.addTaskListContainer :-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: red;
+}
+
+.addTaskListContainer ::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: red;
+}
+
+.addTaskListContainer .formItemAddTaskList {
+  margin: 1rem;
+  text-align: center;
+}
+
+.addTaskListContainer .formItemAddTaskList .formInputAddTaskList {
+  border-radius: 1rem;
+  width: 100%;
+}
+
+.addTaskListContainer .formButtonAddTaskList {
+  justify-content: center;
+  text-align: center;
+  width: 50%;
+  font-size: 1.3rem;
+  height: 10%;
+  font-weight: bold;
+  border: 1px solid white;
+  border-radius: 2rem;
+  color: #80bffa;
+  letter-spacing: 0.2rem;
+}
+
+.addTaskListContainer .modalTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  text-decoration: underline;
+}

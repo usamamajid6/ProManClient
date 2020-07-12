@@ -18,20 +18,20 @@ import { connect } from "react-redux";
 import { getProjectData } from "../../Actions/projectDataAction";
 import Board from "./Board/Board";
 import "./ProjectDashboard.css";
-import AddNewTask from "../AddNewTask/AddNewTask";
-import ViewTaskDetails from "../ViewTaskDetails/ViewTaskDetails";
+import AddNewTask from "./AddNewTask/AddNewTask";
+import ViewTaskDetails from "./ViewTaskDetails/ViewTaskDetails";
 import Icon, {
   MenuFoldOutlined,
   TableOutlined,
   BarcodeOutlined,
-  BarChartOutlined,
+  CloseCircleOutlined,
 } from "@ant-design/icons";
 import Sidebar from "react-sidebar";
-import Homepage from "../Homepage/Homepage";
-import AddNewTaskList from "../AddNewTaskList/AddNewTaskList";
+import SidebarContent from "./Sidebar/Sidebar";
+import AddNewTaskList from "./AddNewTaskList/AddNewTaskList";
 import Server from "../../ServerPath";
 import io from "socket.io-client";
-
+const socket = io.connect(Server);
 const { Panel } = Collapse;
 
 const columns = [
@@ -50,16 +50,20 @@ const columns = [
     render: (data) => {
       return <div>{data}</div>;
     },
-    // ellipsis: true,
+    ellipsis: true,
 
     align: "center",
   },
   {
     title: "Pre Requisitte",
     dataIndex: "pre_req",
-    key: " pre_req",
+    key: "pre_req",
     render: (data) => {
-      return <div>{data.name}</div>;
+      if (data) {
+        return <div>{data.name}</div>;
+      } else {
+        return <div>No Any</div>;
+      }
     },
     ellipsis: true,
     align: "center",
@@ -103,7 +107,7 @@ const columns = [
         {members.map((member) => {
           return (
             <Tag color={"purple"} key={member._id}>
-              {member.name.toUpperCase()}
+              {member.member.name.toUpperCase()}
             </Tag>
           );
         })}
@@ -129,38 +133,25 @@ const columns = [
     align: "center",
   },
 ];
-const socket = io.connect(Server);
-const boardSVG = () => (
-  <svg
-    enable-background="new 0 0 33.8 21.2"
-    version="1.1"
-    viewBox="0 0 33.8 21.2"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <g fill="#231F20">
-      <rect y="13" width="5.3" height="8.2" />
-      <rect x="7.2" y="3.2" width="5.3" height="18" />
-      <rect x="14.3" y="7.9" width="5.3" height="13.4" />
-      <rect x="21.4" y="13.4" width="5.3" height="7.9" />
-      <rect x="28.5" y="3.8" width="5.3" height="17.4" />
-    </g>
-  </svg>
-);
-const BoardIcon = (props) => <Icon component="" {...props} />;
 
 class ProjectDashboard extends Component {
   state = {
-    project_data: {},
+    project_data: {
+      leader: {},
+    },
     data: [],
     view_type: "board",
     sidebar_status: false,
     add_new_task_list_modal: false,
     interval: null,
     task_list_id_to_add: null,
+    view_task: {},
+    user_id: null,
+    project_timeline: [],
   };
 
   componentWillUnmount = () => {
-    clearInterval(this.state.interval);
+    socket.emit("leaveTheProjectRoom", this.state.project_data);
   };
 
   componentDidMount = async () => {
@@ -184,18 +175,20 @@ class ProjectDashboard extends Component {
   };
 
   updateData = async () => {
-    console.log("====================================");
-    console.log("Update Data");
-    console.log("====================================");
     try {
       await this.props.getProjectData({
         _id: parseInt(this.props.project_id.data),
         user_id: this.state.user_id,
       });
+      // await this.props.getProjectData({
+      //   _id: 46,
+      //   user_id: 10,
+      // });
     } catch (error) {}
     this.setState({
       project_data: this.props.project_data.data.result,
       data: this.props.project_data.data,
+      project_timeline: this.props.project_data.data.result.timelines,
     });
   };
 
@@ -214,16 +207,19 @@ class ProjectDashboard extends Component {
           imageStyle={{ height: "inherit", width: "inherit" }}
           description="No Any Project(s)"
           image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-          className="emptyStyles"
+          // className="emptyStyles"
         />
       );
     } else if (this.state.view_type === "board") {
       return (
         <Board
+          id="board"
           onTaskClick={this.handleTaskClick}
           onAddNewTaskClick={this.handleAddNewTask}
           onAddNewTaskListClick={this.handleAddNewTaskList}
           data={this.state.data.taskList}
+          leader_id={this.state.project_data.leader._id}
+          user_id={this.state.user_id}
         />
       );
     } else if (this.state.view_type === "table") {
@@ -268,22 +264,15 @@ class ProjectDashboard extends Component {
   };
 
   handleTaskClick = (task) => {
-    console.log("====================================");
-    console.log(task);
-    console.log("====================================");
     this.setState({
-     view_task:task,
+      view_task: task,
     });
-
     this.setState({
       view_taskdetails_modal: true,
     });
   };
 
   handleAddNewTask = (task_list_id) => {
-    console.log("====================================");
-    console.log(task_list_id);
-    console.log("====================================");
     this.setState({
       task_list_id_to_add: task_list_id,
     });
@@ -300,7 +289,7 @@ class ProjectDashboard extends Component {
   };
 
   displayLeaderButton = () => {
-    if (true) {
+    if (this.state.user_id === this.state.project_data.leader._id) {
       return (
         <Button type="primary" onClick={() => {}}>
           Open Leader Dashboard
@@ -323,6 +312,10 @@ class ProjectDashboard extends Component {
     this.setState({
       add_new_task_list_modal: false,
     });
+    this.tellServerToUpdateData();
+  };
+
+  updateProjectFormViewTaskDetails = () => {
     this.tellServerToUpdateData();
   };
 
@@ -358,10 +351,15 @@ class ProjectDashboard extends Component {
         <Sidebar
           open={this.state.sidebar_status}
           styles={{
-            sidebar: { background: "white", width: "20vw", minHeight: "100vh" },
+            sidebar: { background: "white", width: "25vw", minHeight: "100vh" },
           }}
           onSetOpen={this.onSetSidebarOpen}
-          // sidebar={<Homepage />}
+          sidebar={
+            <SidebarContent
+              project_data={this.state.project_data}
+              timelines={this.state.project_timeline}
+            />
+          }
           transitions={true}
           pullRight={true}
         />
@@ -416,11 +414,19 @@ class ProjectDashboard extends Component {
         </Row>
 
         <Modal
-          title="Add New Task List"
           width="60vw"
           visible={this.state.add_new_task_list_modal}
           onCancel={this.handelAddNewTaskListModalCancel}
           onOk={this.handelAddNewTaskListModalCancel}
+          destroyOnClose
+          centered={true}
+          bodyStyle={{
+            backgroundColor: "steelblue",
+          }}
+          footer={null}
+          closeIcon={
+            <CloseCircleOutlined style={{ color: "white", fontSize: "2rem" }} />
+          }
         >
           <AddNewTaskList
             closeAddNewTaskListModal={this.closeAddNewTaskListModal}
@@ -429,11 +435,19 @@ class ProjectDashboard extends Component {
         </Modal>
 
         <Modal
-          title="Add New Task"
           width="60vw"
           visible={this.state.add_new_task_modal}
           onCancel={this.handelAddNewTaskModalCancel}
           onOk={this.handelAddNewTaskModalCancel}
+          destroyOnClose
+          centered={true}
+          bodyStyle={{
+            backgroundColor: "steelblue",
+          }}
+          footer={null}
+          closeIcon={
+            <CloseCircleOutlined style={{ color: "white", fontSize: "2rem" }} />
+          }
         >
           <AddNewTask
             closeAddNewTaskModal={this.closeAddNewTaskModal}
@@ -442,21 +456,30 @@ class ProjectDashboard extends Component {
           />
         </Modal>
 
-
         <Modal
-          title="View Task Details"
-          width="60vw"
           visible={this.state.view_taskdetails_modal}
           onCancel={this.handelViewTaskDetailsCancel}
           onOk={this.handelViewTaskDetailsCancel}
+          width="60vw"
+          destroyOnClose
+          centered={true}
+          bodyStyle={{
+            backgroundColor: "steelblue",
+          }}
+          footer={null}
+          closeIcon={
+            <CloseCircleOutlined style={{ color: "white", fontSize: "2rem" }} />
+          }
         >
           <ViewTaskDetails
             closeViewTaskDetailsModal={this.closeViewTaskDetailsModal}
+            updateProject={this.updateProjectFormViewTaskDetails}
             project_id={this.state.project_data._id}
             task={this.state.view_task}
+            user_id={this.state.user_id}
+            leader_id={this.state.project_data.leader._id}
           />
         </Modal>
-
       </div>
     );
   }

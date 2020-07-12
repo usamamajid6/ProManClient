@@ -23,6 +23,7 @@ import {
   PlusSquareTwoTone,
   PlusSquareOutlined,
   LockOutlined,
+  CloseCircleOutlined,
 } from "@ant-design/icons";
 import "./UserDashboard.css";
 import { connect } from "react-redux";
@@ -59,20 +60,23 @@ class UserDashboard extends Component {
       this.props.history.push("/login");
       return;
     }
+    this.setState({ loader: true });
     try {
       await this.props.getUserData({
         _id: parseInt(localStorage.getItem("userId")),
       });
     } catch (error) {
       message.info("Some Problem Occur!");
+      this.setState({ loader: false });
     }
-    console.log(this.props.userData);
+
     this.setState({
       userData: this.props.userData.data.result,
       projects: this.props.userData.data.projects,
       orignalProjectsList: this.props.userData.data.projects,
       teams: this.props.userData.data.teams,
     });
+    this.setState({ loader: false });
   };
 
   updateUserData = async () => {
@@ -216,7 +220,6 @@ class UserDashboard extends Component {
       });
       await this.props.createNewProject(data);
 
-
       this.setState({
         loader: false,
         add_project_modal: false,
@@ -317,58 +320,56 @@ class UserDashboard extends Component {
                 </Menu>
               </Sider>
               <Layout className="site-layout">
-                {/* <Header
-                className="headContainer"
-                // className="site-layout-background"
-              >
-                <div className="headButtonsContainer">
-                  <Button type="primary" className="addProject">
-                    Create New Project
-                  </Button>
-                  <Button type="primary" className="addTeam">
-                    Create New Team
-                  </Button>
-                  hjkn
-                </div>
-              </Header> */}
                 <Content>
-                  <Row>
-                    <Col span={24}>
-                      <div className="searchProjectContainer">
-                        <form className="searchProjectForm">
-                          <input
-                            className="searchProjectInput"
-                            type="text"
-                            placeholder="Search Project By Name!"
-                            value={this.state.searchText}
-                            onChange={(e) => {
-                              this.setState({
-                                searchText: e.target.value,
-                              });
-                              if (e.target.value === "") {
+                  <LoadingOverlay
+                    styles={{
+                      overlay: (base) => ({
+                        ...base,
+                        height: "100vh",
+                      }),
+                    }}
+                    active={this.state.loader}
+                    spinner
+                    text="Fetching Data ..."
+                  >
+                    <Row>
+                      <Col span={24}>
+                        <div className="searchProjectContainer">
+                          <form className="searchProjectForm">
+                            <input
+                              className="searchProjectInput"
+                              type="text"
+                              placeholder="Search Project By Name!"
+                              value={this.state.searchText}
+                              onChange={(e) => {
                                 this.setState({
-                                  projects: this.state.orignalProjectsList,
+                                  searchText: e.target.value,
                                 });
-                              }
-                            }}
-                          />
-                          <Button
-                            className="searchProjectButton"
-                            type="primary"
-                            htmlType="submit"
-                            onClick={this.handleSearchProject}
-                          >
-                            Search
-                          </Button>
-                        </form>
-                      </div>
-                    </Col>
-                    <Col span={24}>
-                      <Row className="projectsContainer">
-                        {this.displayProjects()}
-                      </Row>
-                    </Col>
-                  </Row>
+                                if (e.target.value === "") {
+                                  this.setState({
+                                    projects: this.state.orignalProjectsList,
+                                  });
+                                }
+                              }}
+                            />
+                            <Button
+                              className="searchProjectButton"
+                              type="primary"
+                              htmlType="submit"
+                              onClick={this.handleSearchProject}
+                            >
+                              Search
+                            </Button>
+                          </form>
+                        </div>
+                      </Col>
+                      <Col span={24}>
+                        <Row className="projectsContainer">
+                          {this.displayProjects()}
+                        </Row>
+                      </Col>
+                    </Row>
+                  </LoadingOverlay>
                 </Content>
               </Layout>
             </Layout>
@@ -376,12 +377,21 @@ class UserDashboard extends Component {
 
           <Col span={24}>
             <Modal
-              centered={true}
               width="60vw"
-              title="Add Project"
               visible={this.state.add_project_modal}
               onOk={this.handleAddProjectModalOk}
               onCancel={this.handleAddProjectModalOk}
+              destroyOnClose
+              centered={true}
+              bodyStyle={{
+                backgroundColor: "steelblue",
+              }}
+              footer={null}
+              closeIcon={
+                <CloseCircleOutlined
+                  style={{ color: "white", fontSize: "2rem" }}
+                />
+              }
             >
               <LoadingOverlay
                 styles={{
@@ -531,12 +541,21 @@ class UserDashboard extends Component {
 
           <Col span={24}>
             <Modal
-              centered={true}
               width="60vw"
-              title="Add Team"
               visible={this.state.add_team_modal}
               onOk={this.handleAddTeamModalOk}
               onCancel={this.handleAddTeamModalOk}
+              destroyOnClose
+              centered={true}
+              bodyStyle={{
+                backgroundColor: "steelblue",
+              }}
+              footer={null}
+              closeIcon={
+                <CloseCircleOutlined
+                  style={{ color: "white", fontSize: "2rem" }}
+                />
+              }
             >
               <LoadingOverlay
                 styles={{

@@ -1,19 +1,18 @@
 import server from "../ServerPath";
 import axios from "axios";
-export const ADD_COMMENT = "ADD_COMMENT";
+export const UPDATE_TASK_STATUS = "UPDATE_TASK_STATUS";
 
-export const addComment = (data) => async (dispatch) => {
+export const updateTaskStatus = (data) => async (dispatch) => {
   const response = await axios({
-    method: "post",
-    url: `${server}/createNewComment`,
+    method: "put",
+    url: `${server}/updateTaskStatus`,
     headers: {
       "content-type": "application/json",
     },
     data: data,
   });
-
   dispatch({
-    type: ADD_COMMENT,
+    type: UPDATE_TASK_STATUS,
     payload: response.data,
   });
 };

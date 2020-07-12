@@ -69,6 +69,14 @@
   border: 2px solid steelblue;
 }
 
-.headStyle{
+.headStyle {
   background-color: black;
+}
+
+.wrapClass {
+  color: rgb(236, 30, 30);
+}
+
+.ant-modal-title {
+  font-size: 2rem;
 }
