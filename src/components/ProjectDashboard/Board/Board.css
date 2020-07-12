@@ -77,12 +77,14 @@
   font-weight: bold;
   font-size: 1.2rem;
   overflow: hidden;
+  text-align: left;
 }
 .Board .mainContainer .taskList .tasks .taskContainer .taskDueOn {
   color: red;
   padding-top: 0.2rem;
   white-space: pre-wrap;
   overflow: hidden;
+  text-align: right;
 }
 
 .Board
@@ -147,26 +149,22 @@
   -webkit-box-shadow: inset 0 0 6px rgba(238, 36, 36, 0.5);
 }
 
-
-.custom_scroll::-webkit-scrollbar-track
-{
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    border-radius: 10px;
-    opacity: 0.5;
-    /* //background-color: #F5F5F5; */
+.custom_scroll::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  opacity: 0.5;
+  /* //background-color: #F5F5F5; */
 }
 
-.custom_scroll::-webkit-scrollbar
-{
-    width: 5px;
-    opacity: 0.5;
-    /* //background-color: #F5F5F5; */
+.custom_scroll::-webkit-scrollbar {
+  width: 5px;
+  opacity: 0.5;
+  /* //background-color: #F5F5F5; */
 }
 
-.custom_scroll::-webkit-scrollbar-thumb
-{
-    border-radius: 10px;
-    opacity: 0.5;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-    /* //background-color: #555; */
+.custom_scroll::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  opacity: 0.5;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  /* //background-color: #555; */
 }

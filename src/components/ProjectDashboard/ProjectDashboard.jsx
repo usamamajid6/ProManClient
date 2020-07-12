@@ -153,7 +153,7 @@ class ProjectDashboard extends Component {
   };
 
   componentWillUnmount = () => {
-    clearInterval(this.state.interval);
+    socket.emit("leaveTheProjectRoom", this.state.project_data);
   };
 
   componentDidMount = async () => {
@@ -161,10 +161,10 @@ class ProjectDashboard extends Component {
       this.props.history.push("/login");
       return;
     }
-    // if (this.props.project_id === null) {
-    //   this.props.history.push("/userDashboard");
-    //   return;
-    // }
+    if (this.props.project_id === null) {
+      this.props.history.push("/userDashboard");
+      return;
+    }
     const user_id = parseInt(localStorage.getItem("userId"));
     this.setState({ user_id });
     await this.updateData();

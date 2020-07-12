@@ -255,7 +255,7 @@ class ViewTaskDetails extends Component {
       >
         <Row className="ViewTaskDetails">
           <Col span={24} className="modalTitle">
-            {this.state.task.name} Details
+            {this.state.task.name}
           </Col>
           <Col span={24} className="statusContainer">
             <b className="titleStyle">Status:</b>
@@ -321,7 +321,7 @@ class ViewTaskDetails extends Component {
                   ref={this.commentFormRef}
                 >
                   <Row>
-                    <Col span={16}>
+                    <Col span={17}>
                       <Form.Item
                         name="message"
                         rules={[
@@ -334,11 +334,9 @@ class ViewTaskDetails extends Component {
                         <Input className="commentInput" />
                       </Form.Item>
                     </Col>
-                    <Col span={1}></Col>
                     <Col span={7}>
                       <Form.Item>
                         <Button
-                          loading={this.state.loader}
                           className="commentButton"
                           type="primary"
                           htmlType="submit"

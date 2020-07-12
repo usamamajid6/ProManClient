@@ -18,6 +18,7 @@ import addComment from "./addCommentReducer";
 import taskData from "./TaskDataReducer";
 import updateTaskStatus from "./UpdateTaskStatusReducer";
 import updateTaskStatusLeader from "./UpdateTaskStatusReducerLeader";
+import leaderDashboard from "./LeaderDashboardDataReducer";
 
 export default combineReducers({
   counter,
@@ -39,4 +40,5 @@ export default combineReducers({
   taskData,
   updateTaskStatus,
   updateTaskStatusLeader,
+  leaderDashboard,
 });

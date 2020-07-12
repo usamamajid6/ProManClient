@@ -11,6 +11,7 @@ import Footer from "./components/Footer/Footer";
 import ProjectDashboard from "./components/ProjectDashboard/ProjectDashboard";
 import "./App.css";
 import Profile from "./components/Profile/Profile";
+import LeaderDashboard from "./components/LeaderDashboard/LeaderDashboard";
 class App extends Component {
   state = {};
   render() {
@@ -25,6 +26,7 @@ class App extends Component {
             <Route path="/logout" component={Logout} />
             <Route path="/projectDashboard" component={ProjectDashboard} />
             <Route path="/profile" component={Profile} />
+            <Route path="/leaderDashboard" component={LeaderDashboard} />
           </Router>
         </Col>
         <Col span={24}>
