@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { message, Avatar, Row, Col, Progress, Collapse, Tabs } from "antd";
 import { getUserData } from "../../Actions/userDataAction";
+import { CaretRightOutlined } from "@ant-design/icons";
 import "./Profile.css";
 import Navbar from "../Navbar/Navbar";
 
@@ -13,6 +14,8 @@ class Profile extends Component {
     userData: {},
     projects: [],
     teams: [],
+    avatar: "",
+    efficiency: 0,
   };
 
   componentDidMount = async () => {
@@ -27,15 +30,22 @@ class Profile extends Component {
     } catch (error) {
       message.info("Some Problem Occur!");
     }
-    console.log(this.props.userData);
+
     this.setState({
       userData: this.props.userData.data.result,
       projects: this.props.userData.data.projects,
       teams: this.props.userData.data.teams,
     });
-    console.log(this.state.userData);
-    console.log(this.state.projects);
-    console.log(this.state.teams);
+    let avatar = this.props.userData.data.result.name;
+    avatar = avatar.substring(0, 1);
+    let efficiency =
+      (parseInt(this.state.userData.efficiency_score) /
+        parseInt(this.state.userData.total_tasks)) *
+      100;
+    if (isNaN(efficiency)) {
+      efficiency = 0;
+    }
+    this.setState({ avatar, efficiency });
   };
 
   callback(key) {
@@ -52,12 +62,12 @@ class Profile extends Component {
               <Avatar
                 size={150}
                 style={{
-                  color: "#f56a00",
+                  color: "blue",
                   backgroundColor: "#80bffa",
-                  fontSize: "5rem",
+                  fontSize: "6rem",
                 }}
               >
-                {this.state.userData.name}
+                {this.state.avatar}
               </Avatar>
             </Col>
 
@@ -68,28 +78,53 @@ class Profile extends Component {
               <Col span={24}>{this.state.userData.email} </Col>
               <Col span={24}>{this.state.userData.phone_number}</Col>
               <Col span={24}>
-                Efficiency:{" "}
-                {(this.state.userData.efficiency_score /
-                  this.state.userData.total_tasks) *
-                  100}
+                <span>
+                  <b> Efficiency : </b>
+                </span>
+                {this.state.efficiency}
               </Col>
-              <Col span={24}>Total Projects: {this.state.projects.length} </Col>
               <Col span={24}>
-                Total Tasks: {this.state.userData.total_tasks}
+                <span>
+                  <b>Total Projects : </b>
+                </span>
+                {this.state.projects.length}
+              </Col>
+              <Col span={24}>
+                <span>
+                  <b>Total Tasks : </b>
+                </span>
+                {this.state.userData.total_tasks}
               </Col>
             </Col>
           </Row>
 
-          <Tabs className="tabStyle">
+          <Tabs
+            tabBarStyle={{ paddingTop: "2rem" }}
+            className="tabStyle"
+            size="large"
+            tabBarGutter={30}
+            // tabPosition="left"
+            // type="card"
+            centered={true}
+          >
             <TabPane tab="Projects" key="1">
               <Row span={24}>
                 <Col span={24} className="tabComponent">
                   Projects
                 </Col>
                 <Col span={24}>
-                  {this.state.projects.map((projects, index) => (
-                    <Collapse className="tabInnerComponent">
-                      <Panel header={projects.name}></Panel>
+                  {this.state.projects.map((projects) => (
+                    <Collapse
+                      bordered={false}
+                      expandIcon={({ isActive }) => (
+                        <CaretRightOutlined rotate={isActive ? 90 : 0} />
+                      )}
+                    >
+                      <Panel header={projects.name}>
+                        <div className="paneldescription">
+                          {projects.description}
+                        </div>
+                      </Panel>
                     </Collapse>
                   ))}
                 </Col>
@@ -103,9 +138,16 @@ class Profile extends Component {
                 </Col>
                 <Col span={24}>
                   {this.state.teams.map((teams, index) => (
-                    <Collapse className="tabInnerComponent">
+                    <Collapse
+                      bordered={false}
+                      expandIcon={({ isActive }) => (
+                        <CaretRightOutlined rotate={isActive ? 90 : 0} />
+                      )}
+                    >
                       <Panel header={teams.name}>
-                        <p>{teams.description}</p>
+                        <div className="paneldescription">
+                          {teams.description}
+                        </div>
                       </Panel>
                     </Collapse>
                   ))}

@@ -10,9 +10,6 @@ import Homepage from "./components/Homepage/Homepage";
 import Footer from "./components/Footer/Footer";
 import ProjectDashboard from "./components/ProjectDashboard/ProjectDashboard";
 import "./App.css";
-import AddNewTask from "./components/AddNewTask/AddNewTask.jsx";
-import AddNewTaskList from "./components/AddNewTaskList/AddNewTaskList.jsx";
-import ViewTaskDetails from "./components/ViewTaskDetails/ViewTaskDetails.jsx";
 import Profile from "./components/Profile/Profile";
 class App extends Component {
   state = {};
@@ -27,9 +24,6 @@ class App extends Component {
             <Route path="/userDashboard" component={UserDashboard} />
             <Route path="/logout" component={Logout} />
             <Route path="/projectDashboard" component={ProjectDashboard} />
-            <Route path="/addNewTask" component={AddNewTask} />
-            <Route path="/addNewTaskList" component={AddNewTaskList} />
-            <Route path="/viewTaskDetails" component={ViewTaskDetails} />
             <Route path="/profile" component={Profile} />
           </Router>
         </Col>

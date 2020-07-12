@@ -1,5 +1,4 @@
 import { combineReducers } from "redux";
-
 import counter from "./counterReducer";
 import UUCW from "./UCPReducers/UUCWReducer";
 import UAW from "./UCPReducers/UAWReducer";
@@ -16,6 +15,9 @@ import addTask from "./AddTaskReducer";
 import addTaskList from "./AddTaskListReducer";
 import projectId from "./setProjectIdReducer";
 import addComment from "./addCommentReducer";
+import taskData from "./TaskDataReducer";
+import updateTaskStatus from "./UpdateTaskStatusReducer";
+import updateTaskStatusLeader from "./UpdateTaskStatusReducerLeader";
 
 export default combineReducers({
   counter,
@@ -33,5 +35,8 @@ export default combineReducers({
   addTask,
   addTaskList,
   projectId,
-  addComment
+  addComment,
+  taskData,
+  updateTaskStatus,
+  updateTaskStatusLeader,
 });

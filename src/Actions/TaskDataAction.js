@@ -1,19 +1,19 @@
-import server from "../ServerPath";
 import axios from "axios";
-export const ADD_COMMENT = "ADD_COMMENT";
+import server from "../ServerPath";
 
-export const addComment = (data) => async (dispatch) => {
+export const GET_TASK_DATA = "GET_TASK_DATA";
+
+export const getTaskData = (data) => async (dispatch) => {
   const response = await axios({
     method: "post",
-    url: `${server}/createNewComment`,
+    url: `${server}/getTaskById`,
     headers: {
       "content-type": "application/json",
     },
     data: data,
   });
-
   dispatch({
-    type: ADD_COMMENT,
+    type: GET_TASK_DATA,
     payload: response.data,
   });
 };
