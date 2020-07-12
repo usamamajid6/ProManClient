@@ -14,7 +14,7 @@ class Profile extends Component {
     projects: [],
     teams: [],
   };
-
+  
   componentDidMount = async () => {
     if (!localStorage.getItem("userId")) {
       this.props.history.push("/login");
