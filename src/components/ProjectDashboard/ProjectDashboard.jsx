@@ -176,14 +176,14 @@ class ProjectDashboard extends Component {
 
   updateData = async () => {
     try {
-      // await this.props.getProjectData({
-      //   _id: parseInt(this.props.project_id.data),
-      //   user_id: this.state.user_id,
-      // });
       await this.props.getProjectData({
-        _id: 46,
-        user_id: 10,
+        _id: parseInt(this.props.project_id.data),
+        user_id: this.state.user_id,
       });
+      // await this.props.getProjectData({
+      //   _id: 46,
+      //   user_id: 10,
+      // });
     } catch (error) {}
     this.setState({
       project_data: this.props.project_data.data.result,
