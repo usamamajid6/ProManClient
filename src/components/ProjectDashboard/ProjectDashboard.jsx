@@ -29,8 +29,6 @@ import Icon, {
 import Sidebar from "react-sidebar";
 import SidebarContent from "./Sidebar/Sidebar";
 import AddNewTaskList from "./AddNewTaskList/AddNewTaskList";
-import Minimap from "react-minimap";
-import "minimap-react/lib/react-minimap.css";
 import Server from "../../ServerPath";
 import io from "socket.io-client";
 const socket = io.connect(Server);

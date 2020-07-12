@@ -46,7 +46,6 @@ class AddNewTask extends Component {
     return (
       <Row className="addTaskContainer">
         <Col span={24} className="modalTitle">
-          {" "}
           Add New Task
         </Col>
         <Col span={24}>
@@ -66,7 +65,7 @@ class AddNewTask extends Component {
                   rules={[
                     {
                       required: true,
-                      message: "Please input task!",
+                      message: "Name is required!",
                     },
                   ]}
                 >
@@ -82,7 +81,7 @@ class AddNewTask extends Component {
                   rules={[
                     {
                       required: true,
-                      message: "Please input description!",
+                      message: "Description is required!",
                     },
                   ]}
                 >
@@ -102,13 +101,14 @@ class AddNewTask extends Component {
                   rules={[
                     {
                       required: true,
-                      message: "Enter Pre Requsite..!",
+                      message: "Select Pre Requsite..!",
                     },
                   ]}
                 >
                   <Select
                     className="formInputAddTask"
-                    placeholder="Please Enter Pre Requsite, if any..!"
+                    placeholder="Select Pre Requsite Task, if any..!"
+                    style={{ borderRadius: "2rem" }}
                   >
                     <Option value="0">No Prerequsite</Option>
                     {this.props.project_data.data.taskList.map(
@@ -131,7 +131,7 @@ class AddNewTask extends Component {
                   rules={[
                     {
                       required: true,
-                      message: "Please input Due Date!",
+                      message: "Select Due Date!",
                     },
                   ]}
                 >
@@ -139,6 +139,7 @@ class AddNewTask extends Component {
                     className="formButtonAddTask"
                     placeholder="Due Date"
                     onChange={onChange}
+                    showTime={{ format: 'HH:mm' }}
                   />
                 </Form.Item>
               </Col>
@@ -150,7 +151,7 @@ class AddNewTask extends Component {
                   rules={[
                     {
                       required: true,
-                      message: "Please enter atleast a single member!",
+                      message: "Select at-least single member!",
                       type: "array",
                     },
                   ]}
@@ -159,6 +160,7 @@ class AddNewTask extends Component {
                     mode="multiple"
                     className="formInputAddTask"
                     placeholder="Add Members"
+                    style={{ borderRadius: "2rem" }}
                   >
                     {this.props.project_data.data.result.members.map(
                       (members, index) => (
