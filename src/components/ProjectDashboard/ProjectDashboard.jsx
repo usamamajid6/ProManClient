@@ -255,7 +255,6 @@ class ProjectDashboard extends Component {
                   />
                 )}
               </Collapse>
-              ,
             </Col>
           </Row>
         </div>
