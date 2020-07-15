@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { message, Avatar, Row, Col, Progress, Collapse, Tabs } from "antd";
+import { message, Avatar, Row, Col, Collapse, Tabs } from "antd";
 import { getUserData } from "../../Actions/userDataAction";
 import { CaretRightOutlined } from "@ant-design/icons";
 import "./Profile.css";
@@ -17,7 +17,7 @@ class Profile extends Component {
     avatar: "",
     efficiency: 0,
   };
-
+  
   componentDidMount = async () => {
     if (!localStorage.getItem("userId")) {
       this.props.history.push("/login");
