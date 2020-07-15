@@ -12,18 +12,28 @@ import {
   Input,
   Form,
   message,
+  Empty,
+  Tooltip,
 } from "antd";
 import { connect } from "react-redux";
-import { InboxOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import {
+  InboxOutlined,
+  PlusCircleOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
+import ProgressBar from "react-animated-progress-bar";
 import { addComment } from "../../../Actions/addCommentAction";
 import { getTaskData } from "../../../Actions/TaskDataAction";
 import { updateTaskStatus } from "../../../Actions/UpdateTaskStatusAction";
 import { updateTaskStatusLeader } from "../../../Actions/UpdateTaskStatusLeaderAction";
+import { addSubTask } from "../../../Actions/AddSubTaskAction";
+import { updateSubTaskStatus } from "../../../Actions/UpdateSubTaskStatusAction";
 import LoadingOverlay from "react-loading-overlay";
 import "./ViewTaskDetails.css";
 import Server from "../../../ServerPath";
 import io from "socket.io-client";
 const socket = io.connect(Server);
+const { TextArea } = Input;
 class ViewTaskDetails extends Component {
   state = {
     loader: false,
@@ -37,13 +47,11 @@ class ViewTaskDetails extends Component {
     project_id: null,
     user_id: null,
     leader_id: null,
+    add_subtask_modal: false,
+    percentage_of_sub_tasks_completion: 0,
   };
 
   commentFormRef = React.createRef();
-
-  onChange(e) {
-    console.log(`checked = ${e.target.checked}`);
-  }
 
   componentDidMount = () => {
     this.setState({
@@ -57,6 +65,22 @@ class ViewTaskDetails extends Component {
     socket.on("updateTaskData", () => {
       this.updateTask();
     });
+    let sub_tasks = this.props.task.sub_tasks;
+    let total_sub_tasks = sub_tasks.length;
+    let total_done_sub_tasks = 0;
+    for (let i = 0; i < sub_tasks.length; i++) {
+      const element = sub_tasks[i];
+      if (element.status === "done") {
+        total_done_sub_tasks++;
+      }
+    }
+    let percentage_of_sub_tasks_completion =
+      (total_done_sub_tasks * 100) / total_sub_tasks;
+    this.setState({
+      percentage_of_sub_tasks_completion: parseInt(
+        percentage_of_sub_tasks_completion
+      ),
+    });
   };
 
   updateTask = async () => {
@@ -65,7 +89,22 @@ class ViewTaskDetails extends Component {
       this.setState({
         task: this.props.taskData.data,
       });
-      message.info("Data Updated!");
+      let sub_tasks = this.state.task.sub_tasks;
+      let total_sub_tasks = sub_tasks.length;
+      let total_done_sub_tasks = 0;
+      for (let i = 0; i < sub_tasks.length; i++) {
+        const element = sub_tasks[i];
+        if (element.status === "done") {
+          total_done_sub_tasks++;
+        }
+      }
+      let percentage_of_sub_tasks_completion =
+        (total_done_sub_tasks * 100) / total_sub_tasks;
+      this.setState({
+        percentage_of_sub_tasks_completion: parseInt(
+          percentage_of_sub_tasks_completion
+        ),
+      });
     } catch (e) {
       console.log(e);
     }
@@ -142,6 +181,15 @@ class ViewTaskDetails extends Component {
               className="buttonMaster"
               type="primary"
               onClick={async () => {
+                if (
+                  this.state.task.sub_tasks.length !== 0 &&
+                  this.state.percentage_of_sub_tasks_completion !== 100
+                ) {
+                  message.warning(
+                    "Sub Tasks are in-progress, unable to push task!"
+                  );
+                  return;
+                }
                 try {
                   let data = {
                     _id: this.state.task_id,
@@ -240,6 +288,86 @@ class ViewTaskDetails extends Component {
     }
   };
 
+  onChangeUpload = (info) => {
+    const { status } = info.file;
+    if (status !== "uploading") {
+      console.log(info.file, info.fileList);
+    }
+    if (status === "done") {
+      message.success(`${info.file.name} file uploaded successfully.`);
+      this.tellServerToUpdateData();
+    } else if (status === "error") {
+      message.error(`${info.file.name} file upload failed.`);
+    }
+  };
+
+  ifFound = (array, find) => {
+    let found = false;
+    for (let i = 0; i < array.length; i++) {
+      if (array[i].member._id === find) {
+        found = true;
+        break;
+      }
+    }
+    return found;
+  };
+
+  handleAttachmentClick = (file_path, file_name) => {
+    window.location = `${Server}/getAttachment/${file_path}/${file_name}`;
+  };
+
+  addSubTask = () => {
+    if (this.ifPresent(this.state.task.members, this.state.user_id)) {
+      this.setState({ add_subtask_modal: true });
+    } else {
+      message.info("Only assigned members to this task can add Sub-Tasks!");
+    }
+  };
+
+  handeladdSubtaskModalCancel = () => {
+    this.setState({ add_subtask_modal: false });
+  };
+
+  handleAddSubTask = async (values) => {
+    let data = {
+      name: values.name,
+      description: values.description,
+      member_id: this.state.user_id,
+      task_id: this.state.task_id,
+      project_id: this.state.project_id,
+    };
+    try {
+      this.setState({ loader: true });
+      await this.props.addSubTask(data);
+      const response = this.props.addSubTaskResponse;
+      this.tellServerToUpdateData();
+      message.success(response.message);
+      this.setState({ loader: false, add_subtask_modal: false });
+    } catch (e) {
+      this.setState({ loader: false });
+      message.error("Some Problem Occur!");
+    }
+  };
+
+  handleUpdateSubTaskStatus = async (sub_task, status) => {
+    console.log("====================================");
+    console.log(sub_task, status);
+    console.log("====================================");
+    let data = {
+      _id: sub_task._id,
+      status,
+    };
+    try {
+      this.setState({ loader: true });
+      await this.props.updateSubTaskStatus(data);
+      message.success("Updated Sub Task Status!");
+      this.tellServerToUpdateData();
+      this.setState({ loader: false });
+    } catch (e) {
+      this.setState({ loader: false });
+      message.error("Some Problem Occur!");
+    }
+  };
   render() {
     return (
       <LoadingOverlay
@@ -289,6 +417,7 @@ class ViewTaskDetails extends Component {
                   </Col>
                   <Col span={12}>
                     <Button
+                      disabled={this.state.task.status === "done"}
                       className="addSubTaskButton"
                       type="link"
                       onClick={this.addSubTask}
@@ -299,18 +428,52 @@ class ViewTaskDetails extends Component {
                 </Row>
               </Col>
               <Col span={24}>
-                <Row className="subTaskDesign">
-                  <Col span={24}>
-                    <Progress strokeWidth={15} percent={67} />
-                  </Col>
-                  {this.state.task.sub_tasks.map((sub_tasks) => (
+                {this.state.task.sub_tasks.length === 0 ? (
+                  <div>
+                    <Empty
+                      imageStyle={{
+                        height: 60,
+                      }}
+                      description={<span>No Sub Tasks</span>}
+                    ></Empty>
+                    ,
+                  </div>
+                ) : (
+                  <Row className="subTaskDesign">
                     <Col span={24}>
-                      <Checkbox onChange={this.onChange}>
-                        {sub_tasks.name}
-                      </Checkbox>
+                      <Progress
+                        strokeWidth={15}
+                        strokeColor={{
+                          "0%": "#108ee9",
+                          "100%": "#87d068",
+                        }}
+                        percent={this.state.percentage_of_sub_tasks_completion}
+                      />
                     </Col>
-                  ))}
-                </Row>
+                    {this.state.task.sub_tasks.map((sub_tasks) => (
+                      <Col span={24}>
+                        <Tooltip title={sub_tasks.description}>
+                          <Checkbox
+                            disabled={
+                              this.state.task.status === "pending" ||
+                              this.state.task.status === "done"
+                            }
+                            defaultChecked={sub_tasks.status === "done"}
+                            onChange={(e) => {
+                              let status = "done";
+                              if (!e.target.checked) {
+                                status = "in-progress";
+                              }
+                              this.handleUpdateSubTaskStatus(sub_tasks, status);
+                            }}
+                          >
+                            {sub_tasks.name}
+                          </Checkbox>
+                        </Tooltip>
+                      </Col>
+                    ))}
+                  </Row>
+                )}
               </Col>
               <Col span={24} className="otherContainers">
                 <b className="titleStyle">Comments: </b>
@@ -368,13 +531,12 @@ class ViewTaskDetails extends Component {
                             <span className="commenterName">
                               {comments.member.name}
                             </span>
-                            <span>
+                            <span className="sendTime">
                               (
                               <TimeAgo date={comments.createdAt} />)
                             </span>
                           </div>
                           <div className="actualComment">
-                            {" "}
                             {comments.message}
                           </div>
                         </Col>
@@ -400,19 +562,38 @@ class ViewTaskDetails extends Component {
               </Col>
 
               <Col span={24} className="otherContainers">
-                <b className="titleStyle">Attachment: </b>
-                {this.state.task.attachments.map((attachments) => (
-                  <div className="membersAttachmentDesign">
-                    {attachments.name}
-                  </div>
-                ))}
+                <b className="titleStyle">Attachment(s): </b>
+                {this.state.task.attachments.map((attachments) => {
+                  return (
+                    <div className="attachmentsContainer">
+                      <Button
+                        style={{ color: "white" }}
+                        className="attachmentLink"
+                        type="link"
+                        onClick={() => {
+                          this.handleAttachmentClick(
+                            attachments.path,
+                            attachments.name
+                          );
+                        }}
+                      >
+                        {attachments.name}
+                      </Button>
+                    </div>
+                  );
+                })}
               </Col>
-
               <Col span={24}>
                 <Upload.Dragger
-                  name="files"
-                  action="/upload.do"
+                  name="file"
+                  action={`${Server}/createNewAttachment`}
                   className="draggerDesign"
+                  data={{
+                    member_id: this.state.user_id,
+                    project_id: this.state.project_id,
+                    task_id: this.state.task_id,
+                  }}
+                  onChange={this.onChangeUpload}
                 >
                   <p className="ant-upload-drag-icon">
                     <InboxOutlined />
@@ -420,13 +601,99 @@ class ViewTaskDetails extends Component {
                   <p className="ant-upload-text">Upload Attachment(s)</p>
                 </Upload.Dragger>
               </Col>
-
               <Col span={24} className="buttonMasterContainer">
                 {this.displayMasterButtonOnCertainConditions()}
               </Col>
             </Row>
           </Col>
         </Row>
+        <Modal
+          visible={this.state.add_subtask_modal}
+          onCancel={this.handeladdSubtaskModalCancel}
+          onOk={this.handeladdSubtaskModalCancel}
+          width="50vw"
+          destroyOnClose
+          centered={true}
+          bodyStyle={{
+            backgroundColor: "steelblue",
+          }}
+          footer={null}
+          closeIcon={
+            <CloseCircleOutlined style={{ color: "white", fontSize: "2rem" }} />
+          }
+        >
+          <LoadingOverlay
+            styles={{
+              overlay: (base) => ({
+                ...base,
+                borderRadius: "2rem",
+              }),
+            }}
+            active={this.state.loader}
+            spinner
+            text="Creating The Sub Task..."
+          >
+            <Form
+              name="add_sub_task"
+              className="addSubTaskContainer"
+              initialValues={{
+                remember: true,
+              }}
+              onFinish={this.handleAddSubTask}
+            >
+              <Row>
+                <Col span={24} className="modalTitle">
+                  Add New SubTask
+                </Col>
+                <Col span={24}>
+                  <Form.Item
+                    className="formItemAddSubTask"
+                    name="name"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required!",
+                      },
+                    ]}
+                  >
+                    <Input
+                      className="formInputAddSubTask"
+                      // prefix={<UserOutlined className="site-form-item-icon" />}
+                      placeholder="SubTask Name..."
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item
+                    className="formItemAddSubTask"
+                    name="description"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required!",
+                      },
+                    ]}
+                  >
+                    <TextArea
+                      rows={4}
+                      className="formInputAddSubTask"
+                      // prefix={<LockOutlined className="site-form-item-icon" />}
+                      placeholder="Description..."
+                    />
+                  </Form.Item>
+                </Col>
+
+                <Col span={24}>
+                  <Form.Item className="formItemAddSubTask">
+                    <Button className="formButtonAddSubTask" htmlType="submit">
+                      CREATE
+                    </Button>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </LoadingOverlay>
+        </Modal>
       </LoadingOverlay>
     );
   }
@@ -437,6 +704,8 @@ const mapStateToProps = (state) => ({
   taskData: state.taskData,
   updateStatus: state.updateTaskStatus,
   updateStatusLeader: state.updateTaskStatusLeader,
+  addSubTaskResponse: state.addSubTask,
+  updateSubTaskStatusResponse: state.updateSubTaskStatus,
 });
 
 const mapDispatchToProps = {
@@ -444,6 +713,8 @@ const mapDispatchToProps = {
   getTaskData,
   updateTaskStatus,
   updateTaskStatusLeader,
+  addSubTask,
+  updateSubTaskStatus,
 };
 ViewTaskDetails = connect(mapStateToProps, mapDispatchToProps)(ViewTaskDetails);
 

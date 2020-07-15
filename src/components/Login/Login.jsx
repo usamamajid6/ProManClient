@@ -4,19 +4,12 @@ import FacebookLogin from "react-facebook-login";
 import GoogleLogin from "react-google-login";
 import "./Login.css";
 import { Form, Input, Button, Checkbox, Row, Col, message } from "antd";
-import { loginUser } from "../../Actions/LoginAction";
+import { loginUser, loginUserGoogleFB } from "../../Actions/LoginAction";
 import { saveUserData } from "../../Actions/userDataAction";
 import Navbar from "../Navbar/Navbar";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-
-const layout = {
-  labelCol: {
-    span: 6,
-  },
-  wrapperCol: {
-    span: 15,
-  },
-};
+import GoogleKey from "../../GoogleKey";
+import FBAppID from "../../FBAppID";
 const validateMessages = {
   required: "This field is required!",
   types: {
@@ -24,37 +17,77 @@ const validateMessages = {
   },
 };
 
-const tailLayout = {
-  wrapperCol: {
-    offset: 8,
-    span: 10,
-  },
-};
-
 const responseFacebook = (response) => {
   console.log(response);
 };
 
-const responseGoogle = (response) => {
-  console.log(response);
-};
-
 class Login extends Component {
+  state = {
+    loader: false,
+  };
   onFinish = async (values) => {
     try {
+      this.setState({ loader: true });
       await this.props.loginUser(values);
       let response = this.props.response;
+      this.setState({ loader: false });
       message.success(response.message);
       this.props.saveUserData(response.data);
       localStorage.setItem("userId", response.data.result._id);
       this.props.history.push("/userDashboard");
     } catch (error) {
+      this.setState({ loader: false });
       message.error("Some Problem Occur!");
     }
   };
 
   onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
+  };
+
+  responseGoogle = async (googleResponse) => {
+    try {
+      this.setState({ loader: true });
+      await this.props.loginUserGoogleFB({
+        email: googleResponse.profileObj.email,
+      });
+      let response = this.props.response;
+      this.setState({ loader: false });
+      message.success(response.message);
+      this.props.saveUserData(response.data);
+      localStorage.setItem("userId", response.data.result._id);
+      this.props.history.push("/userDashboard");
+    } catch (error) {
+      this.setState({ loader: false });
+      message.error("Some Problem Occur!");
+    }
+  };
+
+  componentClicked = (a, b, c) => {
+    console.log("====================================");
+    console.log(a, b);
+    console.log("====================================");
+    console.log("====================================");
+    console.log(c);
+    console.log("====================================");
+  };
+
+  responseFB = async (fbResponse) => {
+    try {
+      this.setState({ loader: true });
+      await this.props.loginUserGoogleFB({
+        email: fbResponse.email,
+      });
+      let response = this.props.response;
+      this.setState({ loader: false });
+      message.success(response.message);
+      this.props.saveUserData(response.data);
+      localStorage.setItem("userId", response.data.result._id);
+      this.props.history.push("/userDashboard");
+    } catch (error) {
+      this.setState({ loader: false });
+      message.error("Some Problem Occur!");
+    }
   };
 
   render() {
@@ -132,26 +165,26 @@ class Login extends Component {
                       </Button>
                     </Col>
 
-                    {/* <Col span={24}>
-                    <GoogleLogin
-                      clientId="180157925992-c9jacg15oi7rsspb5t9t64lg9um74nuq.apps.googleusercontent.com"
-                      buttonText="Login With Google"
-                      cssClass="googleButton"
-                      onSuccess={responseGoogle}
-                      onFailure={responseGoogle}
-                      cookiePolicy={"single_host_origin"}
-                    />
-                  </Col>
-                  <Col span={24}>
-                    <FacebookLogin
-                      appId="708444756657461"
-                      autoLoad={true}
-                      fields="name,email,picture"
-                      onClick={this.componentClicked}
-                      cssClass="fbButton"
-                      callback={responseFacebook}
-                    />
-                  </Col> */}
+                    <Col span={24}>
+                      <GoogleLogin
+                        clientId={GoogleKey}
+                        buttonText="Login via Google"
+                        className="googleButton"
+                        onSuccess={this.responseGoogle}
+                        onFailure={this.responseGoogle}
+                        cookiePolicy={"single_host_origin"}
+                      />
+                    </Col>
+                    <Col span={24}>
+                      <FacebookLogin
+                        appId={FBAppID}
+                        autoLoad={false}
+                        fields="name,email,picture"
+                        onClick={this.componentClicked}
+                        cssClass="fbButton"
+                        callback={this.responseFB}
+                      />
+                    </Col>
                   </Row>
                 </Form>
               </div>
@@ -168,7 +201,7 @@ const mapStateToProps = (state) => ({
   response: state.loginUser,
 });
 
-const mapDispatchToProps = { loginUser, saveUserData };
+const mapDispatchToProps = { loginUser, saveUserData, loginUserGoogleFB };
 Login = connect(mapStateToProps, mapDispatchToProps)(Login);
 
 export default Login;

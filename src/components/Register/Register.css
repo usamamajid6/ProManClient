@@ -29,22 +29,27 @@
 }
 
 .Register .registerButton {
-  width: 50%;
+  width: 75%;
   height: 8vh;
   font-size: 1.2rem;
   font-weight: bold;
+  text-align: center;
 }
 
 .Register .googleButton {
   padding: 0.4rem;
-  width: 50%;
+  width: 75%;
   color: white;
+  margin-top: 1rem;
 }
 
 .Register .fbButton {
-  border-style: none;
-  padding: 0.4rem;
-  width: 50%;
+  background-color: steelblue;
+  height: 8vh;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 1rem;
+  width: 75%;
   color: white;
-  background-color: dodgerblue;
+  cursor: pointer;
 }

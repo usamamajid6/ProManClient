@@ -11,11 +11,18 @@ import {
   Collapse,
   Table,
   Tag,
+  Form,
+  Input,
   message,
+  Avatar,
 } from "antd";
 import Navbar from "../Navbar/Navbar";
+import LoadingOverlay from "react-loading-overlay";
 import { connect } from "react-redux";
 import { getProjectData } from "../../Actions/projectDataAction";
+import { getChatsByProjectId } from "../../Actions/ChatsDataAction";
+import { addMemberToProject } from "../../Actions/AddMemberToProjectAction";
+import { getUserByEmail } from "../../Actions/GetUserByEmailAction";
 import Board from "./Board/Board";
 import "./ProjectDashboard.css";
 import AddNewTask from "./AddNewTask/AddNewTask";
@@ -25,15 +32,16 @@ import Icon, {
   TableOutlined,
   BarcodeOutlined,
   CloseCircleOutlined,
+  PlusSquareOutlined,
 } from "@ant-design/icons";
 import Sidebar from "react-sidebar";
 import SidebarContent from "./Sidebar/Sidebar";
 import AddNewTaskList from "./AddNewTaskList/AddNewTaskList";
 import Server from "../../ServerPath";
+import ScrollToBottom from "react-scroll-to-bottom";
 import io from "socket.io-client";
 const socket = io.connect(Server);
 const { Panel } = Collapse;
-
 const columns = [
   {
     title: () => {
@@ -138,6 +146,8 @@ class ProjectDashboard extends Component {
   state = {
     project_data: {
       leader: {},
+      name: "",
+      members: [],
     },
     data: [],
     view_type: "board",
@@ -148,8 +158,11 @@ class ProjectDashboard extends Component {
     view_task: {},
     user_id: null,
     project_timeline: [],
+    chats: [],
+    add_member_to_project_modal: false,
+    member_data_for_add_member_to_project: {},
   };
-
+  chatFormRef = React.createRef();
   componentWillUnmount = () => {
     socket.emit("leaveTheProjectRoom", this.state.project_data);
   };
@@ -159,10 +172,10 @@ class ProjectDashboard extends Component {
       this.props.history.push("/login");
       return;
     }
-    if (this.props.project_id === null) {
-      this.props.history.push("/userDashboard");
-      return;
-    }
+    // if (this.props.project_id === null) {
+    //   this.props.history.push("/userDashboard");
+    //   return;
+    // }
     const user_id = parseInt(localStorage.getItem("userId"));
     this.setState({ user_id });
     await this.updateData();
@@ -172,18 +185,33 @@ class ProjectDashboard extends Component {
     socket.on("updateProjectData", () => {
       this.updateData();
     });
+
+    await this.props.getChatsByProjectId({
+      project_id: this.state.project_data._id,
+    });
+    this.setState({
+      chats: this.props.chats.data,
+    });
+
+    socket.on("updateChatsData", (data) => {
+      let chats = this.state.chats;
+
+      chats.push(data);
+
+      this.setState({ chats });
+    });
   };
 
   updateData = async () => {
     try {
-      await this.props.getProjectData({
-        _id: parseInt(this.props.project_id.data),
-        user_id: this.state.user_id,
-      });
       // await this.props.getProjectData({
-      //   _id: 46,
-      //   user_id: 10,
+      //   _id: parseInt(this.props.project_id.data),
+      //   user_id: this.state.user_id,
       // });
+      await this.props.getProjectData({
+        _id: 46,
+        user_id: 10,
+      });
     } catch (error) {}
     this.setState({
       project_data: this.props.project_data.data.result,
@@ -291,9 +319,35 @@ class ProjectDashboard extends Component {
   displayLeaderButton = () => {
     if (this.state.user_id === this.state.project_data.leader._id) {
       return (
-        <Button type="primary" onClick={() => {}}>
-          Open Leader Dashboard
-        </Button>
+        <Row>
+          <Col span={18}>
+            <Button type="primary" onClick={() => {}}>
+              Open Leader Dashboard
+            </Button>
+          </Col>
+          <Col span={2}></Col>
+          <Col span={4}>
+            {" "}
+            <Button
+              style={{
+                color: "white",
+                padding: 0,
+                width: "100%",
+                fontSize: "1.3rem",
+              }}
+              type="primary"
+              onClick={() => {
+                this.setState({
+                  add_member_to_project_modal: true,
+                });
+              }}
+            >
+              <Tooltip title="Add Member">
+                <PlusSquareOutlined />
+              </Tooltip>
+            </Button>
+          </Col>
+        </Row>
       );
     }
   };
@@ -345,6 +399,112 @@ class ProjectDashboard extends Component {
     this.tellServerToUpdateData();
   };
 
+  onChatBoxMessage = async (values) => {
+    let data = {
+      message: values.message,
+      member_id: this.state.user_id,
+      project_id: this.state.project_data._id,
+    };
+    try {
+      this.setState({ loader: true });
+      socket.emit("addChatMessageToProject", data);
+
+      this.setState({ loader: false });
+      // message.success("Added!");
+      this.chatFormRef.current.resetFields();
+    } catch (error) {
+      this.setState({ loader: false });
+
+      // message.error("Some Problem Occur!");
+    }
+  };
+
+  displayChats = () => {
+    if (this.state.chats) {
+      if (this.state.chats.length !== 0) {
+        return this.state.chats.map((message) => {
+          return (
+            <Row className="messageContainer">
+              <Col span={5}>
+                <Avatar
+                  style={{
+                    color: "#f56a00",
+                    backgroundColor: "#fde3cf",
+                  }}
+                >
+                  {message.member.name.substring(0, 1)}
+                </Avatar>
+              </Col>
+              <Col span={19}>
+                <div>
+                  <span className="chaterName">{message.member.name}</span>
+                  <span className="sendTime">
+                    (
+                    <TimeAgo date={message.createdAt} />)
+                  </span>
+                </div>
+                <div className="actualComment">{message.message}</div>
+              </Col>
+            </Row>
+          );
+        });
+      }
+    }
+  };
+
+  handleAddMembersToProjectModalOk = () => {
+    this.setState({
+      add_member_to_project_modal: false,
+    });
+  };
+
+  handleAddMemberToProject = async (values) => {
+    let found = -1;
+    console.log("====================================");
+    console.log(this.state.project_data);
+    console.log("====================================");
+    for (let i = 0; i < this.state.project_data.members.length; i++) {
+      const element = this.state.project_data.members[i];
+      if (element.member.email === values.user_email) {
+        found = i;
+        break;
+      }
+    }
+
+    if (found !== -1) {
+      message.info(
+        this.state.project_data.members[found].member.name +
+          " is already a member of " +
+          this.state.project_data.name +
+          "!"
+      );
+    } else {
+      try {
+        this.setState({ loader: true });
+        await this.props.getUserByEmail({ email: values.user_email });
+        const response = this.props.userByEmail;
+        if (response.message === "User Not Found!") {
+          message.warn(response.message);
+        } else {
+          this.setState({
+            member_data_for_add_member_to_project: response.data,
+          });
+        }
+        this.setState({ loader: false });
+      } catch (e) {
+        this.setState({ loader: false });
+
+        message.error("Sorry Some Problem Occur!");
+      }
+    }
+  };
+
+  openChatBox = () => {
+    document.getElementById("ChatBox").style.display = "block";
+  };
+  closeChatBox = () => {
+    document.getElementById("ChatBox").style.display = "none";
+  };
   render() {
     return (
       <div>
@@ -365,7 +525,13 @@ class ProjectDashboard extends Component {
         />
         <Navbar />
         <Row className="ProjectDashboard">
-          <Button type="primary" className="chatButton">
+          <Button
+            type="primary"
+            className="chatButton"
+            onClick={() => {
+              this.openChatBox();
+            }}
+          >
             Chat
           </Button>
 
@@ -376,8 +542,8 @@ class ProjectDashboard extends Component {
                   {this.state.project_data.name}
                 </div>
               </Col>
-              <Col span={10}></Col>
-              <Col span={4} className="leaderButton">
+              <Col span={8}></Col>
+              <Col span={6} className="leaderButton">
                 {this.displayLeaderButton()}
               </Col>
               <Col span={4} className="viewClass">
@@ -399,6 +565,7 @@ class ProjectDashboard extends Component {
                   </Radio.Button>
                 </Radio.Group>
               </Col>
+
               <Col span={2} className="menuClass">
                 <Tooltip title="Open Menu">
                   <MenuFoldOutlined
@@ -480,6 +647,188 @@ class ProjectDashboard extends Component {
             leader_id={this.state.project_data.leader._id}
           />
         </Modal>
+
+        <Modal
+          width="60vw"
+          visible={this.state.add_member_to_project_modal}
+          onOk={this.handleAddMembersToProjectModalOk}
+          onCancel={this.handleAddMembersToProjectModalOk}
+          destroyOnClose
+          centered={true}
+          bodyStyle={{
+            backgroundColor: "steelblue",
+          }}
+          footer={null}
+          closeIcon={
+            <CloseCircleOutlined style={{ color: "white", fontSize: "2rem" }} />
+          }
+        >
+          <LoadingOverlay
+            styles={{
+              overlay: (base) => ({
+                ...base,
+                borderRadius: "2rem",
+              }),
+            }}
+            active={this.state.loader}
+            spinner
+            text="Processing..."
+          >
+            <Form
+              name="add_member_to_project"
+              className="addMembersToProject"
+              initialValues={{
+                remember: true,
+              }}
+              onFinish={this.handleAddMemberToProject}
+            >
+              <Row>
+                <Col span={24} className="modalTitle">
+                  Add Members to {this.state.project_data.name}
+                </Col>
+                <Col span={24}>
+                  <Form.Item
+                    className="formItemAddMembersToProject"
+                    name="user_email"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required!",
+                      },
+                    ]}
+                  >
+                    <Input
+                      className="formInputAddMembersToProject"
+                      // prefix={<UserOutlined className="site-form-item-icon" />}
+                      placeholder="User Email"
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  {Object.keys(this.state.member_data_for_add_member_to_project)
+                    .length === 0 ? (
+                    <div></div>
+                  ) : (
+                    <div>
+                      <Row className="memberDataInAddMember">
+                        <Col span={20}>
+                          <span className="memberNameTitle">Name:</span>
+                          <span className="memberName">
+                            {
+                              this.state.member_data_for_add_member_to_project
+                                .name
+                            }
+                          </span>
+                        </Col>
+                        <Col span={4}>
+                          <Button
+                            className="addButtonAddMembersToProject"
+                            onClick={async () => {
+                              let data = {
+                                _id: this.state.project_data._id,
+                                member_id: this.state
+                                  .member_data_for_add_member_to_project._id,
+                              };
+
+                              try {
+                                this.setState({ loader: true });
+                                await this.props.addMemberToProject(data);
+                                const response = this.props
+                                  .addMemberToProjectResponse;
+                                this.setState({
+                                  member_data_for_add_member_to_project: {},
+                                });
+                                await this.updateData();
+                                message.success(response.data.message);
+                                this.setState({
+                                  add_member_to_project_modal: false,
+                                });
+                                this.setState({ loader: false });
+                              } catch (e) {
+                                this.setState({ loader: false });
+                                message.error("Some Problem Occur!");
+                              }
+                            }}
+                          >
+                            Add
+                          </Button>
+                        </Col>
+                      </Row>
+                    </div>
+                  )}
+                </Col>
+
+                <Col span={24}>
+                  <Form.Item className="formItemAddMembersToProject">
+                    <Button
+                      className="formButtonAddMembersToProject"
+                      htmlType="submit"
+                    >
+                      SEARCH
+                    </Button>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </LoadingOverlay>
+        </Modal>
+
+        <div className="ChatBox" id="ChatBox">
+          <Row>
+            <Col span={22} style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+              CHAT BOX
+            </Col>
+            <Col span={2}>
+              <Button
+                type="link"
+                onClick={() => {
+                  this.closeChatBox();
+                }}
+              >
+                <CloseCircleOutlined />
+              </Button>
+            </Col>
+          </Row>
+          <ScrollToBottom id="sTob" className="chatMessagesContainer">
+            {this.displayChats()}
+          </ScrollToBottom>
+
+          <div className="sendMessageForm">
+            <Form
+              name="chatBox"
+              onFinish={this.onChatBoxMessage}
+              className="commentForm"
+              ref={this.chatFormRef}
+            >
+              <Row>
+                <Col span={17}>
+                  <Form.Item
+                    name="message"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Message can't be empty!",
+                      },
+                    ]}
+                  >
+                    <Input className="chatInput" />
+                  </Form.Item>
+                </Col>
+                <Col span={7}>
+                  <Form.Item>
+                    <Button
+                      className="chatButton"
+                      type="primary"
+                      htmlType="submit"
+                    >
+                      Send
+                    </Button>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </div>
+        </div>
       </div>
     );
   }
@@ -488,10 +837,16 @@ class ProjectDashboard extends Component {
 const mapStateToProps = (state) => ({
   project_id: state.projectId,
   project_data: state.projectData,
+  chats: state.chatsMessages,
+  addMemberToProjectResponse: state.addMemberToProject,
+  userByEmail: state.userByEmail,
 });
 
 const maptDispatchToProps = {
   getProjectData,
+  getChatsByProjectId,
+  addMemberToProject,
+  getUserByEmail,
 };
 
 ProjectDashboard = connect(

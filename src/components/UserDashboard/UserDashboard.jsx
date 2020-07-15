@@ -12,6 +12,9 @@ import {
   DatePicker,
   Select,
   message,
+  Popconfirm,
+  Avatar,
+  Tooltip,
 } from "antd";
 import {
   DesktopOutlined,
@@ -24,6 +27,8 @@ import {
   PlusSquareOutlined,
   LockOutlined,
   CloseCircleOutlined,
+  ToolTwoTone,
+  PlusCircleOutlined,
 } from "@ant-design/icons";
 import "./UserDashboard.css";
 import { connect } from "react-redux";
@@ -32,6 +37,8 @@ import { createNewProject } from "../../Actions/addProjectAction";
 import { getUserData } from "../../Actions/userDataAction";
 import { createNewTeam } from "../../Actions/addTeamAction";
 import { setProjectId } from "../../Actions/setProjectIdAction";
+import { getUserByEmail } from "../../Actions/GetUserByEmailAction";
+import { addMemberToTeam } from "../../Actions/AddMemberToTeamAction";
 import LoadingOverlay from "react-loading-overlay";
 import BounceLoader from "react-spinners/BounceLoader";
 import Navbar from "../Navbar/Navbar";
@@ -53,6 +60,13 @@ class UserDashboard extends Component {
     project_type: "",
     loader: false,
     add_team_modal: false,
+    add_member_to_team_data: {},
+    add_member_to_team_modal: false,
+    member_data_for_add_member_to_team: {},
+    team_details_modal: false,
+    team_data_for_team_details: {
+      members: [],
+    },
   };
 
   componentDidMount = async () => {
@@ -155,9 +169,18 @@ class UserDashboard extends Component {
     });
   };
 
+  handleAddMemberToTeamClick = (team) => {
+    this.setState({
+      add_member_to_team_data: team,
+    });
+
+    this.setState({
+      add_member_to_team_modal: true,
+    });
+  };
+
   displayTeams = () => {
     return this.state.teams.map((team, index) => {
-      console.log(team);
       return (
         <Menu.Item
           onClick={() => {
@@ -165,6 +188,33 @@ class UserDashboard extends Component {
           }}
         >
           {team.name}
+        </Menu.Item>
+      );
+    });
+  };
+
+  displayTeamsForAddingMembersAndTeamDetails = () => {
+    return this.state.teams.map((team, index) => {
+      return (
+        <Menu.Item>
+          <Popconfirm
+            placement="topLeft"
+            title="What You Want To Do?"
+            okText="Team Details"
+            cancelText="Add Member"
+            okType="ghost"
+            icon={<ToolTwoTone />}
+            onCancel={() => {
+              this.handleAddMemberToTeamClick(team);
+            }}
+            onConfirm={() => {
+              this.handleTeamDeatilsClick(team);
+            }}
+          >
+            <Button type="link" style={{ paddingLeft: 0, color: "white" }}>
+              {team.name}
+            </Button>
+          </Popconfirm>
         </Menu.Item>
       );
     });
@@ -188,8 +238,13 @@ class UserDashboard extends Component {
     });
   };
 
+  handleAddMembersToTeamModalOk = () => {
+    this.setState({
+      add_member_to_team_modal: false,
+    });
+  };
+
   handleAddProject = async (values) => {
-    // console.log(values.date[0]._d);
     let data = {
       name: values.name,
       description: values.description,
@@ -235,6 +290,48 @@ class UserDashboard extends Component {
     }
   };
 
+  handleAddMemberToTeam = async (values) => {
+    let found = -1;
+    for (
+      let i = 0;
+      i < this.state.add_member_to_team_data.members.length;
+      i++
+    ) {
+      const element = this.state.add_member_to_team_data.members[i];
+      if (element.email === values.user_email) {
+        found = i;
+        break;
+      }
+    }
+
+    if (found !== -1) {
+      message.info(
+        this.state.add_member_to_team_data.members[found].name +
+          " is already a member of " +
+          this.state.add_member_to_team_data.name +
+          "!"
+      );
+    } else {
+      try {
+        this.setState({ loader: true });
+        await this.props.getUserByEmail({ email: values.user_email });
+        const response = this.props.userByEmail;
+        if (response.message === "User Not Found!") {
+          message.warn(response.message);
+        } else {
+          this.setState({
+            member_data_for_add_member_to_team: response.data,
+          });
+        }
+        this.setState({ loader: false });
+      } catch (e) {
+        this.setState({ loader: false });
+
+        message.error("Sorry Some Problem Occur!");
+      }
+    }
+  };
+
   handleAddTeam = async (values) => {
     let data = {
       name: values.name,
@@ -269,6 +366,54 @@ class UserDashboard extends Component {
   showUCPOrNot = () => {
     if (this.state.project_type === "software") {
       return <UCP />;
+    }
+  };
+
+  handleTeamDeatilsModalOk = () => {
+    this.setState({ team_details_modal: false });
+  };
+
+  handleTeamDeatilsClick = (team) => {
+    this.setState({
+      team_data_for_team_details: team,
+    });
+    console.log("====================================");
+    console.log(team);
+    console.log("====================================");
+    this.setState({
+      team_details_modal: true,
+    });
+  };
+
+  displayMembersInTeamDetails = () => {
+    if (this.state.team_data_for_team_details) {
+      if (this.state.team_data_for_team_details.members.length !== 0) {
+        return this.state.team_data_for_team_details.members.map(
+          (member, index) => {
+            return (
+              <div style={{ float: "left", marginLeft: "1rem" }}>
+                <Tooltip title={member.name}>
+                  <Avatar
+                    size={50}
+                    style={{
+                      fontWeight: "bold",
+
+                      fontSize: "1.5rem",
+                      color: "#fff",
+                      backgroundColor: "steelblue",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {member.name.substring(0, 1)}
+                  </Avatar>
+                </Tooltip>
+              </div>
+            );
+          }
+        );
+      } else {
+        return <Empty />;
+      }
     }
   };
 
@@ -317,6 +462,13 @@ class UserDashboard extends Component {
                   >
                     Add Team
                   </Menu.Item>
+                  <SubMenu
+                    key="addMembersToTeam"
+                    icon={<TeamOutlined />}
+                    title="Add Members To Team"
+                  >
+                    {this.displayTeamsForAddingMembersAndTeamDetails()}
+                  </SubMenu>
                 </Menu>
               </Sider>
               <Layout className="site-layout">
@@ -413,6 +565,9 @@ class UserDashboard extends Component {
                   onFinish={this.handleAddProject}
                 >
                   <Row>
+                    <Col span={24} className="modalTitle">
+                      Add New Project
+                    </Col>
                     <Col span={24}>
                       <Form.Item
                         className="formItemAddProject"
@@ -577,6 +732,9 @@ class UserDashboard extends Component {
                   onFinish={this.handleAddTeam}
                 >
                   <Row>
+                    <Col span={24} className="modalTitle">
+                      Add New Team
+                    </Col>
                     <Col span={24}>
                       <Form.Item
                         className="formItemAddTeam"
@@ -627,6 +785,210 @@ class UserDashboard extends Component {
               </LoadingOverlay>
             </Modal>
           </Col>
+
+          <Col span={24}>
+            <Modal
+              width="60vw"
+              visible={this.state.add_member_to_team_modal}
+              onOk={this.handleAddMembersToTeamModalOk}
+              onCancel={this.handleAddMembersToTeamModalOk}
+              destroyOnClose
+              centered={true}
+              bodyStyle={{
+                backgroundColor: "steelblue",
+              }}
+              footer={null}
+              closeIcon={
+                <CloseCircleOutlined
+                  style={{ color: "white", fontSize: "2rem" }}
+                />
+              }
+            >
+              <LoadingOverlay
+                styles={{
+                  overlay: (base) => ({
+                    ...base,
+                    borderRadius: "2rem",
+                  }),
+                }}
+                active={this.state.loader}
+                spinner
+                text="Processing..."
+              >
+                <Form
+                  name="add_member_to_team"
+                  className="addMembersToTeam"
+                  initialValues={{
+                    remember: true,
+                  }}
+                  onFinish={this.handleAddMemberToTeam}
+                >
+                  <Row>
+                    <Col span={24} className="modalTitle">
+                      Add Members to {this.state.add_member_to_team_data.name}
+                    </Col>
+                    <Col span={24}>
+                      <Form.Item
+                        className="formItemAddMembersToTeam"
+                        name="user_email"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Required!",
+                          },
+                        ]}
+                      >
+                        <Input
+                          className="formInputAddMembersToTeam"
+                          // prefix={<UserOutlined className="site-form-item-icon" />}
+                          placeholder="User Email"
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={24}>
+                      {Object.keys(
+                        this.state.member_data_for_add_member_to_team
+                      ).length === 0 ? (
+                        <div></div>
+                      ) : (
+                        <div>
+                          <Row className="memberDataInAddMember">
+                            <Col span={20}>
+                              <span className="memberNameTitle">Name:</span>
+                              <span className="memberName">
+                                {
+                                  this.state.member_data_for_add_member_to_team
+                                    .name
+                                }
+                              </span>
+                            </Col>
+                            <Col span={4}>
+                              <Button
+                                className="addButtonAddMembersToTeam"
+                                onClick={async () => {
+                                  try {
+                                    this.setState({ loader: true });
+                                    await this.props.addMemberToTeam({
+                                      _id: this.state.add_member_to_team_data
+                                        ._id,
+                                      member_id_array: [
+                                        this.state
+                                          .member_data_for_add_member_to_team
+                                          ._id,
+                                      ],
+                                    });
+                                    const response = this.props
+                                      .addMemberToTeamResponse;
+                                    this.setState({
+                                      member_data_for_add_member_to_team: {},
+                                    });
+                                    await this.updateUserData();
+                                    message.success(response.data.message);
+                                    this.setState({
+                                      add_member_to_team_modal: false,
+                                      team_details_modal: false,
+                                    });
+                                    this.setState({ loader: false });
+                                  } catch (e) {
+                                    this.setState({ loader: false });
+                                    message.error("Some Problem Occur!");
+                                  }
+                                }}
+                              >
+                                Add
+                              </Button>
+                            </Col>
+                          </Row>
+                        </div>
+                      )}
+                    </Col>
+
+                    <Col span={24}>
+                      <Form.Item className="formItemAddMembersToTeam">
+                        <Button
+                          className="formButtonAddMembersToTeam"
+                          htmlType="submit"
+                        >
+                          SEARCH
+                        </Button>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Form>
+              </LoadingOverlay>
+            </Modal>
+          </Col>
+
+          <Col span={24}>
+            <Modal
+              width="60vw"
+              visible={this.state.team_details_modal}
+              onOk={this.handleTeamDeatilsModalOk}
+              onCancel={this.handleTeamDeatilsModalOk}
+              destroyOnClose
+              centered={true}
+              bodyStyle={{
+                backgroundColor: "steelblue",
+              }}
+              footer={null}
+              closeIcon={
+                <CloseCircleOutlined
+                  style={{ color: "white", fontSize: "2rem" }}
+                />
+              }
+            >
+              <Row className="TeamDetails">
+                <Col span={24}>
+                  <div className="headStyles">Name:</div>
+                  <div className="content">
+                    {this.state.team_data_for_team_details ? (
+                      this.state.team_data_for_team_details.name
+                    ) : (
+                      <div></div>
+                    )}
+                  </div>
+                </Col>
+                <Col span={24}>
+                  <div className="headStyles">Description:</div>
+                  <div className="content">
+                    {this.state.team_data_for_team_details ? (
+                      this.state.team_data_for_team_details.description
+                    ) : (
+                      <div></div>
+                    )}
+                  </div>
+                </Col>
+                <Col span={24}>
+                  <div className="headStyles">Members:</div>
+                  <div className="">
+                    <span> {this.displayMembersInTeamDetails()}</span>
+
+                    <span style={{ marginLeft: "1rem" }}>
+                      <Tooltip title="Add Member">
+                        <Avatar
+                          onClick={() => {
+                            this.handleAddMemberToTeamClick(
+                              this.state.team_data_for_team_details
+                            );
+                          }}
+                          size={50}
+                          style={{
+                            fontWeight: "bold",
+                            fontSize: "1.8rem",
+                            color: "#fff",
+                            backgroundColor: "steelblue",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {<PlusCircleOutlined />}
+                        </Avatar>
+                      </Tooltip>
+                    </span>
+                  </div>
+                </Col>
+              </Row>
+            </Modal>
+          </Col>
         </Row>
       </div>
     );
@@ -638,6 +1000,8 @@ const mapStateToProps = (state) => ({
   ucp: state.UCP,
   addProject: state.addProject,
   addTeam: state.addTeam,
+  userByEmail: state.userByEmail,
+  addMemberToTeamResponse: state.addMemberToTeam,
 });
 
 const mapDispatchToProps = {
@@ -645,6 +1009,8 @@ const mapDispatchToProps = {
   getUserData,
   createNewTeam,
   setProjectId,
+  getUserByEmail,
+  addMemberToTeam,
 };
 
 UserDashboard = connect(mapStateToProps, mapDispatchToProps)(UserDashboard);

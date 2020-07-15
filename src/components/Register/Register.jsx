@@ -1,11 +1,17 @@
 import React, { Component } from "react";
 import { Form, Input, Button, Row, Col, message } from "antd";
-import { registerUser } from "../../Actions/RegisterAction";
+import {
+  registerUser,
+  registerUserGoogleFB,
+} from "../../Actions/RegisterAction";
 import Navbar from "../Navbar/Navbar";
+import FacebookLogin from "react-facebook-login";
+import GoogleLogin from "react-google-login";
 import { connect } from "react-redux";
 import { UserOutlined, LockOutlined, PhoneOutlined } from "@ant-design/icons";
 import "./Register.css";
-
+import GoogleKey from "../../GoogleKey";
+import FBAppID from "../../FBAppID";
 const validateMessages = {
   required: "This field is required!",
   types: {
@@ -15,6 +21,56 @@ const validateMessages = {
 };
 
 class Register extends Component {
+  state = { loader: false };
+  responseGoogle = async (googleResponse) => {
+    console.log("====================================");
+    console.log(googleResponse);
+    console.log("====================================");
+    try {
+      this.setState({ loader: true });
+      await this.props.registerUserGoogleFB({
+        email: googleResponse.profileObj.email,
+        name: googleResponse.profileObj.name,
+      });
+
+      this.setState({ loader: false });
+      let response = this.props.response;
+      this.setState({ loader: false });
+      if (response.data.message === "Email Already Taken!") {
+        message.info(response.data.message);
+        return;
+      }
+      message.success(response.data.message);
+      this.props.history.push("/login");
+    } catch (error) {
+      this.setState({ loader: false });
+      message.error("Some Problem Occur!");
+    }
+  };
+
+  componentClicked = (a, b, c) => {};
+
+  responseFB = async (fbResponse) => {
+    try {
+      this.setState({ loader: true });
+      await this.props.registerUserGoogleFB({
+        name: fbResponse.name,
+        email: fbResponse.email,
+      });
+      let response = this.props.response;
+      this.setState({ loader: false });
+      if (response.data.message === "Email Already Taken!") {
+        message.info(response.data.message);
+        return;
+      }
+      message.success(response.data.message);
+      this.props.history.push("/login");
+    } catch (error) {
+      this.setState({ loader: false });
+      message.error("Some Problem Occur!");
+    }
+  };
+
   onFinish = async (values) => {
     try {
       await this.props.registerUser(values);
@@ -161,15 +217,35 @@ class Register extends Component {
                     </Col>
 
                     <Col span={24}>
-                      <Form.Item>
-                        <Button
-                          className="registerButton"
-                          type="primary"
-                          htmlType="submit"
-                        >
-                          Register
-                        </Button>
-                      </Form.Item>
+                      <Button
+                        className="registerButton"
+                        type="primary"
+                        htmlType="submit"
+                      >
+                        Register
+                      </Button>
+                    </Col>
+
+                    <Col span={24}>
+                      <GoogleLogin
+                        clientId={GoogleKey}
+                        buttonText="Register via Google"
+                        className="googleButton"
+                        onSuccess={this.responseGoogle}
+                        onFailure={this.responseGoogle}
+                        cookiePolicy={"single_host_origin"}
+                      />
+                    </Col>
+                    <Col span={24}>
+                      <FacebookLogin
+                        appId={FBAppID}
+                        autoLoad={false}
+                        fields="name,email,picture"
+                        onClick={this.componentClicked}
+                        cssClass="fbButton"
+                        textButton="Register Via FB"
+                        callback={this.responseFB}
+                      />
                     </Col>
                   </Row>
                 </Form>
@@ -184,10 +260,10 @@ class Register extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  data: state.registerUser,
+  response: state.registerUser,
 });
 
-const mapDispatchToProps = { registerUser };
+const mapDispatchToProps = { registerUser, registerUserGoogleFB };
 
 Register = connect(mapStateToProps, mapDispatchToProps)(Register);
 

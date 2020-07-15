@@ -19,6 +19,12 @@ import taskData from "./TaskDataReducer";
 import updateTaskStatus from "./UpdateTaskStatusReducer";
 import updateTaskStatusLeader from "./UpdateTaskStatusReducerLeader";
 import leaderDashboard from "./LeaderDashboardDataReducer";
+import chatsMessages from "./ChatDataReducer";
+import userByEmail from "./GetUserByEmailReducer";
+import addMemberToTeam from "./AddMemberToTeamReducer";
+import addMemberToProject from "./AddMemberToProjectReducer";
+import addSubTask from "./AddSubTaskReducer";
+import updateSubTaskStatus from "./UpdateSubTaskStatusReducer";
 
 export default combineReducers({
   counter,
@@ -41,4 +47,10 @@ export default combineReducers({
   updateTaskStatus,
   updateTaskStatusLeader,
   leaderDashboard,
+  chatsMessages,
+  userByEmail,
+  addMemberToTeam,
+  addMemberToProject,
+  addSubTask,
+  updateSubTaskStatus,
 });

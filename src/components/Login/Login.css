@@ -29,7 +29,7 @@
 }
 
 .Login .loginButton {
-  width: 50%;
+  width: 75%;
   height: 8vh;
   font-size: 1.2rem;
   font-weight: bold;
@@ -37,14 +37,18 @@
 
 .Login .googleButton {
   padding: 0.4rem;
-  width: 50%;
+  width: 75%;
   color: white;
+  margin-top: 1rem;
 }
 
 .Login .fbButton {
-  border-style: none;
-  padding: 0.4rem;
-  width: 50%;
+  background-color: steelblue;
+  height: 8vh;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 1rem;
+  width: 75%;
   color: white;
-  background-color: dodgerblue;
+  cursor: pointer;
 }
