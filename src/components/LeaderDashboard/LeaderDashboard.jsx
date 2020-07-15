@@ -236,17 +236,16 @@ class LeaderDashboard extends Component {
           </Col>
           <Col span={24} className="otherData">
             <b>Project Creation Date: </b>
-            {this.state.project_data.createdAt}
+            {moment(this.state.project_data.createdAt).format('L')}
           </Col>
           <Col span={24} className="otherData">
             <b>Project Starting Date: </b>
-            {this.state.project_data.start_date}{" "}
+            {moment(this.state.project_data.start_date).format('L')}
           </Col>
           <Col span={24} className="otherData">
             <b>Project Ending Date: </b>
-            {this.state.project_data.end_date}{" "}
+            {moment(this.state.project_data.end_date).format('L')}
           </Col>
-          {/* <Col span={8}>{this.state.project_data.createdAt} </Col> */}
         </Row>
       </div>
     );
