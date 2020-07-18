@@ -25,6 +25,11 @@
   padding-top: 3rem;
   padding-left: 3rem;
   margin-right: 1rem;
+  text-align: center;
+}
+
+.LeaderDashboard .otherData b {
+  /* text-align: left; */
 }
 
 .LeaderDashboard .overviewBigText {
@@ -45,12 +50,15 @@
 
 .LeaderDashboard .memberContainer {
   font-size: 1.3rem;
-  margin: 1rem;
   border: 0.2rem solid;
   background-color: #80bffa;
-  padding: 1rem;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  max-width: 30vw;
+  border-radius: 2rem;
+  min-height: 70vh;
 }
 
-.LeaderDashboard .innerContainer{
+.LeaderDashboard .innerContainer {
   padding: 0.5rem;
 }

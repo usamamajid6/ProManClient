@@ -444,8 +444,8 @@ class ViewTaskDetails extends Component {
                       <Progress
                         strokeWidth={15}
                         strokeColor={{
-                          "0%": "#108ee9",
-                          "100%": "#87d068",
+                          "0%": "#ff4d4d",
+                          "100%": "#004080",
                         }}
                         percent={this.state.percentage_of_sub_tasks_completion}
                       />

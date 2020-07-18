@@ -73,14 +73,21 @@ class Register extends Component {
 
   onFinish = async (values) => {
     try {
+      this.setState({ loader: true });
       await this.props.registerUser(values);
-      if (this.props.data.data.message === "Email Already Exists!") {
-        message.info(this.props.data.data.message);
+      let response = this.props.response;
+      this.setState({ loader: false });
+      console.log("====================================");
+      console.log(response);
+      console.log("====================================");
+      if (response.data.message === "Email Already Exists!") {
+        message.info(response.data.message);
         return;
       }
-      message.success(this.props.data.data.message);
+      message.success(response.data.message);
       this.props.history.push("/login");
-    } catch (e) {
+    } catch (error) {
+      this.setState({ loader: false });
       message.error("Some Problem Occur!");
     }
   };

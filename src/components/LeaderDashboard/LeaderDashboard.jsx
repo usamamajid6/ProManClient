@@ -127,13 +127,17 @@ const columns = [
     key: " sub_tasks",
     render: (sub_tasks) => (
       <span>
-        {sub_tasks.map((sub_task) => {
-          return (
-            <Tag color={"orange"} key={sub_task._id}>
-              {sub_task.name.toUpperCase()}
-            </Tag>
-          );
-        })}
+        {sub_tasks.length !== 0 ? (
+          sub_tasks.map((sub_task) => {
+            return (
+              <Tag color={"orange"} key={sub_task._id}>
+                {sub_task.name.toUpperCase()}
+              </Tag>
+            );
+          })
+        ) : (
+          <div>No Any</div>
+        )}
       </span>
     ),
     align: "center",
@@ -179,7 +183,7 @@ class LeaderDashboard extends Component {
       //   user_id: this.state.user_id,
       // });
       await this.props.getProjectDetailsForLeaderDashboard({
-        _id: 5,
+        _id: 1,
         user_id: 10,
       });
     } catch (error) {}
@@ -208,43 +212,42 @@ class LeaderDashboard extends Component {
       <div>
         <Row className="mainHeading">
           <Col span={24}>
-            {" "}
             <b> Project Name: </b>
-            {this.state.project_data.name}{" "}
+            {this.state.project_data.name}
           </Col>
           <Col span={24}>
             <b>Project Status: </b>
-            {this.state.project_data.status}{" "}
+            {this.state.project_data.status}
           </Col>
         </Row>
 
         <Row>
           <Col span={24} className="otherData">
-            <b>Leader Name: </b> {this.state.project_data.leader.name}{" "}
+            <b>Leader Name: </b> {this.state.project_data.leader.name}
           </Col>
           <Col span={24} className="otherData">
             <b>Project Description: </b>
-            {this.state.project_data.description}{" "}
+            {this.state.project_data.description}
           </Col>
           <Col span={24} className="otherData">
             <b>Project Type: </b>
-            {this.state.project_data.project_type}{" "}
+            {this.state.project_data.project_type}
           </Col>
           <Col span={24} className="otherData">
             <b>Project Cost: </b>
-            {this.state.project_data.cost}{" "}
+            {this.state.project_data.cost}
           </Col>
           <Col span={24} className="otherData">
             <b>Project Creation Date: </b>
-            {moment(this.state.project_data.createdAt).format('L')}
+            {moment(this.state.project_data.createdAt).format("L")}
           </Col>
           <Col span={24} className="otherData">
             <b>Project Starting Date: </b>
-            {moment(this.state.project_data.start_date).format('L')}
+            {moment(this.state.project_data.start_date).format("L")}
           </Col>
           <Col span={24} className="otherData">
             <b>Project Ending Date: </b>
-            {moment(this.state.project_data.end_date).format('L')}
+            {moment(this.state.project_data.end_date).format("L")}
           </Col>
         </Row>
       </div>
@@ -311,9 +314,18 @@ class LeaderDashboard extends Component {
         let members = this.state.project_data.members;
         if (members.length !== 0) {
           return members.map((members, index) => (
-            <Col span={index === 0 ? 24 : 8} className="memberContainer">
-              <Row>
-                <Col span={24} style={{ textAlign: "center" }}>
+            <Col
+              lg={index === 0 ? 24 : 8}
+              md={index === 0 ? 24 : 12}
+              style={{ display: "flex", justifyContent: "center" }}
+            >
+              <Row className="memberContainer">
+                <Col
+                  span={24}
+                  style={{
+                    textAlign: "center",
+                  }}
+                >
                   <Progress
                     type="circle"
                     strokeColor={{
