@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, PureComponent } from "react";
 import {
   Layout,
   Menu,
@@ -11,6 +11,15 @@ import {
   Collapse,
   Progress,
 } from "antd";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
 import TimeAgo from "react-timeago";
 import moment from "moment";
 import {
@@ -26,6 +35,7 @@ import {
   RadarChartOutlined,
   FundOutlined,
   QrcodeOutlined,
+  ConsoleSqlOutlined,
 } from "@ant-design/icons";
 import { getProjectDetailsForLeaderDashboard } from "../../Actions/LeaderDashboardDataAction";
 import { connect } from "react-redux";
@@ -46,13 +56,13 @@ const columns = [
       return <div>Name</div>;
     },
     dataIndex: "name",
-    key: " name",
+    key: "name",
     align: "center",
   },
   {
     title: "Description",
     dataIndex: "description",
-    key: " description",
+    key: "description",
     render: (data) => {
       return <div>{data}</div>;
     },
@@ -72,6 +82,16 @@ const columns = [
       }
     },
     ellipsis: true,
+    align: "center",
+  },
+  {
+    title: "Creation Date",
+    dataIndex: "createdAt",
+    key: " createdAt",
+    sorter: (a, b) => a.createdAt - b.createdAt,
+    render: (data) => {
+      return <TimeAgo date={data} />;
+    },
     align: "center",
   },
   {
@@ -131,7 +151,7 @@ const columns = [
           sub_tasks.map((sub_task) => {
             return (
               <Tag color={"orange"} key={sub_task._id}>
-                {sub_task.name.toUpperCase()}
+                {/* {sub_task.name.toUpperCase()} */}
               </Tag>
             );
           })
@@ -151,8 +171,9 @@ class LeaderDashboard extends Component {
       members: [],
     },
 
+    tasks: [],
     overdue_tasks: [],
-
+    task_by_members: [],
     upcoming_tasks: [],
     collapsed: false,
     panel: "overview",
@@ -183,7 +204,7 @@ class LeaderDashboard extends Component {
       //   user_id: this.state.user_id,
       // });
       await this.props.getProjectDetailsForLeaderDashboard({
-        _id: 1,
+        _id: 5,
         user_id: 10,
       });
     } catch (error) {}
@@ -191,8 +212,10 @@ class LeaderDashboard extends Component {
       project_data: this.props.projectData.data.project,
       overdue_tasks: this.props.projectData.data.overDueTasks,
       upcoming_tasks: this.props.projectData.data.upcomingDeadlines.inDay,
+      tasks: this.props.projectData.data.taskByTask,
+      task_by_members: this.props.projectData.data.tasksByMembers,
     });
-    console.log(this.props.projectData.data.project);
+    console.log(this.props.projectData);
   };
 
   toggle = () => {
@@ -259,21 +282,40 @@ class LeaderDashboard extends Component {
       <div>
         <Row>
           <Col className="overviewHeading" span={24}>
-            GRAPH
-            <div className="overviewBigText"> GRAPH </div>
+            MEMBER-EFFICIENCY GRAPH:
+            <LineChart
+              width={1000}
+              height={500}
+              data={this.state.project_data.members}
+              margin={{
+                top: 15,
+                right: 40,
+                left: 20,
+                bottom: 15,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="member.name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="efficiency"
+                stroke="#8884d8"
+                activeDot={{ r: 2 }}
+              />
+            </LineChart>
           </Col>
 
           <Col span={24} className="overviewHeading">
             OVERDUE TASKS
             <div>
               <Table
-                // style={{ backgroundColor: "steelblue", color: "white" }}
                 bordered
                 size="small"
                 columns={columns}
                 dataSource={this.state.overdue_tasks}
-                // rowClassName="tableRowClass"
-                // className="tableStyles"
                 pagination="10"
               />
             </div>
@@ -282,25 +324,22 @@ class LeaderDashboard extends Component {
 
         <Row>
           <Col span={24} className="overviewHeading">
-            DAYS OF PROJECT LAUNCHED
-            <div className="overviewBigText">
-              {moment(this.state.project_data.createdAt, "YYYYMMDD").fromNow()}
-            </div>
-          </Col>
-          <Col span={24} className="overviewHeading">
             {" "}
             UPCOMING DEADLINES
             <div>
               <Table
-                // style={{ backgroundColor: "steelblue", color: "white" }}
                 bordered
                 size="small"
                 columns={columns}
                 dataSource={this.state.upcoming_tasks}
-                // rowClassName="tableRowClass"
-                // className="tableStyles"
                 pagination="10"
               />
+            </div>
+          </Col>
+          <Col span={24} className="overviewHeading">
+            DAYS OF PROJECT LAUNCHED
+            <div className="overviewBigText">
+              {moment(this.state.project_data.createdAt, "YYYYMMDD").fromNow()}
             </div>
           </Col>
         </Row>
@@ -365,6 +404,56 @@ class LeaderDashboard extends Component {
     }
   };
 
+  taskByTask = () => {
+    return (
+      <Row>
+        <Col span={24} className="">
+          OVERDUE TASKS
+          <div>
+            <Table
+              // style={{ backgroundColor: "steelblue", color: "white" }}
+              bordered
+              size="small"
+              columns={columns}
+              dataSource={this.state.tasks}
+              // rowClassName="tableRowClass"
+              // className="tableStyles"
+              pagination="10"
+            />
+          </div>
+        </Col>
+      </Row>
+    );
+  };
+
+  taskByMembers = () => {
+    return (
+      <Row>
+        <Col span={24} className="overviewHeading">
+          TASK BY MEMBERS:{" "}
+        </Col>
+        <Col span={24}>
+          <Collapse defaultActiveKey={["0"]} ghost>
+            {this.state.task_by_members.map((task_by_members, index) => {
+              return (
+                <Panel header={task_by_members.name} key={index}>
+                  <Table
+                    bordered
+                    size="small"
+                    columns={columns}
+                    dataSource={task_by_members.tasks}
+                    key={index}
+                    pagination="10"
+                  />
+                </Panel>
+              );
+            })}
+          </Collapse>
+        </Col>
+      </Row>
+    );
+  };
+
   displayContent = () => {
     if (this.state.panel === "projectDetails") {
       return <div>{this.displayProjectDetails()}</div>;
@@ -376,10 +465,10 @@ class LeaderDashboard extends Component {
       return <Row className="showMember">{this.performanceByMember()}</Row>;
     }
     if (this.state.panel === "taskByTask") {
-      return <div>Task By Task</div>;
+      return <div>{this.taskByTask()}</div>;
     }
     if (this.state.panel === "tasksByMembers") {
-      return <div>Tasks By Members</div>;
+      return <div>{this.taskByMembers()}</div>;
     }
   };
 
