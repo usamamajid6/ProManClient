@@ -28,6 +28,8 @@ import { updateTaskStatus } from "../../../Actions/UpdateTaskStatusAction";
 import { updateTaskStatusLeader } from "../../../Actions/UpdateTaskStatusLeaderAction";
 import { addSubTask } from "../../../Actions/AddSubTaskAction";
 import { updateSubTaskStatus } from "../../../Actions/UpdateSubTaskStatusAction";
+import { subscribeTheTask } from "../../../Actions/AddSubscriberAction";
+import { unsubscribeTheTask } from "../../../Actions/RemoveSubscriberAction";
 import LoadingOverlay from "react-loading-overlay";
 import "./ViewTaskDetails.css";
 import Server from "../../../ServerPath";
@@ -42,6 +44,7 @@ class ViewTaskDetails extends Component {
       comments: [],
       members: [],
       attachments: [],
+      subscriber: [],
     },
     task_id: null,
     project_id: null,
@@ -288,6 +291,33 @@ class ViewTaskDetails extends Component {
     }
   };
 
+  displaySubUnsubButton = () => {
+    if (!this.ifPresent(this.state.task.members, this.state.user_id)) {
+      if (!this.ifPresent(this.state.task.subscriber, this.state.user_id)) {
+        return (
+          <Button
+            className="buttonMaster"
+            type="primary"
+            onClick={this.handleAddSubscriber}
+          >
+            Subscribe
+          </Button>
+        );
+      }
+      if (this.ifPresent(this.state.task.subscriber, this.state.user_id)) {
+        return (
+          <Button
+            className="buttonMaster"
+            type="primary"
+            onClick={this.handleRemoveSubscriber}
+          >
+            Unsubscribe
+          </Button>
+        );
+      }
+    }
+  };
+
   onChangeUpload = (info) => {
     const { status } = info.file;
     if (status !== "uploading") {
@@ -368,6 +398,45 @@ class ViewTaskDetails extends Component {
       message.error("Some Problem Occur!");
     }
   };
+
+  handleAddSubscriber = async () => {
+    let data = {
+      _id: this.state.task_id,
+      member_id: this.state.user_id,
+      project_id: this.state.project_id,
+    };
+    try {
+      this.setState({ loader: true });
+      await this.props.subscribeTheTask(data);
+      const response = this.props.subscribeTheTaskResponse;
+      this.tellServerToUpdateData();
+      message.success(response.message);
+      this.setState({ loader: false });
+    } catch (e) {
+      this.setState({ loader: false });
+      message.error("Some Problem Occur!");
+    }
+  };
+
+  handleRemoveSubscriber = async () => {
+    let data = {
+      _id: this.state.task_id,
+      member_id: this.state.user_id,
+      project_id: this.state.project_id,
+    };
+    try {
+      this.setState({ loader: true });
+      await this.props.unsubscribeTheTask(data);
+      const response = this.props.unsubscribeTheTaskResponse;
+      this.tellServerToUpdateData();
+      message.success(response.message);
+      this.setState({ loader: false });
+    } catch (e) {
+      this.setState({ loader: false });
+      message.error("Some Problem Occur!");
+    }
+  };
+
   render() {
     return (
       <LoadingOverlay
@@ -560,7 +629,6 @@ class ViewTaskDetails extends Component {
                   })}
                 </ul>
               </Col>
-
               <Col span={24} className="otherContainers">
                 <b className="titleStyle">Attachment(s): </b>
                 {this.state.task.attachments.map((attachments) => {
@@ -603,6 +671,9 @@ class ViewTaskDetails extends Component {
               </Col>
               <Col span={24} className="buttonMasterContainer">
                 {this.displayMasterButtonOnCertainConditions()}
+              </Col>
+              <Col span={24} className="buttonMasterContainer">
+                {this.displaySubUnsubButton()}
               </Col>
             </Row>
           </Col>
@@ -706,6 +777,8 @@ const mapStateToProps = (state) => ({
   updateStatusLeader: state.updateTaskStatusLeader,
   addSubTaskResponse: state.addSubTask,
   updateSubTaskStatusResponse: state.updateSubTaskStatus,
+  subscribeTheTaskResponse: state.subscribeTheTask,
+  unsubscribeTheTaskResponse: state.unsubscribeTheTask,
 });
 
 const mapDispatchToProps = {
@@ -715,6 +788,8 @@ const mapDispatchToProps = {
   updateTaskStatusLeader,
   addSubTask,
   updateSubTaskStatus,
+  subscribeTheTask,
+  unsubscribeTheTask,
 };
 ViewTaskDetails = connect(mapStateToProps, mapDispatchToProps)(ViewTaskDetails);
 

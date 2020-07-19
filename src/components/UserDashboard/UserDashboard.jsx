@@ -170,6 +170,10 @@ class UserDashboard extends Component {
   };
 
   handleAddMemberToTeamClick = (team) => {
+    if (team.leader !== this.state.userData._id) {
+      message.warning("You have no any privileges to do it!");
+      return;
+    }
     this.setState({
       add_member_to_team_data: team,
     });
@@ -803,6 +807,7 @@ class UserDashboard extends Component {
                   style={{ color: "white", fontSize: "2rem" }}
                 />
               }
+              zIndex={1001}
             >
               <LoadingOverlay
                 styles={{

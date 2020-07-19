@@ -25,6 +25,8 @@ import addMemberToTeam from "./AddMemberToTeamReducer";
 import addMemberToProject from "./AddMemberToProjectReducer";
 import addSubTask from "./AddSubTaskReducer";
 import updateSubTaskStatus from "./UpdateSubTaskStatusReducer";
+import subscribeTheTask from "./AddSubscribeReducer";
+import unsubscribeTheTask from "./RemoveSubscribeReducer";
 
 export default combineReducers({
   counter,
@@ -53,4 +55,6 @@ export default combineReducers({
   addMemberToProject,
   addSubTask,
   updateSubTaskStatus,
+  subscribeTheTask,
+  unsubscribeTheTask,
 });
