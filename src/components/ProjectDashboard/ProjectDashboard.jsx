@@ -23,6 +23,7 @@ import { getProjectData } from "../../Actions/projectDataAction";
 import { getChatsByProjectId } from "../../Actions/ChatsDataAction";
 import { addMemberToProject } from "../../Actions/AddMemberToProjectAction";
 import { getUserByEmail } from "../../Actions/GetUserByEmailAction";
+import { setProjectId } from "../../Actions/setProjectIdAction";
 import Board from "./Board/Board";
 import "./ProjectDashboard.css";
 import AddNewTask from "./AddNewTask/AddNewTask";
@@ -161,8 +162,11 @@ class ProjectDashboard extends Component {
     chats: [],
     add_member_to_project_modal: false,
     member_data_for_add_member_to_project: {},
+    loader: false,
   };
+
   chatFormRef = React.createRef();
+
   componentWillUnmount = () => {
     socket.emit("leaveTheProjectRoom", this.state.project_data);
   };
@@ -172,10 +176,11 @@ class ProjectDashboard extends Component {
       this.props.history.push("/login");
       return;
     }
-    // if (this.props.project_id === null) {
-    //   this.props.history.push("/userDashboard");
-    //   return;
-    // }
+    if (this.props.project_id === null) {
+      this.props.history.push("/userDashboard");
+      return;
+    }
+    this.setState({ loader: true });
     const user_id = parseInt(localStorage.getItem("userId"));
     this.setState({ user_id });
     await this.updateData();
@@ -192,6 +197,7 @@ class ProjectDashboard extends Component {
     this.setState({
       chats: this.props.chats.data,
     });
+    this.setState({ loader: false });
 
     socket.on("updateChatsData", (data) => {
       let chats = this.state.chats;
@@ -204,14 +210,14 @@ class ProjectDashboard extends Component {
 
   updateData = async () => {
     try {
-      // await this.props.getProjectData({
-      //   _id: parseInt(this.props.project_id.data),
-      //   user_id: this.state.user_id,
-      // });
       await this.props.getProjectData({
-        _id: 1,
-        user_id: 10,
+        _id: parseInt(this.props.project_id.data),
+        user_id: this.state.user_id,
       });
+      // await this.props.getProjectData({
+      //   _id: 1,
+      //   user_id: 10,
+      // });
     } catch (error) {}
     this.setState({
       project_data: this.props.project_data.data.result,
@@ -320,7 +326,13 @@ class ProjectDashboard extends Component {
       return (
         <Row>
           <Col span={18}>
-            <Button type="primary" onClick={() => {}}>
+            <Button
+              type="primary"
+              onClick={() => {
+                this.props.setProjectId(this.state.project_data._id);
+                this.props.history.push("/leaderDashboard");
+              }}
+            >
               Open Leader Dashboard
             </Button>
           </Col>
@@ -536,46 +548,58 @@ class ProjectDashboard extends Component {
           </Button>
 
           <Col span={24}>
-            <Row>
-              <Col span={4}>
-                <div className="projectTitle">
-                  {this.state.project_data.name}
-                </div>
-              </Col>
-              <Col span={8}></Col>
-              <Col span={6} className="leaderButton">
-                {this.displayLeaderButton()}
-              </Col>
-              <Col span={4} className="viewClass">
-                <Radio.Group
-                  onChange={(e) => {
-                    this.setState({ view_type: e.target.value });
-                  }}
-                  defaultValue={this.state.view_type}
-                >
-                  <Radio.Button value="board">
-                    <Tooltip title="Board View">
-                      <BarcodeOutlined />
-                    </Tooltip>
-                  </Radio.Button>
-                  <Radio.Button value="table">
-                    <Tooltip title="Table View">
-                      <TableOutlined />
-                    </Tooltip>
-                  </Radio.Button>
-                </Radio.Group>
-              </Col>
-
-              <Col span={2} className="menuClass">
-                <Tooltip title="Open Menu">
-                  <MenuFoldOutlined
-                    onClick={() => {
-                      this.setState({ sidebar_status: true });
+            <LoadingOverlay
+              styles={{
+                overlay: (base) => ({
+                  ...base,
+                  height: "100vh",
+                }),
+              }}
+              active={this.state.loader}
+              spinner
+              text="Fetching Data ..."
+            >
+              <Row>
+                <Col span={4}>
+                  <div className="projectTitle">
+                    {this.state.project_data.name}
+                  </div>
+                </Col>
+                <Col span={8}></Col>
+                <Col span={6} className="leaderButton">
+                  {this.displayLeaderButton()}
+                </Col>
+                <Col span={4} className="viewClass">
+                  <Radio.Group
+                    onChange={(e) => {
+                      this.setState({ view_type: e.target.value });
                     }}
-                  />
-                </Tooltip>
-              </Col>
-            </Row>
+                    defaultValue={this.state.view_type}
+                  >
+                    <Radio.Button value="board">
+                      <Tooltip title="Board View">
+                        <BarcodeOutlined />
+                      </Tooltip>
+                    </Radio.Button>
+                    <Radio.Button value="table">
+                      <Tooltip title="Table View">
+                        <TableOutlined />
+                      </Tooltip>
+                    </Radio.Button>
+                  </Radio.Group>
+                </Col>
+
+                <Col span={2} className="menuClass">
+                  <Tooltip title="Open Menu">
+                    <MenuFoldOutlined
+                      onClick={() => {
+                        this.setState({ sidebar_status: true });
+                      }}
+                    />
+                  </Tooltip>
+                </Col>
+              </Row>
+            </LoadingOverlay>
           </Col>
           <Col span={24}>{this.displayProject()}</Col>
         </Row>
@@ -847,6 +871,7 @@ const maptDispatchToProps = {
   getChatsByProjectId,
   addMemberToProject,
   getUserByEmail,
+  setProjectId,
 };
 
 ProjectDashboard = connect(

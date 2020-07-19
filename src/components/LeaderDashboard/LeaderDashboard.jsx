@@ -19,6 +19,8 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  BarChart,
+  Bar,
 } from "recharts";
 import TimeAgo from "react-timeago";
 import moment from "moment";
@@ -35,6 +37,7 @@ import {
   RadarChartOutlined,
   FundOutlined,
   QrcodeOutlined,
+  CaretRightOutlined,
   ConsoleSqlOutlined,
 } from "@ant-design/icons";
 import { getProjectDetailsForLeaderDashboard } from "../../Actions/LeaderDashboardDataAction";
@@ -88,7 +91,7 @@ const columns = [
     title: "Creation Date",
     dataIndex: "createdAt",
     key: " createdAt",
-    sorter: (a, b) => a.createdAt - b.createdAt,
+    sorter: (a, b) => moment(a.createdAt).unix() - moment(b.createdAt).unix(),
     render: (data) => {
       return <TimeAgo date={data} />;
     },
@@ -123,6 +126,21 @@ const columns = [
     },
     ellipsis: true,
     align: "center",
+    filters: [
+      {
+        text: "In-Progress",
+        value: "in-progress",
+      },
+      {
+        text: "Pending",
+        value: "pending",
+      },
+      {
+        text: "Done",
+        value: "done",
+      },
+    ],
+    onFilter: (value, record) => record.status.indexOf(value) === 0,
   },
   {
     title: "Members",
@@ -151,7 +169,7 @@ const columns = [
           sub_tasks.map((sub_task) => {
             return (
               <Tag color={"orange"} key={sub_task._id}>
-                {/* {sub_task.name.toUpperCase()} */}
+                {sub_task.name.toUpperCase()}
               </Tag>
             );
           })
@@ -170,26 +188,29 @@ class LeaderDashboard extends Component {
       leader: {},
       members: [],
     },
-
     tasks: [],
     overdue_tasks: [],
     task_by_members: [],
     upcoming_tasks: [],
     collapsed: false,
-    panel: "overview",
+    panel: "projectDetails",
+    loader: false,
   };
+
   componentDidMount = async () => {
     if (!localStorage.getItem("userId")) {
       this.props.history.push("/login");
       return;
     }
-    // if (this.props.project_id === null) {
-    //   this.props.history.push("/userDashboard");
-    //   return;
-    // }
+    if (this.props.project_id === null) {
+      this.props.history.push("/userDashboard");
+      return;
+    }
+    this.setState({ loader: true });
     const user_id = parseInt(localStorage.getItem("userId"));
     this.setState({ user_id });
     await this.updateData();
+    this.setState({ loader: false });
 
     socket.emit("joinTheProjectRoom", this.state.project_data);
 
@@ -197,16 +218,17 @@ class LeaderDashboard extends Component {
       this.updateData();
     });
   };
+
   updateData = async () => {
     try {
-      // await this.props.getProjectData({
-      //   _id: parseInt(this.props.project_id.data),
-      //   user_id: this.state.user_id,
-      // });
       await this.props.getProjectDetailsForLeaderDashboard({
-        _id: 5,
-        user_id: 10,
+        _id: parseInt(this.props.project_id.data),
+        user_id: this.state.user_id,
       });
+      // await this.props.getProjectDetailsForLeaderDashboard({
+      //   _id: 1,
+      //   user_id: 10,
+      // });
     } catch (error) {}
     this.setState({
       project_data: this.props.projectData.data.project,
@@ -223,9 +245,11 @@ class LeaderDashboard extends Component {
       collapsed: !this.state.collapsed,
     });
   };
+
   onCollapse = (collapsed) => {
     this.setState({ collapsed });
   };
+
   handleClick = (e) => {
     this.setState({ panel: e.key });
   };
@@ -283,7 +307,7 @@ class LeaderDashboard extends Component {
         <Row>
           <Col className="overviewHeading" span={24}>
             MEMBER-EFFICIENCY GRAPH:
-            <LineChart
+            {/* <LineChart
               width={1000}
               height={500}
               data={this.state.project_data.members}
@@ -305,7 +329,20 @@ class LeaderDashboard extends Component {
                 stroke="#8884d8"
                 activeDot={{ r: 2 }}
               />
-            </LineChart>
+            </LineChart> */}
+            <BarChart
+              style={{ width: "100vw", height: "100vh", margin: "2rem" }}
+              width={1000}
+              height={500}
+              data={this.state.project_data.members}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="member.name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="efficiency" fill="#8884d8" />
+            </BarChart>
           </Col>
 
           <Col span={24} className="overviewHeading">
@@ -336,12 +373,12 @@ class LeaderDashboard extends Component {
               />
             </div>
           </Col>
-          <Col span={24} className="overviewHeading">
+          {/* <Col span={24} className="overviewHeading">
             DAYS OF PROJECT LAUNCHED
             <div className="overviewBigText">
               {moment(this.state.project_data.createdAt, "YYYYMMDD").fromNow()}
             </div>
-          </Col>
+          </Col> */}
         </Row>
       </div>
     );
@@ -366,12 +403,14 @@ class LeaderDashboard extends Component {
                   }}
                 >
                   <Progress
+                    format={(percent) => `${percent}%`}
                     type="circle"
                     strokeColor={{
                       "0%": "#ff4d4d",
                       "100%": "#004080",
                     }}
-                    percent={members.efficiency_score / members.total_tasks}
+                    status="exception"
+                    percent={members.efficiency}
                   />
                 </Col>
 
@@ -388,7 +427,7 @@ class LeaderDashboard extends Component {
                   <span>
                     <b> Efficiency : </b>
                   </span>
-                  {members.efficiency_score / members.total_tasks}%
+                  {members.efficiency}%
                 </Col>
                 <Col span={24} className="innerContainer">
                   <span>
@@ -407,8 +446,8 @@ class LeaderDashboard extends Component {
   taskByTask = () => {
     return (
       <Row>
-        <Col span={24} className="">
-          OVERDUE TASKS
+        <Col span={24} className="overviewHeading">
+          Task By Task
           <div>
             <Table
               // style={{ backgroundColor: "steelblue", color: "white" }}
@@ -433,7 +472,15 @@ class LeaderDashboard extends Component {
           TASK BY MEMBERS:{" "}
         </Col>
         <Col span={24}>
-          <Collapse defaultActiveKey={["0"]} ghost>
+          <Collapse
+            defaultActiveKey={["0"]}
+            ghost
+            bordered={false}
+            expandIcon={({ isActive }) => (
+              <CaretRightOutlined rotate={isActive ? 90 : 0} />
+            )}
+            className="site-collapse-custom-collapse"
+          >
             {this.state.task_by_members.map((task_by_members, index) => {
               return (
                 <Panel header={task_by_members.name} key={index}>
@@ -558,6 +605,7 @@ class LeaderDashboard extends Component {
 
 const mapStateToProps = (state) => ({
   projectData: state.leaderDashboard,
+  project_id: state.projectId,
 });
 
 const mapDispatchToProps = {

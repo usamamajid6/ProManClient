@@ -381,9 +381,6 @@ class UserDashboard extends Component {
     this.setState({
       team_data_for_team_details: team,
     });
-    console.log("====================================");
-    console.log(team);
-    console.log("====================================");
     this.setState({
       team_details_modal: true,
     });
