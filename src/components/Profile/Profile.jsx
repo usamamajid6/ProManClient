@@ -40,8 +40,7 @@ class Profile extends Component {
     avatar = avatar.substring(0, 1);
     let efficiency =
       (parseInt(this.state.userData.efficiency_score) /
-        parseInt(this.state.userData.total_tasks)) *
-      100;
+        parseInt(this.state.userData.total_tasks));
     if (isNaN(efficiency)) {
       efficiency = 0;
     }
@@ -81,7 +80,7 @@ class Profile extends Component {
                 <span>
                   <b> Efficiency : </b>
                 </span>
-                {this.state.efficiency}
+                {this.state.efficiency}%
               </Col>
               <Col span={24}>
                 <span>

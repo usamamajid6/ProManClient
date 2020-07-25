@@ -22,54 +22,54 @@ const validateMessages = {
 
 class Register extends Component {
   state = { loader: false };
-  responseGoogle = async (googleResponse) => {
-    console.log("====================================");
-    console.log(googleResponse);
-    console.log("====================================");
-    try {
-      this.setState({ loader: true });
-      await this.props.registerUserGoogleFB({
-        email: googleResponse.profileObj.email,
-        name: googleResponse.profileObj.name,
-      });
+  // responseGoogle = async (googleResponse) => {
+  //   console.log("====================================");
+  //   console.log(googleResponse);
+  //   console.log("====================================");
+  //   try {
+  //     this.setState({ loader: true });
+  //     await this.props.registerUserGoogleFB({
+  //       email: googleResponse.profileObj.email,
+  //       name: googleResponse.profileObj.name,
+  //     });
 
-      this.setState({ loader: false });
-      let response = this.props.response;
-      this.setState({ loader: false });
-      if (response.data.message === "Email Already Taken!") {
-        message.info(response.data.message);
-        return;
-      }
-      message.success(response.data.message);
-      this.props.history.push("/login");
-    } catch (error) {
-      this.setState({ loader: false });
-      message.error("Some Problem Occur!");
-    }
-  };
+  //     this.setState({ loader: false });
+  //     let response = this.props.response;
+  //     this.setState({ loader: false });
+  //     if (response.data.message === "Email Already Taken!") {
+  //       message.info(response.data.message);
+  //       return;
+  //     }
+  //     message.success(response.data.message);
+  //     this.props.history.push("/login");
+  //   } catch (error) {
+  //     this.setState({ loader: false });
+  //     message.error("Some Problem Occur!");
+  //   }
+  // };
 
   componentClicked = (a, b, c) => {};
 
-  responseFB = async (fbResponse) => {
-    try {
-      this.setState({ loader: true });
-      await this.props.registerUserGoogleFB({
-        name: fbResponse.name,
-        email: fbResponse.email,
-      });
-      let response = this.props.response;
-      this.setState({ loader: false });
-      if (response.data.message === "Email Already Taken!") {
-        message.info(response.data.message);
-        return;
-      }
-      message.success(response.data.message);
-      this.props.history.push("/login");
-    } catch (error) {
-      this.setState({ loader: false });
-      message.error("Some Problem Occur!");
-    }
-  };
+  // responseFB = async (fbResponse) => {
+  //   try {
+  //     this.setState({ loader: true });
+  //     await this.props.registerUserGoogleFB({
+  //       name: fbResponse.name,
+  //       email: fbResponse.email,
+  //     });
+  //     let response = this.props.response;
+  //     this.setState({ loader: false });
+  //     if (response.data.message === "Email Already Taken!") {
+  //       message.info(response.data.message);
+  //       return;
+  //     }
+  //     message.success(response.data.message);
+  //     this.props.history.push("/login");
+  //   } catch (error) {
+  //     this.setState({ loader: false });
+  //     message.error("Some Problem Occur!");
+  //   }
+  // };
 
   onFinish = async (values) => {
     try {
@@ -159,7 +159,7 @@ class Register extends Component {
                           },
                         ]}
                       >
-                        <Input
+                        <Input 
                           prefix={
                             <PhoneOutlined className="site-form-item-icon" />
                           }
@@ -233,7 +233,7 @@ class Register extends Component {
                       </Button>
                     </Col>
 
-                    <Col span={24}>
+                    {/* <Col span={24}>
                       <GoogleLogin
                         clientId={GoogleKey}
                         buttonText="Register via Google"
@@ -253,7 +253,7 @@ class Register extends Component {
                         textButton="Register Via FB"
                         callback={this.responseFB}
                       />
-                    </Col>
+                    </Col> */}
                   </Row>
                 </Form>
               </div>

@@ -14,7 +14,7 @@ class Homepage extends Component {
               <Col span={12}>
                 <div className="mainTitleContainer">
                   <div className="mainTitle">PROMAN</div>
-                  <div className="subTitle">A PROject MANager</div>
+                  <div className="subTitle">A PROJECT MANAGER</div>
                 </div>
               </Col>
               <Col span={12}>
