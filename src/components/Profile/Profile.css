@@ -39,3 +39,8 @@
 .Profile .paneldescription {
   padding-left: 2rem;
 }
+/* 
+.Profile .mainAvatar:hover {
+  opacity: 0.7;
+  cursor: pointer;
+} */

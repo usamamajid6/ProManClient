@@ -47,7 +47,6 @@ import LoadingOverlay from "react-loading-overlay";
 import Navbar from "../Navbar/Navbar";
 import Server from "../../ServerPath";
 import io from "socket.io-client";
-
 const { Column, ColumnGroup } = Table;
 const { Header, Sider, Content } = Layout;
 const socket = io.connect(Server);
@@ -584,7 +583,7 @@ class LeaderDashboard extends Component {
                     styles={{
                       overlay: (base) => ({
                         ...base,
-                        height: "100vh",
+                        minHeight: "100vh",
                       }),
                     }}
                     active={this.state.loader}

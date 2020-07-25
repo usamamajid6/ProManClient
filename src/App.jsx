@@ -12,6 +12,8 @@ import ProjectDashboard from "./components/ProjectDashboard/ProjectDashboard";
 import "./App.css";
 import Profile from "./components/Profile/Profile";
 import LeaderDashboard from "./components/LeaderDashboard/LeaderDashboard";
+import UnVerifyUser from "./components/UnVerifyUser/UnVerifyUser";
+import VerifyUser from "./components/VerifyUser/VerifyUser";
 class App extends Component {
   state = {};
   render() {
@@ -27,6 +29,8 @@ class App extends Component {
             <Route path="/projectDashboard" component={ProjectDashboard} />
             <Route path="/profile" component={Profile} />
             <Route path="/leaderDashboard" component={LeaderDashboard} />
+            <Route path="/notVerified" component={UnVerifyUser} />
+            <Route path="/verifyUser/:_id" component={VerifyUser} />
           </Router>
         </Col>
         <Col span={24}>

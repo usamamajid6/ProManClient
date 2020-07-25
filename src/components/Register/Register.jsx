@@ -12,6 +12,8 @@ import { UserOutlined, LockOutlined, PhoneOutlined } from "@ant-design/icons";
 import "./Register.css";
 import GoogleKey from "../../GoogleKey";
 import FBAppID from "../../FBAppID";
+import LoadingOverlay from "react-loading-overlay";
+
 const validateMessages = {
   required: "This field is required!",
   types: {
@@ -72,6 +74,10 @@ class Register extends Component {
   // };
 
   onFinish = async (values) => {
+    if (isNaN(values.phone_number)) {
+      message.warning("Phone Number Must Be In Digits!");
+      return;
+    }
     try {
       this.setState({ loader: true });
       await this.props.registerUser(values);
@@ -96,144 +102,155 @@ class Register extends Component {
     return (
       <div>
         <Navbar />
-        <div className="Register">
-          <Row className="mainDiv">
-            <Col lg={7} md={4} sm={2} xs={1}></Col>
-            <Col lg={10} md={16} sm={20} xs={22}>
-              <div className="formContainer">
-                <div className="mainTitle">Register</div>
-                <Form
-                  name="registerForm"
-                  onFinish={this.onFinish}
-                  validateMessages={validateMessages}
-                >
-                  <Row>
-                    <Col span={24}>
-                      <Form.Item
-                        name="name"
-                        rules={[
-                          {
-                            required: true,
-                          },
-                        ]}
-                      >
-                        <Input
-                          prefix={
-                            <UserOutlined className="site-form-item-icon" />
-                          }
-                          placeholder="Name"
-                        />
-                      </Form.Item>
-                    </Col>
-
-                    <Col span={24}>
-                      <Form.Item
-                        name="email"
-                        rules={[
-                          {
-                            type: "email",
-                            message: "The input is not valid E-mail!",
-                          },
-                          {
-                            required: true,
-                            message: "Please input your E-mail!",
-                          },
-                        ]}
-                      >
-                        <Input
-                          prefix={
-                            <UserOutlined className="site-form-item-icon" />
-                          }
-                          placeholder="E-Mail"
-                        />
-                      </Form.Item>
-                    </Col>
-
-                    <Col span={24}>
-                      <Form.Item
-                        name="phone_number"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please input your phone number!",
-                          },
-                        ]}
-                      >
-                        <Input 
-                          prefix={
-                            <PhoneOutlined className="site-form-item-icon" />
-                          }
-                          placeholder="Phone Number"
-                        />
-                      </Form.Item>
-                    </Col>
-
-                    <Col span={24}>
-                      <Form.Item
-                        name="password"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please input your password!",
-                          },
-                        ]}
-                        hasFeedback
-                      >
-                        <Input.Password
-                          prefix={
-                            <LockOutlined className="site-form-item-icon" />
-                          }
-                          placeholder="Password"
-                        />
-                      </Form.Item>
-                    </Col>
-
-                    <Col span={24}>
-                      <Form.Item
-                        name="confirm"
-                        dependencies={["password"]}
-                        hasFeedback
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please confirm your password!",
-                          },
-                          ({ getFieldValue }) => ({
-                            validator(rule, value) {
-                              if (
-                                !value ||
-                                getFieldValue("password") === value
-                              ) {
-                                return Promise.resolve();
-                              }
-
-                              return Promise.reject(
-                                "The two passwords that you entered do not match!"
-                              );
+        <LoadingOverlay
+          styles={{
+            overlay: (base) => ({
+              ...base,
+              minHeight: "100vh",
+            }),
+          }}
+          active={this.state.loader}
+          spinner
+          text="Processing....!"
+        >
+          <div className="Register">
+            <Row className="mainDiv">
+              <Col lg={7} md={4} sm={2} xs={1}></Col>
+              <Col lg={10} md={16} sm={20} xs={22}>
+                <div className="formContainer">
+                  <div className="mainTitle">Register</div>
+                  <Form
+                    name="registerForm"
+                    onFinish={this.onFinish}
+                    validateMessages={validateMessages}
+                  >
+                    <Row>
+                      <Col span={24}>
+                        <Form.Item
+                          name="name"
+                          rules={[
+                            {
+                              required: true,
                             },
-                          }),
-                        ]}
-                      >
-                        <Input.Password
-                          prefix={
-                            <LockOutlined className="site-form-item-icon" />
-                          }
-                          placeholder="Confirm Password"
-                        />
-                      </Form.Item>
-                    </Col>
+                          ]}
+                        >
+                          <Input
+                            prefix={
+                              <UserOutlined className="site-form-item-icon" />
+                            }
+                            placeholder="Name"
+                          />
+                        </Form.Item>
+                      </Col>
 
-                    <Col span={24}>
-                      <Button
-                        className="registerButton"
-                        type="primary"
-                        htmlType="submit"
-                      >
-                        Register
-                      </Button>
-                    </Col>
+                      <Col span={24}>
+                        <Form.Item
+                          name="email"
+                          rules={[
+                            {
+                              type: "email",
+                              message: "The input is not valid E-mail!",
+                            },
+                            {
+                              required: true,
+                              message: "Please input your E-mail!",
+                            },
+                          ]}
+                        >
+                          <Input
+                            prefix={
+                              <UserOutlined className="site-form-item-icon" />
+                            }
+                            placeholder="E-Mail"
+                          />
+                        </Form.Item>
+                      </Col>
 
-                    {/* <Col span={24}>
+                      <Col span={24}>
+                        <Form.Item
+                          name="phone_number"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please input your phone number!",
+                            },
+                          ]}
+                        >
+                          <Input
+                            prefix={
+                              <PhoneOutlined className="site-form-item-icon" />
+                            }
+                            placeholder="Phone Number"
+                          />
+                        </Form.Item>
+                      </Col>
+
+                      <Col span={24}>
+                        <Form.Item
+                          name="password"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please input your password!",
+                            },
+                          ]}
+                          hasFeedback
+                        >
+                          <Input.Password
+                            prefix={
+                              <LockOutlined className="site-form-item-icon" />
+                            }
+                            placeholder="Password"
+                          />
+                        </Form.Item>
+                      </Col>
+
+                      <Col span={24}>
+                        <Form.Item
+                          name="confirm"
+                          dependencies={["password"]}
+                          hasFeedback
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please confirm your password!",
+                            },
+                            ({ getFieldValue }) => ({
+                              validator(rule, value) {
+                                if (
+                                  !value ||
+                                  getFieldValue("password") === value
+                                ) {
+                                  return Promise.resolve();
+                                }
+
+                                return Promise.reject(
+                                  "The two passwords that you entered do not match!"
+                                );
+                              },
+                            }),
+                          ]}
+                        >
+                          <Input.Password
+                            prefix={
+                              <LockOutlined className="site-form-item-icon" />
+                            }
+                            placeholder="Confirm Password"
+                          />
+                        </Form.Item>
+                      </Col>
+
+                      <Col span={24}>
+                        <Button
+                          className="registerButton"
+                          type="primary"
+                          htmlType="submit"
+                        >
+                          Register
+                        </Button>
+                      </Col>
+
+                      {/* <Col span={24}>
                       <GoogleLogin
                         clientId={GoogleKey}
                         buttonText="Register via Google"
@@ -254,13 +271,14 @@ class Register extends Component {
                         callback={this.responseFB}
                       />
                     </Col> */}
-                  </Row>
-                </Form>
-              </div>
-            </Col>
-            <Col lg={7} md={4} sm={2} xs={1}></Col>
-          </Row>
-        </div>
+                    </Row>
+                  </Form>
+                </div>
+              </Col>
+              <Col lg={7} md={4} sm={2} xs={1}></Col>
+            </Row>
+          </div>
+        </LoadingOverlay>
       </div>
     );
   }

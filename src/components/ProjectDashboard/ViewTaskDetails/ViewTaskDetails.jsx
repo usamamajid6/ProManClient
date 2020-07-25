@@ -193,6 +193,12 @@ class ViewTaskDetails extends Component {
                   );
                   return;
                 }
+                if (this.state.task.pre_req.status !== "done") {
+                  message.warning(
+                    `${this.state.task.pre_req.name} is not done yet! So, you cannot push ${this.state.task.name}`
+                  );
+                  return;
+                }
                 try {
                   let data = {
                     _id: this.state.task_id,
@@ -319,15 +325,19 @@ class ViewTaskDetails extends Component {
   };
 
   onChangeUpload = (info) => {
+    this.setState({ loader: true });
     const { status } = info.file;
     if (status !== "uploading") {
       console.log(info.file, info.fileList);
+      this.setState({ loader: false });
     }
     if (status === "done") {
       message.success(`${info.file.name} file uploaded successfully.`);
       this.tellServerToUpdateData();
+      this.setState({ loader: false });
     } else if (status === "error") {
       message.error(`${info.file.name} file upload failed.`);
+      this.setState({ loader: false });
     }
   };
 
@@ -511,7 +521,8 @@ class ViewTaskDetails extends Component {
                   <Row className="subTaskDesign">
                     <Col span={24}>
                       <Progress
-                        strokeWidth={15}
+                        status="active"
+                        strokeWidth={12}
                         strokeColor={{
                           "0%": "#ff4d4d",
                           "100%": "#004080",
@@ -631,25 +642,27 @@ class ViewTaskDetails extends Component {
               </Col>
               <Col span={24} className="otherContainers">
                 <b className="titleStyle">Attachment(s): </b>
-                {this.state.task.attachments.map((attachments) => {
-                  return (
-                    <div className="attachmentsContainer">
-                      <Button
-                        style={{ color: "white" }}
-                        className="attachmentLink"
-                        type="link"
-                        onClick={() => {
-                          this.handleAttachmentClick(
-                            attachments.path,
-                            attachments.name
-                          );
-                        }}
-                      >
-                        {attachments.name}
-                      </Button>
-                    </div>
-                  );
-                })}
+                <div className="attachmentsContainer">
+                  {this.state.task.attachments.map((attachments) => {
+                    return (
+                      <div className="attachmentsContainer">
+                        <Button
+                          style={{ color: "white" }}
+                          className="attachmentLink"
+                          type="link"
+                          onClick={() => {
+                            this.handleAttachmentClick(
+                              attachments.path,
+                              attachments.name
+                            );
+                          }}
+                        >
+                          {attachments.name}
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
               </Col>
               <Col span={24}>
                 <Upload.Dragger
@@ -662,6 +675,7 @@ class ViewTaskDetails extends Component {
                     task_id: this.state.task_id,
                   }}
                   onChange={this.onChangeUpload}
+                  showUploadList={false}
                 >
                   <p className="ant-upload-drag-icon">
                     <InboxOutlined />
@@ -669,6 +683,10 @@ class ViewTaskDetails extends Component {
                   <p className="ant-upload-text">Upload Attachment(s)</p>
                 </Upload.Dragger>
               </Col>
+            </Row>
+          </Col>
+          <Col span={24} className="colDesign">
+            <Row>
               <Col span={24} className="buttonMasterContainer">
                 {this.displayMasterButtonOnCertainConditions()}
               </Col>

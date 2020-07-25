@@ -26,6 +26,13 @@ class Navbar extends Component {
           login_status: true,
           userData: this.props.userData,
         });
+        if (!this.state.userData.data.result.isVerified) {
+          this.props.history.push("/notVerified");
+        }
+        if (this.state.userData.data.result.phone_number === "") {
+          message.info("Phone Number Required!");
+          this.props.history.push("/profile");
+        }
       } catch (error) {
         message.info("Some Problem Occur!");
       }
