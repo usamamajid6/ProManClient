@@ -68,3 +68,7 @@
   color: white;
   text-decoration: underline;
 }
+
+.addTaskContainer .formItemAddTask .formInputAddTask .ant-select-selector {
+  border-radius: 1rem;
+}

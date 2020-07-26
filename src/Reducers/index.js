@@ -29,6 +29,7 @@ import subscribeTheTask from "./AddSubscribeReducer";
 import unsubscribeTheTask from "./RemoveSubscribeReducer";
 import verifyUser from "./VerifyUserReducer";
 import updateUser from "./UpdateUserReducer";
+import updateProject from "./UpdateProjectDataReducer";
 export default combineReducers({
   counter,
   UUCW,
@@ -60,4 +61,5 @@ export default combineReducers({
   unsubscribeTheTask,
   verifyUser,
   updateUser,
+  updateProject,
 });
