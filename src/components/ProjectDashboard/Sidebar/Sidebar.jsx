@@ -6,6 +6,7 @@ import {
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import Server from "../../../ServerPath";
 import moment from "moment";
 const { TabPane } = Tabs;
 class Sidebar extends Component {
@@ -55,6 +56,7 @@ class Sidebar extends Component {
                   style={{
                     backgroundColor: "#87d068",
                   }}
+                  src={`${Server}/${member.member.dp}`}
                   icon={<UserOutlined />}
                 />
               </Col>

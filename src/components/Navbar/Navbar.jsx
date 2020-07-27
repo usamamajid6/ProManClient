@@ -12,6 +12,7 @@ import { withRouter } from "react-router-dom";
 import { getUserData } from "../../Actions/userDataAction";
 import "./Navbar.css";
 import logo from "../../Images/logo1.png";
+import Server from "../../ServerPath";
 
 class Navbar extends Component {
   state = {
@@ -104,6 +105,8 @@ class Navbar extends Component {
               >
                 <Avatar
                   className="onHoverPointer"
+                  src={`${Server}/${this.state.userData.data.result.dp}`}
+
                   size={50}
                   style={{ color: "purple", backgroundColor: "lightblue" }}
                 >

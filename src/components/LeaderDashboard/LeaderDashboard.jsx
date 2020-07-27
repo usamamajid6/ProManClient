@@ -18,6 +18,7 @@ import {
   message,
   Typography,
   Tabs,
+  Empty,
 } from "antd";
 import {
   LineChart,
@@ -381,131 +382,133 @@ class LeaderDashboard extends Component {
 
   displayProjectDetailsReDesigned = () => {
     return (
-      <Row className="ProjectDetailsContainerRD">
-        <Col span={24}>
-          <Row className="SingleItemContainer">
-            <Col span={12}>
-              <div className="title">Project Name:</div>
-            </Col>
-            <Col span={12}>
-              <div className="content">{this.state.project_data.name}</div>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <Row className="SingleItemContainer">
-            <Col span={12}>
-              <div className="title">Project Status:</div>
-            </Col>
-            <Col span={12}>
-              <div className="content">{this.state.project_data.status}</div>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <Row className="SingleItemContainer">
-            <Col span={12}>
-              <div className="title">Project Leader:</div>
-            </Col>
-            <Col span={12}>
-              <div className="content">
-                {this.state.project_data.leader.name}
-              </div>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <Row className="SingleItemContainer">
-            <Col span={12}>
-              <div className="title">Project Description:</div>
-            </Col>
-            <Col span={12}>
-              <Paragraph
-                className="content"
-                ellipsis={{
-                  expandable: true,
-                }}
-              >
-                {this.state.project_data.description}
-              </Paragraph>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <Row className="SingleItemContainer">
-            <Col span={12}>
-              <div className="title">Project Type:</div>
-            </Col>
-            <Col span={12}>
-              <div className="content">
-                {this.state.project_data.project_type}
-              </div>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <Row className="SingleItemContainer">
-            <Col span={12}>
-              <div className="title">Project Cost:</div>
-            </Col>
-            <Col span={12}>
-              <div className="content">{this.state.project_data.cost}</div>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <Row className="SingleItemContainer">
-            <Col span={12}>
-              <div className="title">Project Creation Date:</div>
-            </Col>
-            <Col span={12}>
-              <div className="content">
-                {" "}
-                {moment(this.state.project_data.createdAt).format("llll")}
-              </div>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <Row className="SingleItemContainer">
-            <Col span={12}>
-              <div className="title">Project Starting Date:</div>
-            </Col>
-            <Col span={12}>
-              <div className="content">
-                {" "}
-                {moment(this.state.project_data.start_date).format("llll")}
-              </div>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <Row className="SingleItemContainer">
-            <Col span={12}>
-              <div className="title">Project Ending Date:</div>
-            </Col>
-            <Col span={12}>
-              <div className="content">
-                {" "}
-                {moment(this.state.project_data.end_date).format("llll")}
-              </div>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <Button
-            type="primary"
-            className="editButtonRD"
-            onClick={() => {
-              this.setState({
-                update_project_data_modal: true,
-              });
-            }}
-          >
-            Edit
-          </Button>
-        </Col>
-      </Row>
+      <div>
+        <Row className="ProjectDetailsContainerRD">
+          <Col span={24}>
+            <Row className="SingleItemContainer">
+              <Col span={12}>
+                <div className="title">Project Name:</div>
+              </Col>
+              <Col span={12}>
+                <div className="content">{this.state.project_data.name}</div>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <Row className="SingleItemContainer">
+              <Col span={12}>
+                <div className="title">Project Status:</div>
+              </Col>
+              <Col span={12}>
+                <div className="content">{this.state.project_data.status}</div>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <Row className="SingleItemContainer">
+              <Col span={12}>
+                <div className="title">Project Leader:</div>
+              </Col>
+              <Col span={12}>
+                <div className="content">
+                  {this.state.project_data.leader.name}
+                </div>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <Row className="SingleItemContainer">
+              <Col span={12}>
+                <div className="title">Project Description:</div>
+              </Col>
+              <Col span={12}>
+                <Paragraph
+                  className="content"
+                  ellipsis={{
+                    expandable: true,
+                  }}
+                >
+                  {this.state.project_data.description}
+                </Paragraph>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <Row className="SingleItemContainer">
+              <Col span={12}>
+                <div className="title">Project Type:</div>
+              </Col>
+              <Col span={12}>
+                <div className="content">
+                  {this.state.project_data.project_type}
+                </div>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <Row className="SingleItemContainer">
+              <Col span={12}>
+                <div className="title">Project Cost:</div>
+              </Col>
+              <Col span={12}>
+                <div className="content">{this.state.project_data.cost}</div>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <Row className="SingleItemContainer">
+              <Col span={12}>
+                <div className="title">Project Creation Date:</div>
+              </Col>
+              <Col span={12}>
+                <div className="content">
+                  {" "}
+                  {moment(this.state.project_data.createdAt).format("llll")}
+                </div>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <Row className="SingleItemContainer">
+              <Col span={12}>
+                <div className="title">Project Starting Date:</div>
+              </Col>
+              <Col span={12}>
+                <div className="content">
+                  {" "}
+                  {moment(this.state.project_data.start_date).format("llll")}
+                </div>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <Row className="SingleItemContainer">
+              <Col span={12}>
+                <div className="title">Project Ending Date:</div>
+              </Col>
+              <Col span={12}>
+                <div className="content">
+                  {" "}
+                  {moment(this.state.project_data.end_date).format("llll")}
+                </div>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <Button
+              type="primary"
+              className="editButtonRD"
+              onClick={() => {
+                this.setState({
+                  update_project_data_modal: true,
+                });
+              }}
+            >
+              Edit
+            </Button>
+          </Col>
+        </Row>
+      </div>
     );
   };
 
@@ -640,7 +643,7 @@ class LeaderDashboard extends Component {
                   <span>
                     <b>Tasks : </b>
                   </span>
-                  {members.member.total_tasks}
+                  {members.total_tasks}
                 </Col>
               </Row>
             </Col>
@@ -755,6 +758,15 @@ class LeaderDashboard extends Component {
             </Col>
           </Row>
         );
+      } else {
+        return (
+          <Empty
+            imageStyle={{ height: "inherit", width: "inherit" }}
+            description="No Any Task(s)"
+            image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+            className="emptyStyles"
+          />
+        );
       }
     }
   };
@@ -804,28 +816,67 @@ class LeaderDashboard extends Component {
             </Col>
           </Row>
         );
+      } else {
+        return (
+          <Empty
+            imageStyle={{ height: "inherit", width: "inherit" }}
+            description="No Any Task(s)"
+            image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+            className="emptyStyles"
+          />
+        );
       }
     }
   };
 
   displayContent = () => {
     if (this.state.panel === "projectDetails") {
-      return <div>{this.displayProjectDetailsReDesigned()}</div>;
+      return (
+        <div>
+          <div className="headTitle">{this.state.title}</div>
+          <div>{this.displayProjectDetailsReDesigned()}</div>
+        </div>
+      );
     }
     if (this.state.panel === "overview") {
-      return <div>{this.projectOverview()}</div>;
+      return (
+        <div>
+          <div className="headTitle">{this.state.title}</div>
+          <div>{this.projectOverview()}</div>
+        </div>
+      );
     }
     if (this.state.panel === "performanceByMember") {
-      return <Row className="showMember">{this.performanceByMember()}</Row>;
+      return (
+        <div>
+          <div className="headTitle">{this.state.title}</div>
+          <Row className="showMember">{this.performanceByMember()}</Row>
+        </div>
+      );
     }
     if (this.state.panel === "taskByTask") {
-      return <div>{this.taskByTask()}</div>;
+      return (
+        <div>
+          <div className="headTitle">{this.state.title}</div>
+          <div>{this.taskByTask()}</div>
+        </div>
+      );
     }
     if (this.state.panel === "tasksByMembers") {
-      return <div>{this.taskByMembers()}</div>;
+      return (
+        <div>
+          <div className="headTitle">{this.state.title}</div>
+          <div>{this.taskByMembers()}</div>
+        </div>
+      );
     }
     if (this.state.panel === "tasksHierarchy") {
-      return <div>{this.tasksHierarchy()}</div>;
+      return (
+        <div>
+          <div className="headTitle">{this.state.title}</div>
+          <div>{this.tasksHierarchy()}</div>
+        </div>
+      );
     }
   };
 
@@ -959,9 +1010,9 @@ class LeaderDashboard extends Component {
                     text="Fetching Data ..."
                   >
                     <Row className="mainContainer">
-                      <Col span={24}>
+                      {/* <Col span={24}>
                         <div className="headTitle">{this.state.title}</div>
-                      </Col>
+                      </Col> */}
                       <Col span={24}>{this.displayContent()}</Col>
                     </Row>
                   </LoadingOverlay>

@@ -1,12 +1,23 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { message, Avatar, Row, Col, Collapse, Tabs, Typography } from "antd";
+import {
+  message,
+  Avatar,
+  Row,
+  Col,
+  Collapse,
+  Tabs,
+  Typography,
+  Upload,
+  Tooltip,
+} from "antd";
 import { getUserData } from "../../Actions/userDataAction";
 import { updateUser } from "../../Actions/UpdateUserAction";
 import { CaretRightOutlined } from "@ant-design/icons";
 import "./Profile.css";
 import Navbar from "../Navbar/Navbar";
 import LoadingOverlay from "react-loading-overlay";
+import Server from "../../ServerPath";
 
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
@@ -63,6 +74,7 @@ class Profile extends Component {
   callback(key) {
     console.log(key);
   }
+
   onChangeName = async (name) => {
     try {
       this.setState({ loader: true });
@@ -78,6 +90,7 @@ class Profile extends Component {
       message.error("Some Problem Occur!");
     }
   };
+
   onChangeNumber = async (number) => {
     if (isNaN(number)) {
       message.warning("Phone Number Must Be In Digits!");
@@ -97,6 +110,36 @@ class Profile extends Component {
       message.error("Some Problem Occur!");
     }
   };
+
+  beforeUpload = (file) => {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      message.error("You can only upload JPG/PNG file!");
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error("Image must smaller than 2MB!");
+    }
+    return isJpgOrPng && isLt2M;
+  };
+
+  onChangeUpload = async (info) => {
+    this.setState({ loader: true });
+    const { status } = info.file;
+    if (status !== "uploading") {
+      console.log(info.file, info.fileList);
+      this.setState({ loader: false });
+    }
+    if (status === "done") {
+      message.success(`${info.file.name} file uploaded successfully.`);
+      await this.loadUserData();
+      this.setState({ loader: false });
+    } else if (status === "error") {
+      message.error(`${info.file.name} file upload failed.`);
+      this.setState({ loader: false });
+    }
+  };
+
   render() {
     return (
       <div>
@@ -115,17 +158,31 @@ class Profile extends Component {
           <div className="Profile">
             <Row>
               <Col span={24} style={{ textAlign: "center" }}>
-                <Avatar
-                  className="mainAvatar"
-                  size={150}
-                  style={{
-                    color: "blue",
-                    backgroundColor: "#80bffa",
-                    fontSize: "6rem",
+                <Upload
+                  name="dp"
+                  showUploadList={false}
+                  action={`${Server}/uploadDP`}
+                  data={{
+                    _id: this.state.userData._id,
                   }}
+                  beforeUpload={this.beforeUpload}
+                  onChange={this.onChangeUpload}
                 >
-                  {this.state.avatar}
-                </Avatar>
+                  <Tooltip title="Change Profile Picture" placement="bottom">
+                    <Avatar
+                      className="mainAvatar"
+                      size={150}
+                      src={`${Server}/${this.state.userData.dp}`}
+                      style={{
+                        color: "blue",
+                        backgroundColor: "#80bffa",
+                        fontSize: "6rem",
+                      }}
+                    >
+                      {this.state.avatar}
+                    </Avatar>
+                  </Tooltip>
+                </Upload>
               </Col>
 
               <Col className="mainComponent" span={24}>

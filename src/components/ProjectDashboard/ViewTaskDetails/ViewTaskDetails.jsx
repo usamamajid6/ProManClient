@@ -598,6 +598,7 @@ class ViewTaskDetails extends Component {
                       <Row className="commentContainer">
                         <Col span={3}>
                           <Avatar
+                            src={`${Server}/${comments.member.dp}`}
                             style={{
                               color: "#f56a00",
                               backgroundColor: "#fde3cf",
