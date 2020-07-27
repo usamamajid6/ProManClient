@@ -34,6 +34,7 @@ import Icon, {
   BarcodeOutlined,
   CloseCircleOutlined,
   PlusSquareOutlined,
+  MessageOutlined,
 } from "@ant-design/icons";
 import Sidebar from "react-sidebar";
 import SidebarContent from "./Sidebar/Sidebar";
@@ -544,6 +545,7 @@ class ProjectDashboard extends Component {
               this.openChatBox();
             }}
           >
+            <MessageOutlined />
             Chat
           </Button>
 

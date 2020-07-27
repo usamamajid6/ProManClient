@@ -92,6 +92,7 @@
   z-index: 9;
   background-color: white;
   display: none;
+  transition: 0.5s;
 }
 
 .ChatBox .chatMessagesContainer {
