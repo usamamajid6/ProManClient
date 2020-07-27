@@ -88,6 +88,7 @@ class AddNewTask extends Component {
                   <TextArea
                     className="formInputAddTask"
                     placeholder="Description..."
+                    rows={4}
                   />
                 </Form.Item>
               </Col>
@@ -139,7 +140,7 @@ class AddNewTask extends Component {
                     className="formButtonAddTask"
                     placeholder="Due Date"
                     onChange={onChange}
-                    showTime={{ format: 'HH:mm' }}
+                    showTime={{ format: "HH:mm" }}
                   />
                 </Form.Item>
               </Col>

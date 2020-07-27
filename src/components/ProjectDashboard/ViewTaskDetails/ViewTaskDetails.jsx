@@ -193,12 +193,15 @@ class ViewTaskDetails extends Component {
                   );
                   return;
                 }
-                if (this.state.task.pre_req.status !== "done") {
-                  message.warning(
-                    `${this.state.task.pre_req.name} is not done yet! So, you cannot push ${this.state.task.name}`
-                  );
-                  return;
+                if (this.state.task.pre_req !== null) {
+                  if (this.state.task.pre_req.status !== "done") {
+                    message.warning(
+                      `${this.state.task.pre_req.name} is not done yet! So, you cannot push ${this.state.task.name}`
+                    );
+                    return;
+                  }
                 }
+
                 try {
                   let data = {
                     _id: this.state.task_id,
@@ -206,9 +209,6 @@ class ViewTaskDetails extends Component {
                     project_id: this.state.project_id,
                     status: "pending",
                   };
-                  console.log("====================================");
-                  console.log(data);
-                  console.log("====================================");
                   this.setState({ loader: true });
                   await this.props.updateTaskStatus(data);
                   this.tellServerToUpdateData();

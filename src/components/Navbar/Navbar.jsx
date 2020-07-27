@@ -1,9 +1,18 @@
 import React, { Component } from "react";
 import { Row, Col, Avatar, Button, Menu, Dropdown, message } from "antd";
+import {
+  LoginOutlined,
+  UserAddOutlined,
+  UserOutlined,
+  LogoutOutlined,
+  AppstoreOutlined,
+} from "@ant-design/icons";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { getUserData } from "../../Actions/userDataAction";
 import "./Navbar.css";
+import logo from "../../Images/logo1.png";
+
 class Navbar extends Component {
   state = {
     login_status: false,
@@ -49,7 +58,7 @@ class Navbar extends Component {
               this.props.history.push("/Profile");
             }}
           >
-            PROFILE
+            <UserOutlined /> PROFILE
           </Button>
         </Menu.Item>
         <Menu.Item>
@@ -59,7 +68,7 @@ class Navbar extends Component {
             }}
             type="link"
           >
-            DASHBOARD
+            <AppstoreOutlined /> DASHBOARD
           </Button>
         </Menu.Item>
         <Menu.Item>
@@ -69,7 +78,7 @@ class Navbar extends Component {
             }}
             type="link"
           >
-            LOGOUT
+            <LogoutOutlined /> LOGOUT
           </Button>
         </Menu.Item>
       </Menu>
@@ -119,7 +128,7 @@ class Navbar extends Component {
                   className="navLink"
                   type="link"
                 >
-                  Login
+                  <LoginOutlined /> Login
                 </Button>
                 /
                 <Button
@@ -129,7 +138,7 @@ class Navbar extends Component {
                   className="navLink"
                   type="link"
                 >
-                  Register
+                  <UserAddOutlined /> Register
                 </Button>
               </div>
             </div>
@@ -143,9 +152,9 @@ class Navbar extends Component {
     return (
       <Row className="Navbar">
         <Col span={1}></Col>
-        <Col span={2}>
+        <Col span={4}>
           <div className="navItem">
-            <Avatar
+            {/* <Avatar
               className="onHoverPointer"
               style={{
                 backgroundColor: "lightblue",
@@ -158,11 +167,19 @@ class Navbar extends Component {
               }}
             >
               PROMAN
-            </Avatar>
+            </Avatar> */}
+            <img
+              onClick={() => {
+                this.props.history.push("/");
+              }}
+              className="logo"
+              src={logo}
+              alt="ProMan"
+            />
           </div>
         </Col>
-        <Col span={4}>
-          <div className="navItem">
+        <Col span={2}>
+          {/* <div className="navItem">
             <div
               className="navTitle onHoverPointer"
               onClick={() => {
@@ -171,7 +188,7 @@ class Navbar extends Component {
             >
               PROMAN
             </div>
-          </div>
+          </div> */}
         </Col>
         <Col span={11}></Col>
         <Col span={6}>{this.displayUserRelatedNavItems()}</Col>

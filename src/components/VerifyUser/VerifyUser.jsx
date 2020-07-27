@@ -3,15 +3,19 @@ import Navbar from "../Navbar/Navbar";
 import { verifyUser } from "../../Actions/VerifyUserAction";
 import { connect } from "react-redux";
 import { message } from "antd";
+import jwt from 'jsonwebtoken';
+import JWTKey from '../../JWTKey';
 import "./VerifyUser.css";
 class VerifyUser extends Component {
   componentDidMount = async () => {
     try {
+      var decoded = jwt.verify(this.props.match.params.token, JWTKey);
+
       await this.props.verifyUser({
-        _id: this.props.match.params._id,
+        _id: decoded._id,
       });
       console.log('====================================');
-      console.log(this.props.match.params._id);
+      console.log(decoded);
       console.log('====================================');
       message.success("Successfully Verified");
       this.props.history.push("/login");

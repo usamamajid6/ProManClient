@@ -79,6 +79,7 @@ class AddNewTaskList extends Component {
                   <TextArea
                     className="formInputAddTaskList"
                     placeholder="Description..."
+                    rows={4}
                   />
                 </Form.Item>
               </Col>

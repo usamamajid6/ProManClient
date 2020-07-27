@@ -92,6 +92,7 @@
   z-index: 9;
   background-color: white;
   display: none;
+  transition: 0.5s;
 }
 
 .ChatBox .chatMessagesContainer {
@@ -120,7 +121,7 @@
 .ChatBox .messageContainer {
   padding: 1rem 0.1rem 1rem 0.1rem;
   margin: 0.2rem;
-  border-top: 2px solid black;
+  border-bottom: 2px solid black;
 }
 .ChatBox .messageHead {
 }

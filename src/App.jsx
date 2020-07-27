@@ -30,7 +30,7 @@ class App extends Component {
             <Route path="/profile" component={Profile} />
             <Route path="/leaderDashboard" component={LeaderDashboard} />
             <Route path="/notVerified" component={UnVerifyUser} />
-            <Route path="/verifyUser/:_id" component={VerifyUser} />
+            <Route path="/verifyUser/:token" component={VerifyUser} />
           </Router>
         </Col>
         <Col span={24}>

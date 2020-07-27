@@ -10,6 +10,14 @@ import {
   Space,
   Collapse,
   Progress,
+  Modal,
+  Form,
+  Select,
+  Input,
+  DatePicker,
+  message,
+  Typography,
+  Tabs,
 } from "antd";
 import {
   LineChart,
@@ -38,19 +46,34 @@ import {
   FundOutlined,
   QrcodeOutlined,
   CaretRightOutlined,
-  ConsoleSqlOutlined,
+  CloseCircleOutlined,
+  BranchesOutlined,
 } from "@ant-design/icons";
+import { FormInstance } from "antd/lib/form";
 import { getProjectDetailsForLeaderDashboard } from "../../Actions/LeaderDashboardDataAction";
+import { updateProjectData } from "../../Actions/UpdateProjectDataAction";
 import { connect } from "react-redux";
 import "./LeaderDashboard.css";
 import LoadingOverlay from "react-loading-overlay";
 import Navbar from "../Navbar/Navbar";
 import Server from "../../ServerPath";
 import io from "socket.io-client";
+import UCP from "../UCP/UCP";
+import OrgChart from "react-orgchart";
+import "react-orgchart/index.css";
+import Tree from "react-tree-graph";
+import "react-tree-graph/dist/style.css";
+
 const { Column, ColumnGroup } = Table;
 const { Header, Sider, Content } = Layout;
+const { TextArea } = Input;
+const { RangePicker } = DatePicker;
+const { Option } = Select;
 const socket = io.connect(Server);
 const { Panel } = Collapse;
+const dateFormat = "MM-DD-YYYY";
+const { Paragraph } = Typography;
+const { TabPane } = Tabs;
 
 const columns = [
   {
@@ -181,6 +204,10 @@ const columns = [
   },
 ];
 
+const MyNodeComponent = ({ node }) => {
+  return <div className="initechNode">{node.name}</div>;
+};
+
 class LeaderDashboard extends Component {
   state = {
     project_data: {
@@ -191,10 +218,16 @@ class LeaderDashboard extends Component {
     overdue_tasks: [],
     task_by_members: [],
     upcoming_tasks: [],
+    tasks_hierarchy: [],
     collapsed: false,
     panel: "projectDetails",
     loader: false,
+    update_project_data_modal: false,
+    project_type: "other",
+    title: "Project Details",
   };
+
+  updateFormRef = React.createRef();
 
   componentDidMount = async () => {
     if (!localStorage.getItem("userId")) {
@@ -222,11 +255,9 @@ class LeaderDashboard extends Component {
     try {
       await this.props.getProjectDetailsForLeaderDashboard({
         _id: parseInt(this.props.project_id.data),
-        user_id: this.state.user_id,
       });
       // await this.props.getProjectDetailsForLeaderDashboard({
       //   _id: 1,
-      //   user_id: 10,
       // });
     } catch (error) {}
     this.setState({
@@ -235,8 +266,9 @@ class LeaderDashboard extends Component {
       upcoming_tasks: this.props.projectData.data.upcomingDeadlines.inDay,
       tasks: this.props.projectData.data.taskByTask,
       task_by_members: this.props.projectData.data.tasksByMembers,
+      tasks_hierarchy: this.props.projectData.data.tasksHierarchy,
+      // project_type: this.props.projectData.data.project.project_type,
     });
-    console.log(this.props.projectData);
   };
 
   toggle = () => {
@@ -250,6 +282,40 @@ class LeaderDashboard extends Component {
   };
 
   handleClick = (e) => {
+    switch (e.key) {
+      case "projectDetails":
+        this.setState({
+          title: "Project Details",
+        });
+        break;
+      case "overview":
+        this.setState({
+          title: "Project Overview",
+        });
+        break;
+      case "performanceByMember":
+        this.setState({
+          title: "Performance By Member(s)",
+        });
+        break;
+      case "taskByTask":
+        this.setState({
+          title: "Task By Task Details",
+        });
+        break;
+      case "tasksByMembers":
+        this.setState({
+          title: "Task(s) By Member(s) Details",
+        });
+        break;
+      case "tasksHierarchy":
+        this.setState({
+          title: "Task(s) Hierarchy",
+        });
+        break;
+      default:
+        break;
+    }
     this.setState({ panel: e.key });
   };
 
@@ -285,18 +351,161 @@ class LeaderDashboard extends Component {
           </Col>
           <Col span={24} className="otherData">
             <b>Project Creation Date: </b>
-            {moment(this.state.project_data.createdAt).format("L")}
+            {moment(this.state.project_data.createdAt).format("llll")}
           </Col>
           <Col span={24} className="otherData">
             <b>Project Starting Date: </b>
-            {moment(this.state.project_data.start_date).format("L")}
+            {moment(this.state.project_data.start_date).format("llll")}
           </Col>
           <Col span={24} className="otherData">
             <b>Project Ending Date: </b>
-            {moment(this.state.project_data.end_date).format("L")}
+            {moment(this.state.project_data.end_date).format("llll")}
+          </Col>
+          <Col span={24} className="otherData">
+            <Button
+              type="primary"
+              className="editButton"
+              onClick={() => {
+                this.setState({
+                  update_project_data_modal: true,
+                });
+              }}
+            >
+              Edit
+            </Button>
           </Col>
         </Row>
       </div>
+    );
+  };
+
+  displayProjectDetailsReDesigned = () => {
+    return (
+      <Row className="ProjectDetailsContainerRD">
+        <Col span={24}>
+          <Row className="SingleItemContainer">
+            <Col span={12}>
+              <div className="title">Project Name:</div>
+            </Col>
+            <Col span={12}>
+              <div className="content">{this.state.project_data.name}</div>
+            </Col>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <Row className="SingleItemContainer">
+            <Col span={12}>
+              <div className="title">Project Status:</div>
+            </Col>
+            <Col span={12}>
+              <div className="content">{this.state.project_data.status}</div>
+            </Col>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <Row className="SingleItemContainer">
+            <Col span={12}>
+              <div className="title">Project Leader:</div>
+            </Col>
+            <Col span={12}>
+              <div className="content">
+                {this.state.project_data.leader.name}
+              </div>
+            </Col>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <Row className="SingleItemContainer">
+            <Col span={12}>
+              <div className="title">Project Description:</div>
+            </Col>
+            <Col span={12}>
+              <Paragraph
+                className="content"
+                ellipsis={{
+                  expandable: true,
+                }}
+              >
+                {this.state.project_data.description}
+              </Paragraph>
+            </Col>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <Row className="SingleItemContainer">
+            <Col span={12}>
+              <div className="title">Project Type:</div>
+            </Col>
+            <Col span={12}>
+              <div className="content">
+                {this.state.project_data.project_type}
+              </div>
+            </Col>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <Row className="SingleItemContainer">
+            <Col span={12}>
+              <div className="title">Project Cost:</div>
+            </Col>
+            <Col span={12}>
+              <div className="content">{this.state.project_data.cost}</div>
+            </Col>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <Row className="SingleItemContainer">
+            <Col span={12}>
+              <div className="title">Project Creation Date:</div>
+            </Col>
+            <Col span={12}>
+              <div className="content">
+                {" "}
+                {moment(this.state.project_data.createdAt).format("llll")}
+              </div>
+            </Col>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <Row className="SingleItemContainer">
+            <Col span={12}>
+              <div className="title">Project Starting Date:</div>
+            </Col>
+            <Col span={12}>
+              <div className="content">
+                {" "}
+                {moment(this.state.project_data.start_date).format("llll")}
+              </div>
+            </Col>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <Row className="SingleItemContainer">
+            <Col span={12}>
+              <div className="title">Project Ending Date:</div>
+            </Col>
+            <Col span={12}>
+              <div className="content">
+                {" "}
+                {moment(this.state.project_data.end_date).format("llll")}
+              </div>
+            </Col>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <Button
+            type="primary"
+            className="editButtonRD"
+            onClick={() => {
+              this.setState({
+                update_project_data_modal: true,
+              });
+            }}
+          >
+            Edit
+          </Button>
+        </Col>
+      </Row>
     );
   };
 
@@ -330,7 +539,6 @@ class LeaderDashboard extends Component {
               />
             </LineChart> */}
             <BarChart
-              style={{ width: "100vw", height: "100vh", margin: "2rem" }}
               width={1000}
               height={500}
               data={this.state.project_data.members}
@@ -468,7 +676,7 @@ class LeaderDashboard extends Component {
     return (
       <Row>
         <Col span={24} className="overviewHeading">
-          TASK BY MEMBERS:{" "}
+          TASK BY MEMBERS:
         </Col>
         <Col span={24}>
           <Collapse
@@ -500,9 +708,109 @@ class LeaderDashboard extends Component {
     );
   };
 
+  tasksHierarchy = () => {
+    return (
+      <div className="card-container">
+        <Tabs type="line" defaultActiveKey="1">
+          <TabPane tab="Type A" key="1">
+            {this.displayTypeATree()}
+          </TabPane>
+
+          <TabPane tab="Type B" key="2">
+            {this.displayTypeBTree()}
+          </TabPane>
+        </Tabs>
+      </div>
+    );
+  };
+
+  displayTypeATree = () => {
+    if (this.state.tasks_hierarchy) {
+      if (this.state.tasks_hierarchy.length !== 0) {
+        return (
+          <Row>
+            <Col span={24}>
+              <Collapse
+                defaultActiveKey={["0"]}
+                ghost
+                bordered={false}
+                expandIcon={({ isActive }) => (
+                  <CaretRightOutlined rotate={isActive ? 90 : 0} />
+                )}
+                className="site-collapse-custom-collapse"
+              >
+                {this.state.tasks_hierarchy.map((hierarichal_task, index) => {
+                  return (
+                    <Panel header={hierarichal_task.name} key={index}>
+                      <div id="initechOrgChart">
+                        <OrgChart
+                          tree={hierarichal_task}
+                          NodeComponent={MyNodeComponent}
+                        />
+                      </div>
+                    </Panel>
+                  );
+                })}
+              </Collapse>
+            </Col>
+          </Row>
+        );
+      }
+    }
+  };
+
+  displayTypeBTree = () => {
+    if (this.state.tasks_hierarchy) {
+      if (this.state.tasks_hierarchy.length !== 0) {
+        return (
+          <Row>
+            <Col span={24}>
+              <Collapse
+                defaultActiveKey={["0"]}
+                ghost
+                bordered={false}
+                expandIcon={({ isActive }) => (
+                  <CaretRightOutlined rotate={isActive ? 90 : 0} />
+                )}
+                className="site-collapse-custom-collapse"
+              >
+                {this.state.tasks_hierarchy.map((hierarichal_task, index) => {
+                  return (
+                    <Panel header={hierarichal_task.name} key={index}>
+                      <div className="custom-container">
+                        <Tree
+                          data={hierarichal_task}
+                          height={500}
+                          width={1000}
+                          svgProps={{
+                            className: "custom",
+                            // transform: "rotate(90)",
+                          }}
+                          animated
+                          // duration={1000}
+                          steps={40}
+                        />
+                      </div>
+                      {/* <div
+                        id="treeWrapper"
+                        style={{ width: "100vw", height: "100vh" }}
+                      >
+                        <HTree data={hierarichal_task} />
+                      </div> */}
+                    </Panel>
+                  );
+                })}
+              </Collapse>
+            </Col>
+          </Row>
+        );
+      }
+    }
+  };
+
   displayContent = () => {
     if (this.state.panel === "projectDetails") {
-      return <div>{this.displayProjectDetails()}</div>;
+      return <div>{this.displayProjectDetailsReDesigned()}</div>;
     }
     if (this.state.panel === "overview") {
       return <div>{this.projectOverview()}</div>;
@@ -515,6 +823,56 @@ class LeaderDashboard extends Component {
     }
     if (this.state.panel === "tasksByMembers") {
       return <div>{this.taskByMembers()}</div>;
+    }
+    if (this.state.panel === "tasksHierarchy") {
+      return <div>{this.tasksHierarchy()}</div>;
+    }
+  };
+
+  handleUpdateProjectDataModalCancel = (e) => {
+    this.setState({
+      update_project_data_modal: false,
+    });
+  };
+
+  showUCPOrNot = () => {
+    if (this.state.project_type === "software") {
+      return <UCP />;
+    }
+  };
+
+  handleUpdateProject = async (values) => {
+    let data = {
+      _id: this.state.project_data._id,
+      name: values.name,
+      description: values.description,
+      status: values.status,
+      end_date: values.end_date._d,
+      project_type: values.project_type,
+    };
+    if (values.project_type === "other") {
+      data.cost = "No Data!";
+    }
+    if (values.project_type === "software") {
+      if (isNaN(this.state.project_data.cost)) {
+        if (this.props.ucp.result === "To Be Calculated!") {
+          message.warning("First Calculate UCP Then Proceed!");
+          return;
+        }
+        data.cost = this.props.ucp.result;
+      } else {
+        data.cost = this.state.project_data.cost;
+      }
+    }
+    try {
+      this.setState({ loader: true });
+      await this.props.updateProjectData(data);
+      await this.updateData();
+      message.success("Data Updated Successfully!");
+      this.setState({ loader: false, update_project_data_modal: false });
+    } catch (e) {
+      this.setState({ loader: false });
+      message.error("Some Problem Occur!");
     }
   };
 
@@ -535,6 +893,7 @@ class LeaderDashboard extends Component {
                   theme="dark"
                   mode="inline"
                   onClick={this.handleClick}
+                  defaultSelectedKeys="projectDetails"
                 >
                   <Menu.Item key="projectDetails" icon={<ProjectFilled />}>
                     Project Deatils
@@ -575,6 +934,15 @@ class LeaderDashboard extends Component {
                   >
                     Tasks By Members
                   </Menu.Item>
+                  <Menu.Item
+                    onClick={() => {
+                      //   this.setState({ add_team_modal: true });
+                    }}
+                    key="tasksHierarchy"
+                    icon={<BranchesOutlined />}
+                  >
+                    Tasks Hierarchy
+                  </Menu.Item>
                 </Menu>
               </Sider>
               <Layout className="site-layout">
@@ -590,13 +958,180 @@ class LeaderDashboard extends Component {
                     spinner
                     text="Fetching Data ..."
                   >
-                    <div className="mainContainer">{this.displayContent()}</div>
+                    <Row className="mainContainer">
+                      <Col span={24}>
+                        <div className="headTitle">{this.state.title}</div>
+                      </Col>
+                      <Col span={24}>{this.displayContent()}</Col>
+                    </Row>
                   </LoadingOverlay>
                 </Content>
               </Layout>
             </Layout>
           </Col>
         </Row>
+        <Modal
+          width="60vw"
+          visible={this.state.update_project_data_modal}
+          onCancel={this.handleUpdateProjectDataModalCancel}
+          onOk={this.handleUpdateProjectDataModalCancel}
+          destroyOnClose
+          centered={true}
+          bodyStyle={{
+            backgroundColor: "steelblue",
+          }}
+          footer={null}
+          closeIcon={
+            <CloseCircleOutlined style={{ color: "white", fontSize: "2rem" }} />
+          }
+        >
+          <LoadingOverlay
+            styles={{
+              overlay: (base) => ({
+                ...base,
+              }),
+            }}
+            active={this.state.loader}
+            spinner
+            text="Updating Data ..."
+          >
+            <Form
+              name="update_project"
+              className="updateProjectContainer"
+              scrollToFirstError={true}
+              initialValues={{
+                remember: true,
+                name: this.state.project_data.name,
+                description: this.state.project_data.description,
+                end_date: moment(this.state.project_data.end_date),
+                project_type: this.state.project_data.project_type,
+                status: this.state.project_data.status,
+              }}
+              onFinish={this.handleUpdateProject}
+              ref={this.updateFormRef}
+            >
+              <Row>
+                <Col span={24} className="modalTitle">
+                  Update Data
+                </Col>
+                <Col span={24}>
+                  <Form.Item
+                    className="formItemUpdateProject"
+                    name="name"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required!",
+                      },
+                    ]}
+                  >
+                    <Input
+                      className="formInputUpdateProject"
+                      // prefix={<UserOutlined className="site-form-item-icon" />}
+                      placeholder="Project Name..."
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item
+                    className="formItemUpdateProject"
+                    name="description"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required!",
+                      },
+                    ]}
+                  >
+                    <TextArea
+                      rows={4}
+                      className="formInputUpdateProject"
+                      // prefix={<LockOutlined className="site-form-item-icon" />}
+                      placeholder="Description..."
+                    />
+                  </Form.Item>
+                </Col>
+
+                <Col span={24}>
+                  <Form.Item
+                    className="formItemUpdateProject"
+                    name="end_date"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required!",
+                      },
+                    ]}
+                  >
+                    <DatePicker
+                      className="formInputUpdateProject"
+                      placeholder="Select End Date"
+                      // prefix={<LockOutlined className="site-form-item-icon" />}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item
+                    className="formItemUpdateProject"
+                    name="status"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required!",
+                      },
+                    ]}
+                  >
+                    <Select
+                      key="3"
+                      className="formInputUpdateProject"
+                      placeholder="Project Status"
+                    >
+                      <Option value="in-progress">In Progress</Option>
+                      <Option value="done">Done</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+
+                <Col span={24}>
+                  <Form.Item
+                    className="formItemUpdateProject"
+                    name="project_type"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Required!",
+                      },
+                    ]}
+                  >
+                    <Select
+                      key="2"
+                      className="formInputUpdateProject"
+                      placeholder="Project Type"
+                      onChange={(value) => {
+                        this.setState({
+                          project_type: value,
+                        });
+                      }}
+                    >
+                      <Option value="software">Software Project</Option>
+                      <Option value="other">
+                        Other(any project other than software) Project
+                      </Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={24}>{this.showUCPOrNot()}</Col>
+                <Col span={24}>
+                  <Form.Item className="formItemUpdateProject ">
+                    <Button className="formButtonAddProject" htmlType="submit">
+                      Update
+                    </Button>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </LoadingOverlay>
+        </Modal>
       </div>
     );
   }
@@ -605,10 +1140,13 @@ class LeaderDashboard extends Component {
 const mapStateToProps = (state) => ({
   projectData: state.leaderDashboard,
   project_id: state.projectId,
+  updateProjectDataResponse: state.updateProjectData,
+  ucp: state.UCP,
 });
 
 const mapDispatchToProps = {
   getProjectDetailsForLeaderDashboard,
+  updateProjectData,
 };
 
 LeaderDashboard = connect(mapStateToProps, mapDispatchToProps)(LeaderDashboard);
