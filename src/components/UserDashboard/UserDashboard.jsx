@@ -41,6 +41,7 @@ import { getUserByEmail } from "../../Actions/GetUserByEmailAction";
 import { addMemberToTeam } from "../../Actions/AddMemberToTeamAction";
 import LoadingOverlay from "react-loading-overlay";
 import BounceLoader from "react-spinners/BounceLoader";
+import Server from "../../ServerPath";
 import Navbar from "../Navbar/Navbar";
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -396,9 +397,9 @@ class UserDashboard extends Component {
                 <Tooltip title={member.name}>
                   <Avatar
                     size={50}
+                    src={`${Server}/${member.dp}`}
                     style={{
                       fontWeight: "bold",
-
                       fontSize: "1.5rem",
                       color: "#fff",
                       backgroundColor: "steelblue",
