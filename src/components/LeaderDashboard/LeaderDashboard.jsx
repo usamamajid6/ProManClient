@@ -231,7 +231,7 @@ class LeaderDashboard extends Component {
   updateFormRef = React.createRef();
 
   componentDidMount = async () => {
-    if (!localStorage.getItem("userId")) {
+    if (!sessionStorage.getItem("userId")) {
       this.props.history.push("/login");
       return;
     }
@@ -240,7 +240,7 @@ class LeaderDashboard extends Component {
       return;
     }
     this.setState({ loader: true });
-    const user_id = parseInt(localStorage.getItem("userId"));
+    const user_id = parseInt(sessionStorage.getItem("userId"));
     this.setState({ user_id });
     await this.updateData();
     this.setState({ loader: false });
@@ -800,7 +800,7 @@ class LeaderDashboard extends Component {
                           }}
                           animated
                           // duration={1000}
-                          steps={40}
+                          // steps={40}
                         />
                       </div>
                       {/* <div

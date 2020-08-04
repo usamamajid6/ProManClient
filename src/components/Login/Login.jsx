@@ -36,7 +36,7 @@ class Login extends Component {
       message.success(response.message);
       if (response.message !== "Email OR Password are incorrect!") {
         await this.props.saveUserData(response.data);
-        localStorage.setItem("userId", response.data.result._id);
+        sessionStorage.setItem("userId", response.data.result._id);
         this.props.history.push("/userDashboard");
       }
     } catch (e) {
@@ -60,7 +60,7 @@ class Login extends Component {
       this.setState({ loader: false });
       message.success(response.message);
       this.props.saveUserData(response.data);
-      localStorage.setItem("userId", response.data.result._id);
+      sessionStorage.setItem("userId", response.data.result._id);
       this.props.history.push("/userDashboard");
     } catch (error) {
       this.setState({ loader: false });
@@ -79,7 +79,7 @@ class Login extends Component {
       this.setState({ loader: false });
       message.success(response.message);
       this.props.saveUserData(response.data);
-      localStorage.setItem("userId", response.data.result._id);
+      sessionStorage.setItem("userId", response.data.result._id);
       this.props.history.push("/userDashboard");
     } catch (error) {
       this.setState({ loader: false });

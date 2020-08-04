@@ -30,6 +30,10 @@ import unsubscribeTheTask from "./RemoveSubscribeReducer";
 import verifyUser from "./VerifyUserReducer";
 import updateUser from "./UpdateUserReducer";
 import updateProject from "./UpdateProjectDataReducer";
+import updateOrNotNavbar from "./UpdateOrNotNavbarReducer";
+import getNotifications from "./GetNotificationsReducer";
+import markNotificationsAsRead from "./MarkNotificationsAsReadReducer";
+
 export default combineReducers({
   counter,
   UUCW,
@@ -62,4 +66,7 @@ export default combineReducers({
   verifyUser,
   updateUser,
   updateProject,
+  updateOrNotNavbar,
+  getNotifications,
+  markNotificationsAsRead,
 });

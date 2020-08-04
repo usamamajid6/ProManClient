@@ -7,13 +7,13 @@ class Homepage extends Component {
   render() {
     return (
       <div>
-        <Navbar />
+        <Navbar parent="Homepage" />
         <Row className="Homepage">
           <Col span={24}>
             <Row className="mainContainer">
               <Col span={12}>
                 <div className="mainTitleContainer">
-                  <div className="mainTitle">PROMAN</div>
+                  <div className="mainTitle animate__bounceInLeft">PROMAN</div>
                   <div className="subTitle">A PROject MANager</div>
                 </div>
               </Col>

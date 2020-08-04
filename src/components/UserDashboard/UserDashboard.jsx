@@ -68,17 +68,18 @@ class UserDashboard extends Component {
     team_data_for_team_details: {
       members: [],
     },
+    interval: null,
   };
 
   componentDidMount = async () => {
-    if (!localStorage.getItem("userId")) {
+    if (!sessionStorage.getItem("userId")) {
       this.props.history.push("/login");
       return;
     }
     this.setState({ loader: true });
     try {
       await this.props.getUserData({
-        _id: parseInt(localStorage.getItem("userId")),
+        _id: parseInt(sessionStorage.getItem("userId")),
       });
     } catch (error) {
       message.info("Some Problem Occur!");
@@ -92,6 +93,19 @@ class UserDashboard extends Component {
       teams: this.props.userData.data.teams,
     });
     this.setState({ loader: false });
+    this.setState({
+      interval: setInterval(async () => {
+        await this.updateUserData();
+      }, 2000),
+    });
+  };
+
+  componentWillUnmount = () => {
+    clearInterval(
+      this.setState({
+        interval: clearInterval(this.state.interval),
+      })
+    );
   };
 
   updateUserData = async () => {

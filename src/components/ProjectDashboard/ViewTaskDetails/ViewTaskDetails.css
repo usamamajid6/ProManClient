@@ -117,7 +117,7 @@
   border-bottom-left-radius: 2rem;
 }
 
-.ViewTaskDetails .buttonMasterContainer{
+.ViewTaskDetails .buttonMasterContainer {
   text-align: center;
 }
 
@@ -165,7 +165,12 @@
 
 .ViewTaskDetails .attachmentsContainer {
   color: white;
-  overflow: hidden;
+  max-height: 30vh;
+  overflow: auto;
+  width: 100%;
+  padding: 0.5rem;
+  /* border-radius: 1rem;
+  border: 1px solid white; */
 }
 
 .ViewTaskDetails .attachmentLink {
@@ -186,6 +191,7 @@
   border-radius: 2rem;
   padding-top: 2rem;
 }
+
 .addSubTaskContainer .formItemAddSubTask {
   margin: 1rem;
   text-align: center;
@@ -238,11 +244,6 @@
   text-align: center;
   color: white;
   text-decoration: underline;
-}
-
-.ViewTaskDetails .attachmentsContainer {
-  max-height: 30vh;
-  overflow: auto;
 }
 
 .ViewTaskDetails .attachmentsContainer::-webkit-scrollbar-track {
