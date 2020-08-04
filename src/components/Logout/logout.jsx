@@ -2,7 +2,7 @@ import React, { Component } from "react";
 class logout extends Component {
   state = {};
   componentDidMount = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     this.props.history.push("/");
   };
   render() {

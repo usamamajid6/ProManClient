@@ -13,11 +13,13 @@ import {
 } from "antd";
 import { getUserData } from "../../Actions/userDataAction";
 import { updateUser } from "../../Actions/UpdateUserAction";
+import { updateOrNotNavbar } from "../../Actions/UpdateOrNotNavbarAction";
 import { CaretRightOutlined } from "@ant-design/icons";
 import "./Profile.css";
 import Navbar from "../Navbar/Navbar";
 import LoadingOverlay from "react-loading-overlay";
 import Server from "../../ServerPath";
+import BounceLoader from 'react-spinners/BounceLoader'
 
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
@@ -33,7 +35,7 @@ class Profile extends Component {
   };
 
   componentDidMount = async () => {
-    if (!localStorage.getItem("userId")) {
+    if (!sessionStorage.getItem("userId")) {
       this.props.history.push("/login");
       return;
     }
@@ -49,7 +51,7 @@ class Profile extends Component {
   loadUserData = async () => {
     try {
       await this.props.getUserData({
-        _id: parseInt(localStorage.getItem("userId")),
+        _id: parseInt(sessionStorage.getItem("userId")),
       });
     } catch (error) {
       message.info("Some Problem Occur!");
@@ -74,6 +76,7 @@ class Profile extends Component {
   callback(key) {
     console.log(key);
   }
+  componentDidUpdate = () => {};
 
   onChangeName = async (name) => {
     try {
@@ -85,6 +88,7 @@ class Profile extends Component {
       });
       await this.loadUserData();
       this.setState({ loader: false });
+      this.props.updateOrNotNavbar(true);
     } catch (e) {
       this.setState({ loader: false });
       message.error("Some Problem Occur!");
@@ -134,16 +138,23 @@ class Profile extends Component {
       message.success(`${info.file.name} file uploaded successfully.`);
       await this.loadUserData();
       this.setState({ loader: false });
+      this.props.updateOrNotNavbar(true);
+
+      // this.refreshPage();
     } else if (status === "error") {
       message.error(`${info.file.name} file upload failed.`);
       this.setState({ loader: false });
     }
   };
 
+  refreshPage = () => {
+    window.location.reload();
+  };
+
   render() {
     return (
       <div>
-        <Navbar />
+        <Navbar parent="Profile" />
         <LoadingOverlay
           styles={{
             overlay: (base) => ({
@@ -151,6 +162,7 @@ class Profile extends Component {
               minHeight: "100vh",
             }),
           }}
+          
           active={this.state.loader}
           spinner
           text="Processing..."
@@ -285,11 +297,13 @@ class Profile extends Component {
 const mapStateToProps = (state) => ({
   userData: state.userData,
   updateUserResponse: state.updateUser,
+  updateOrNotNavbarState: state.updateOrNotNavbar,
 });
 
 const mapDispatchToProps = {
   getUserData,
   updateUser,
+  updateOrNotNavbar,
 };
 
 Profile = connect(mapStateToProps, mapDispatchToProps)(Profile);

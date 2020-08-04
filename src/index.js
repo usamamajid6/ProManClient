@@ -8,8 +8,7 @@ import reducer from "./Reducers";
 import * as serviceWorker from "./serviceWorker";
 import App from "./App.jsx";
 import 'antd/dist/antd.css';
-// import 'antd/dist/;
-
+// import './customTheme.less';
 
 
 const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));

@@ -15,6 +15,7 @@ import {
   Input,
   message,
   Avatar,
+  Badge,
 } from "antd";
 import Navbar from "../Navbar/Navbar";
 import LoadingOverlay from "react-loading-overlay";
@@ -28,35 +29,38 @@ import Board from "./Board/Board";
 import "./ProjectDashboard.css";
 import AddNewTask from "./AddNewTask/AddNewTask";
 import ViewTaskDetails from "./ViewTaskDetails/ViewTaskDetails";
-import Icon, {
+import {
   MenuFoldOutlined,
   TableOutlined,
   BarcodeOutlined,
   CloseCircleOutlined,
-  PlusSquareOutlined,
+  PlusCircleOutlined,
   MessageOutlined,
 } from "@ant-design/icons";
+import alertSound from "../../Audio/alert.mp3";
 import Sidebar from "react-sidebar";
 import SidebarContent from "./Sidebar/Sidebar";
 import AddNewTaskList from "./AddNewTaskList/AddNewTaskList";
 import Server from "../../ServerPath";
 import ScrollToBottom from "react-scroll-to-bottom";
+import moment from "moment";
 import io from "socket.io-client";
 const socket = io.connect(Server);
 const { Panel } = Collapse;
+const notificationSound = new Audio(alertSound);
 const columns = [
   {
     title: () => {
       return <div>Name</div>;
     },
     dataIndex: "name",
-    key: " name",
+    key: "name",
     align: "center",
   },
   {
     title: "Description",
     dataIndex: "description",
-    key: " description",
+    key: "description",
     render: (data) => {
       return <div>{data}</div>;
     },
@@ -76,6 +80,16 @@ const columns = [
       }
     },
     ellipsis: true,
+    align: "center",
+  },
+  {
+    title: "Creation Date",
+    dataIndex: "createdAt",
+    key: " createdAt",
+    sorter: (a, b) => moment(a.createdAt).unix() - moment(b.createdAt).unix(),
+    render: (data) => {
+      return <TimeAgo date={data} />;
+    },
     align: "center",
   },
   {
@@ -107,6 +121,21 @@ const columns = [
     },
     ellipsis: true,
     align: "center",
+    filters: [
+      {
+        text: "In-Progress",
+        value: "in-progress",
+      },
+      {
+        text: "Pending",
+        value: "pending",
+      },
+      {
+        text: "Done",
+        value: "done",
+      },
+    ],
+    onFilter: (value, record) => record.status.indexOf(value) === 0,
   },
   {
     title: "Members",
@@ -117,7 +146,7 @@ const columns = [
         {members.map((member) => {
           return (
             <Tag color={"purple"} key={member._id}>
-              {member.member.name.toUpperCase()}
+              {member.member.name}
             </Tag>
           );
         })}
@@ -131,13 +160,17 @@ const columns = [
     key: " sub_tasks",
     render: (sub_tasks) => (
       <span>
-        {sub_tasks.map((sub_task) => {
-          return (
-            <Tag color={"orange"} key={sub_task._id}>
-              {sub_task.name.toUpperCase()}
-            </Tag>
-          );
-        })}
+        {sub_tasks.length !== 0 ? (
+          sub_tasks.map((sub_task) => {
+            return (
+              <Tag color={"orange"} key={sub_task._id}>
+                {sub_task.name.toUpperCase()}
+              </Tag>
+            );
+          })
+        ) : (
+          <div>No Any</div>
+        )}
       </span>
     ),
     align: "center",
@@ -164,6 +197,7 @@ class ProjectDashboard extends Component {
     add_member_to_project_modal: false,
     member_data_for_add_member_to_project: {},
     loader: false,
+    unReadChatMessages: 0,
   };
 
   chatFormRef = React.createRef();
@@ -172,8 +206,15 @@ class ProjectDashboard extends Component {
     socket.emit("leaveTheProjectRoom", this.state.project_data);
   };
 
+  handleClickOnScreen = (e) => {
+    if (!e.path.some((path) => path.id === "ChatBox")) {
+      this.closeChatBox();
+    }
+  };
+
   componentDidMount = async () => {
-    if (!localStorage.getItem("userId")) {
+    document.addEventListener("mousedown", this.handleClickOnScreen, false);
+    if (!sessionStorage.getItem("userId")) {
       this.props.history.push("/login");
       return;
     }
@@ -182,7 +223,7 @@ class ProjectDashboard extends Component {
       return;
     }
     this.setState({ loader: true });
-    const user_id = parseInt(localStorage.getItem("userId"));
+    const user_id = parseInt(sessionStorage.getItem("userId"));
     this.setState({ user_id });
     await this.updateData();
 
@@ -202,10 +243,14 @@ class ProjectDashboard extends Component {
 
     socket.on("updateChatsData", (data) => {
       let chats = this.state.chats;
-
       chats.push(data);
-
       this.setState({ chats });
+      if (data.member._id !== this.state.user_id) {
+        notificationSound.play();
+        this.setState({
+          unReadChatMessages: ++this.state.unReadChatMessages,
+        });
+      }
     });
   };
 
@@ -213,11 +258,9 @@ class ProjectDashboard extends Component {
     try {
       await this.props.getProjectData({
         _id: parseInt(this.props.project_id.data),
-        user_id: this.state.user_id,
       });
       // await this.props.getProjectData({
-      //   _id: 1,
-      //   user_id: 10,
+      //   _id: 2,
       // });
     } catch (error) {}
     this.setState({
@@ -328,7 +371,7 @@ class ProjectDashboard extends Component {
         <Row>
           <Col span={18}>
             <Button
-              type="primary"
+              type="link"
               onClick={() => {
                 this.props.setProjectId(this.state.project_data._id);
                 this.props.history.push("/leaderDashboard");
@@ -337,17 +380,15 @@ class ProjectDashboard extends Component {
               Open Leader Dashboard
             </Button>
           </Col>
-          <Col span={2}></Col>
-          <Col span={4}>
+          <Col span={6}>
             {" "}
             <Button
               style={{
-                color: "white",
-                padding: 0,
                 width: "100%",
                 fontSize: "1.3rem",
+                lineHeight: "1.3rem",
               }}
-              type="primary"
+              type="link"
               onClick={() => {
                 this.setState({
                   add_member_to_project_modal: true,
@@ -355,7 +396,7 @@ class ProjectDashboard extends Component {
               }}
             >
               <Tooltip title="Add Member">
-                <PlusSquareOutlined />
+                <PlusCircleOutlined />
               </Tooltip>
             </Button>
           </Col>
@@ -473,9 +514,6 @@ class ProjectDashboard extends Component {
 
   handleAddMemberToProject = async (values) => {
     let found = -1;
-    console.log("====================================");
-    console.log(this.state.project_data);
-    console.log("====================================");
     for (let i = 0; i < this.state.project_data.members.length; i++) {
       const element = this.state.project_data.members[i];
       if (element.member.email === values.user_email) {
@@ -515,9 +553,18 @@ class ProjectDashboard extends Component {
   openChatBox = () => {
     document.getElementById("ChatBox").style.display = "block";
   };
+
   closeChatBox = () => {
-    document.getElementById("ChatBox").style.display = "none";
+    if (document.getElementById("ChatBox")) {
+      if (document.getElementById("ChatBox").style.display === "block") {
+        this.setState({
+          unReadChatMessages: 0,
+        });
+      }
+      document.getElementById("ChatBox").style.display = "none";
+    }
   };
+
   render() {
     return (
       <div>
@@ -538,16 +585,36 @@ class ProjectDashboard extends Component {
         />
         <Navbar />
         <Row className="ProjectDashboard">
-          <Button
-            type="primary"
-            className="chatButton"
-            onClick={() => {
-              this.openChatBox();
-            }}
+          <Badge
+            className="chatButtonContainer"
+            count={this.state.unReadChatMessages}
+            offset={[-130, 5]}
+            style={
+              {
+                // backgroundColor: "#52c41a",
+                // fontWeight: "bold",
+                // fontSize: "1.1rem",
+                // paddingRight: "0.2rem",
+                // paddingLeft: "0.1rem",
+                // border: "none",
+                // zIndex: "1",
+              }
+            }
           >
-            <MessageOutlined />
-            Chat
-          </Button>
+            <Button
+              type="primary"
+              className="chatButton"
+              onClick={() => {
+                this.openChatBox();
+                this.setState({
+                  unReadChatMessages: 0,
+                });
+              }}
+            >
+              <MessageOutlined className="chatButtonIcon" />
+              Chat
+            </Button>
+          </Badge>
 
           <Col span={24}>
             <LoadingOverlay
@@ -801,7 +868,14 @@ class ProjectDashboard extends Component {
 
         <div className="ChatBox" id="ChatBox">
           <Row>
-            <Col span={22} style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+            <Col
+              span={22}
+              style={{
+                fontSize: "1.2rem",
+                fontWeight: "bold",
+                color: "dodgerBlue",
+              }}
+            >
               CHAT BOX
             </Col>
             <Col span={2}>
@@ -809,6 +883,12 @@ class ProjectDashboard extends Component {
                 type="link"
                 onClick={() => {
                   this.closeChatBox();
+                }}
+                style={{
+                  lineHeight: "2rem",
+                  fontSize: "2rem",
+                  padding: "0",
+                  margin: "0",
                 }}
               >
                 <CloseCircleOutlined />

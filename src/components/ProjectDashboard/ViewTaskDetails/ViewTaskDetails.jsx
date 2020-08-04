@@ -14,6 +14,7 @@ import {
   message,
   Empty,
   Tooltip,
+  Typography,
 } from "antd";
 import { connect } from "react-redux";
 import {
@@ -34,8 +35,13 @@ import LoadingOverlay from "react-loading-overlay";
 import "./ViewTaskDetails.css";
 import Server from "../../../ServerPath";
 import io from "socket.io-client";
+import moment from "moment";
+import FileViewer from "react-file-viewer";
+import { CustomErrorComponent } from "custom-error";
 const socket = io.connect(Server);
 const { TextArea } = Input;
+const { Paragraph } = Typography;
+const type = "png";
 class ViewTaskDetails extends Component {
   state = {
     loader: false,
@@ -52,6 +58,9 @@ class ViewTaskDetails extends Component {
     leader_id: null,
     add_subtask_modal: false,
     percentage_of_sub_tasks_completion: 0,
+    files_view_modal: false,
+    file_path: "",
+    file_type: "",
   };
 
   commentFormRef = React.createRef();
@@ -354,6 +363,17 @@ class ViewTaskDetails extends Component {
 
   handleAttachmentClick = (file_path, file_name) => {
     window.location = `${Server}/getAttachment/${file_path}/${file_name}`;
+    // let path = `${Server}/${file_path}`;
+    // let type = path.substring(path.lastIndexOf(".") + 1);
+
+    // console.log("====================================");
+    // console.log(type);
+    // console.log("====================================");
+    // this.setState({ files_view_modal: true, file_path: path, file_type: type });
+    // let image = new Image();
+    // image.src = path;
+    // let w = window.open("");
+    // w.document.write(image.outerHTML);
   };
 
   addSubTask = () => {
@@ -366,6 +386,10 @@ class ViewTaskDetails extends Component {
 
   handeladdSubtaskModalCancel = () => {
     this.setState({ add_subtask_modal: false });
+  };
+
+  handleFileViewModalCancel = () => {
+    this.setState({ files_view_modal: false });
   };
 
   handleAddSubTask = async (values) => {
@@ -447,6 +471,10 @@ class ViewTaskDetails extends Component {
     }
   };
 
+  onError = (e) => {
+    console.log(e, "error in file-viewer");
+  };
+
   render() {
     return (
       <LoadingOverlay
@@ -473,7 +501,8 @@ class ViewTaskDetails extends Component {
           <Col span={24} className="statusContainer">
             <span>
               <b className="titleStyle">
-                <TimeAgo date={this.state.task.due_date} />
+                {moment(this.state.task.due_date).format("llll")}
+                ( <TimeAgo date={this.state.task.due_date} />)
               </b>
             </span>
           </Col>
@@ -646,7 +675,7 @@ class ViewTaskDetails extends Component {
                 <div className="attachmentsContainer">
                   {this.state.task.attachments.map((attachments) => {
                     return (
-                      <div className="attachmentsContainer">
+                      <div>
                         <Button
                           style={{ color: "white" }}
                           className="attachmentLink"
@@ -782,6 +811,41 @@ class ViewTaskDetails extends Component {
                 </Col>
               </Row>
             </Form>
+          </LoadingOverlay>
+        </Modal>
+        <Modal
+          visible={this.state.files_view_modal}
+          onCancel={this.handleFileViewModalCancel}
+          onOk={this.handleFileViewModalCancel}
+          width="90vw"
+          destroyOnClose
+          centered={true}
+          bodyStyle={{
+            backgroundColor: "steelblue",
+            minHeight: "90vh",
+          }}
+          footer={null}
+          closeIcon={
+            <CloseCircleOutlined style={{ color: "white", fontSize: "2rem" }} />
+          }
+        >
+          <LoadingOverlay
+            styles={{
+              overlay: (base) => ({
+                ...base,
+                borderRadius: "2rem",
+              }),
+            }}
+            active={this.state.loader}
+            spinner
+            text="Loading...!"
+          >
+            <FileViewer
+              fileType={this.state.file_type}
+              filePath={this.state.file_path}
+              errorComponent={CustomErrorComponent}
+              onError={this.onError}
+            />
           </LoadingOverlay>
         </Modal>
       </LoadingOverlay>
