@@ -38,9 +38,7 @@ class AddNewTask extends Component {
     console.log("Failed:", errorInfo);
   };
 
-  componentDidMount = () => {
-    console.log(this.props.project_data.data);
-  };
+  componentDidMount = () => {};
 
   render() {
     return (
@@ -114,13 +112,13 @@ class AddNewTask extends Component {
                     <Option value="0">No Prerequsite</Option>
                     {this.props.project_data.data.taskList.map(
                       (taskList, index) =>
-                        index === 0 || index === 1 || index === 2 ? (
-                          taskList.tasks.map((tasks) => (
-                            <Option value={tasks._id}>{tasks.name}</Option>
-                          ))
-                        ) : (
-                          <div></div>
-                        )
+                        index === 0 || index === 1 || index === 2
+                          ? taskList.tasks.map((tasks) => {
+                              return (
+                                <Option value={tasks._id}>{tasks.name}</Option>
+                              );
+                            })
+                          : null
                     )}
                   </Select>
                 </Form.Item>

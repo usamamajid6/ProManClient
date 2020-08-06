@@ -13,9 +13,13 @@ import { Row, Col, Button, Form, Table, Radio } from "antd";
 import { connect } from "react-redux";
 import { changeECFResultStatus, saveECFResult } from "../../Actions";
 import "./UCP.css";
+// import reactComponentDebounce from 'react-component-debounce';
 
 const { Column } = Table;
-
+// const DebounceInput = reactComponentDebounce({
+//   valuePropName: 'value',
+//   triggerMs: 250,
+// })(Input);
 class ECF extends Component {
   state = {
     tableData: [
@@ -106,7 +110,7 @@ class ECF extends Component {
                   onFinish={this.onFinish}
                   onFinishFailed={this.onFinishFailed}
                 >
-                  <Form.Item className="formItem">
+                  <Form.Item className="formItem" >
                     <Table
                       size="small"
                       dataSource={this.state.tableData}

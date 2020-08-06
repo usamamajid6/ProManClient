@@ -1,12 +1,25 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { message, Avatar, Row, Col, Collapse, Tabs, Typography } from "antd";
+import {
+  message,
+  Avatar,
+  Row,
+  Col,
+  Collapse,
+  Tabs,
+  Typography,
+  Upload,
+  Tooltip,
+} from "antd";
 import { getUserData } from "../../Actions/userDataAction";
 import { updateUser } from "../../Actions/UpdateUserAction";
+import { updateOrNotNavbar } from "../../Actions/UpdateOrNotNavbarAction";
 import { CaretRightOutlined } from "@ant-design/icons";
 import "./Profile.css";
 import Navbar from "../Navbar/Navbar";
 import LoadingOverlay from "react-loading-overlay";
+import Server from "../../ServerPath";
+import BounceLoader from 'react-spinners/BounceLoader'
 
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
@@ -22,7 +35,7 @@ class Profile extends Component {
   };
 
   componentDidMount = async () => {
-    if (!localStorage.getItem("userId")) {
+    if (!sessionStorage.getItem("userId")) {
       this.props.history.push("/login");
       return;
     }
@@ -38,7 +51,7 @@ class Profile extends Component {
   loadUserData = async () => {
     try {
       await this.props.getUserData({
-        _id: parseInt(localStorage.getItem("userId")),
+        _id: parseInt(sessionStorage.getItem("userId")),
       });
     } catch (error) {
       message.info("Some Problem Occur!");
@@ -63,6 +76,8 @@ class Profile extends Component {
   callback(key) {
     console.log(key);
   }
+  componentDidUpdate = () => {};
+
   onChangeName = async (name) => {
     try {
       this.setState({ loader: true });
@@ -73,11 +88,13 @@ class Profile extends Component {
       });
       await this.loadUserData();
       this.setState({ loader: false });
+      this.props.updateOrNotNavbar(true);
     } catch (e) {
       this.setState({ loader: false });
       message.error("Some Problem Occur!");
     }
   };
+
   onChangeNumber = async (number) => {
     if (isNaN(number)) {
       message.warning("Phone Number Must Be In Digits!");
@@ -97,10 +114,47 @@ class Profile extends Component {
       message.error("Some Problem Occur!");
     }
   };
+
+  beforeUpload = (file) => {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      message.error("You can only upload JPG/PNG file!");
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error("Image must smaller than 2MB!");
+    }
+    return isJpgOrPng && isLt2M;
+  };
+
+  onChangeUpload = async (info) => {
+    this.setState({ loader: true });
+    const { status } = info.file;
+    if (status !== "uploading") {
+      console.log(info.file, info.fileList);
+      this.setState({ loader: false });
+    }
+    if (status === "done") {
+      message.success(`${info.file.name} file uploaded successfully.`);
+      await this.loadUserData();
+      this.setState({ loader: false });
+      this.props.updateOrNotNavbar(true);
+
+      // this.refreshPage();
+    } else if (status === "error") {
+      message.error(`${info.file.name} file upload failed.`);
+      this.setState({ loader: false });
+    }
+  };
+
+  refreshPage = () => {
+    window.location.reload();
+  };
+
   render() {
     return (
       <div>
-        <Navbar />
+        <Navbar parent="Profile" />
         <LoadingOverlay
           styles={{
             overlay: (base) => ({
@@ -108,6 +162,7 @@ class Profile extends Component {
               minHeight: "100vh",
             }),
           }}
+          
           active={this.state.loader}
           spinner
           text="Processing..."
@@ -115,17 +170,31 @@ class Profile extends Component {
           <div className="Profile">
             <Row>
               <Col span={24} style={{ textAlign: "center" }}>
-                <Avatar
-                  className="mainAvatar"
-                  size={150}
-                  style={{
-                    color: "blue",
-                    backgroundColor: "#80bffa",
-                    fontSize: "6rem",
+                <Upload
+                  name="dp"
+                  showUploadList={false}
+                  action={`${Server}/uploadDP`}
+                  data={{
+                    _id: this.state.userData._id,
                   }}
+                  beforeUpload={this.beforeUpload}
+                  onChange={this.onChangeUpload}
                 >
-                  {this.state.avatar}
-                </Avatar>
+                  <Tooltip title="Change Profile Picture" placement="bottom">
+                    <Avatar
+                      className="mainAvatar"
+                      size={150}
+                      src={`${Server}/${this.state.userData.dp}`}
+                      style={{
+                        color: "blue",
+                        backgroundColor: "#80bffa",
+                        fontSize: "6rem",
+                      }}
+                    >
+                      {this.state.avatar}
+                    </Avatar>
+                  </Tooltip>
+                </Upload>
               </Col>
 
               <Col className="mainComponent" span={24}>
@@ -228,11 +297,13 @@ class Profile extends Component {
 const mapStateToProps = (state) => ({
   userData: state.userData,
   updateUserResponse: state.updateUser,
+  updateOrNotNavbarState: state.updateOrNotNavbar,
 });
 
 const mapDispatchToProps = {
   getUserData,
   updateUser,
+  updateOrNotNavbar,
 };
 
 Profile = connect(mapStateToProps, mapDispatchToProps)(Profile);

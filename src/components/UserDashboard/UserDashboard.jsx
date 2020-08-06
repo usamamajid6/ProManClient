@@ -41,6 +41,7 @@ import { getUserByEmail } from "../../Actions/GetUserByEmailAction";
 import { addMemberToTeam } from "../../Actions/AddMemberToTeamAction";
 import LoadingOverlay from "react-loading-overlay";
 import BounceLoader from "react-spinners/BounceLoader";
+import Server from "../../ServerPath";
 import Navbar from "../Navbar/Navbar";
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -67,17 +68,18 @@ class UserDashboard extends Component {
     team_data_for_team_details: {
       members: [],
     },
+    interval: null,
   };
 
   componentDidMount = async () => {
-    if (!localStorage.getItem("userId")) {
+    if (!sessionStorage.getItem("userId")) {
       this.props.history.push("/login");
       return;
     }
     this.setState({ loader: true });
     try {
       await this.props.getUserData({
-        _id: parseInt(localStorage.getItem("userId")),
+        _id: parseInt(sessionStorage.getItem("userId")),
       });
     } catch (error) {
       message.info("Some Problem Occur!");
@@ -91,6 +93,19 @@ class UserDashboard extends Component {
       teams: this.props.userData.data.teams,
     });
     this.setState({ loader: false });
+    this.setState({
+      interval: setInterval(async () => {
+        await this.updateUserData();
+      }, 2000),
+    });
+  };
+
+  componentWillUnmount = () => {
+    clearInterval(
+      this.setState({
+        interval: clearInterval(this.state.interval),
+      })
+    );
   };
 
   updateUserData = async () => {
@@ -396,9 +411,9 @@ class UserDashboard extends Component {
                 <Tooltip title={member.name}>
                   <Avatar
                     size={50}
+                    src={`${Server}/${member.dp}`}
                     style={{
                       fontWeight: "bold",
-
                       fontSize: "1.5rem",
                       color: "#fff",
                       backgroundColor: "steelblue",
