@@ -17,15 +17,9 @@ import {
   Tooltip,
 } from "antd";
 import {
-  DesktopOutlined,
-  PieChartOutlined,
-  FileOutlined,
   TeamOutlined,
-  UserOutlined,
   ProjectFilled,
-  PlusSquareTwoTone,
   PlusSquareOutlined,
-  LockOutlined,
   CloseCircleOutlined,
   ToolTwoTone,
   PlusCircleOutlined,
@@ -40,10 +34,9 @@ import { setProjectId } from "../../Actions/setProjectIdAction";
 import { getUserByEmail } from "../../Actions/GetUserByEmailAction";
 import { addMemberToTeam } from "../../Actions/AddMemberToTeamAction";
 import LoadingOverlay from "react-loading-overlay";
-import BounceLoader from "react-spinners/BounceLoader";
 import Server from "../../ServerPath";
 import Navbar from "../Navbar/Navbar";
-const { Header, Content, Footer, Sider } = Layout;
+const {  Content, Sider } = Layout;
 const { SubMenu } = Menu;
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;

@@ -5,13 +5,9 @@ import {
   registerUserGoogleFB,
 } from "../../Actions/RegisterAction";
 import Navbar from "../Navbar/Navbar";
-import FacebookLogin from "react-facebook-login";
-import GoogleLogin from "react-google-login";
 import { connect } from "react-redux";
 import { UserOutlined, LockOutlined, PhoneOutlined } from "@ant-design/icons";
 import "./Register.css";
-import GoogleKey from "../../GoogleKey";
-import FBAppID from "../../FBAppID";
 import LoadingOverlay from "react-loading-overlay";
 
 const validateMessages = {
@@ -25,9 +21,6 @@ const validateMessages = {
 class Register extends Component {
   state = { loader: false };
   responseGoogle = async (googleResponse) => {
-    console.log("====================================");
-    console.log(googleResponse);
-    console.log("====================================");
     try {
       this.setState({ loader: true });
       await this.props.registerUserGoogleFB({
@@ -49,8 +42,6 @@ class Register extends Component {
       message.error("Some Problem Occur!");
     }
   };
-
-  componentClicked = (a, b, c) => {};
 
   responseFB = async (fbResponse) => {
     try {
@@ -83,9 +74,6 @@ class Register extends Component {
       await this.props.registerUser(values);
       let response = this.props.response;
       this.setState({ loader: false });
-      console.log("====================================");
-      console.log(response);
-      console.log("====================================");
       if (response.data.message === "Email Already Exists!") {
         message.info(response.data.message);
         return;

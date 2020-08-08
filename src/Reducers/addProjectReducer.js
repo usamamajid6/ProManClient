@@ -1,6 +1,5 @@
 import { ADD_PROJECT } from "../Actions/addProjectAction";
 
-const initialState = {};
 
 const addProjectReducer = (state = null, action) => {
   switch (action.type) {
