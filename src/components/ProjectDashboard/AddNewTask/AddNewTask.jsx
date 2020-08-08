@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Modal, Button, Form, Input, Select, Row, Col, message } from "antd";
+import {  Button, Form, Input, Select, Row, Col, message } from "antd";
 import { DatePicker } from "antd";
 import { addTask } from "../../../Actions/AddTaskAction";
 import "./AddNewTask.css";

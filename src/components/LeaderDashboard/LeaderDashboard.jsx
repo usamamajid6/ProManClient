@@ -1,4 +1,4 @@
-import React, { Component, PureComponent } from "react";
+import React, { Component } from "react";
 import {
   Layout,
   Menu,
@@ -7,7 +7,6 @@ import {
   Col,
   Table,
   Tag,
-  Space,
   Collapse,
   Progress,
   Modal,
@@ -21,8 +20,6 @@ import {
   Empty,
 } from "antd";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -34,14 +31,7 @@ import {
 import TimeAgo from "react-timeago";
 import moment from "moment";
 import {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-  UploadOutlined,
   ProjectFilled,
-  PlusSquareOutlined,
-  TeamOutlined,
   GroupOutlined,
   RadarChartOutlined,
   FundOutlined,
@@ -50,7 +40,6 @@ import {
   CloseCircleOutlined,
   BranchesOutlined,
 } from "@ant-design/icons";
-import { FormInstance } from "antd/lib/form";
 import { getProjectDetailsForLeaderDashboard } from "../../Actions/LeaderDashboardDataAction";
 import { updateProjectData } from "../../Actions/UpdateProjectDataAction";
 import { connect } from "react-redux";
@@ -65,14 +54,11 @@ import "react-orgchart/index.css";
 import Tree from "react-tree-graph";
 import "react-tree-graph/dist/style.css";
 
-const { Column, ColumnGroup } = Table;
-const { Header, Sider, Content } = Layout;
+const {  Sider, Content } = Layout;
 const { TextArea } = Input;
-const { RangePicker } = DatePicker;
 const { Option } = Select;
 const socket = io.connect(Server);
 const { Panel } = Collapse;
-const dateFormat = "MM-DD-YYYY";
 const { Paragraph } = Typography;
 const { TabPane } = Tabs;
 

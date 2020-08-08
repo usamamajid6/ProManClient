@@ -19,7 +19,6 @@ import "./Profile.css";
 import Navbar from "../Navbar/Navbar";
 import LoadingOverlay from "react-loading-overlay";
 import Server from "../../ServerPath";
-import BounceLoader from 'react-spinners/BounceLoader'
 
 const { Panel } = Collapse;
 const { TabPane } = Tabs;

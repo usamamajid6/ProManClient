@@ -11,7 +11,6 @@ import {
   Dropdown,
 } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
-import { FixedSizeList as RWList } from "react-window";
 import "./Board.css";
 import moment from "moment";
 const { Paragraph } = Typography;
