@@ -19,9 +19,6 @@ const validateMessages = {
   },
 };
 
-const responseFacebook = (response) => {
-  console.log(response);
-};
 
 class Login extends Component {
   state = {

@@ -5,13 +5,9 @@ import {
   registerUserGoogleFB,
 } from "../../Actions/RegisterAction";
 import Navbar from "../Navbar/Navbar";
-import FacebookLogin from "react-facebook-login";
-import GoogleLogin from "react-google-login";
 import { connect } from "react-redux";
 import { UserOutlined, LockOutlined, PhoneOutlined } from "@ant-design/icons";
 import "./Register.css";
-import GoogleKey from "../../GoogleKey";
-import FBAppID from "../../FBAppID";
 import LoadingOverlay from "react-loading-overlay";
 
 const validateMessages = {
@@ -24,6 +20,7 @@ const validateMessages = {
 
 class Register extends Component {
   state = { loader: false };
+<<<<<<< HEAD
   // responseGoogle = async (googleResponse) => {
   //   console.log("====================================");
   //   console.log(googleResponse);
@@ -34,6 +31,15 @@ class Register extends Component {
   //       email: googleResponse.profileObj.email,
   //       name: googleResponse.profileObj.name,
   //     });
+=======
+  responseGoogle = async (googleResponse) => {
+    try {
+      this.setState({ loader: true });
+      await this.props.registerUserGoogleFB({
+        email: googleResponse.profileObj.email,
+        name: googleResponse.profileObj.name,
+      });
+>>>>>>> b4f6216ff6bf5a2351a158df9c9701c7f7c0c213
 
   //     this.setState({ loader: false });
   //     let response = this.props.response;
@@ -50,6 +56,7 @@ class Register extends Component {
   //   }
   // };
 
+<<<<<<< HEAD
   componentClicked = (a, b, c) => {};
 
   // responseFB = async (fbResponse) => {
@@ -72,6 +79,28 @@ class Register extends Component {
   //     message.error("Some Problem Occur!");
   //   }
   // };
+=======
+  responseFB = async (fbResponse) => {
+    try {
+      this.setState({ loader: true });
+      await this.props.registerUserGoogleFB({
+        name: fbResponse.name,
+        email: fbResponse.email,
+      });
+      let response = this.props.response;
+      this.setState({ loader: false });
+      if (response.data.message === "Email Already Taken!") {
+        message.info(response.data.message);
+        return;
+      }
+      message.success(response.data.message);
+      this.props.history.push("/login");
+    } catch (error) {
+      this.setState({ loader: false });
+      message.error("Some Problem Occur!");
+    }
+  };
+>>>>>>> b4f6216ff6bf5a2351a158df9c9701c7f7c0c213
 
   onFinish = async (values) => {
     if (isNaN(values.phone_number)) {
@@ -83,9 +112,6 @@ class Register extends Component {
       await this.props.registerUser(values);
       let response = this.props.response;
       this.setState({ loader: false });
-      console.log("====================================");
-      console.log(response);
-      console.log("====================================");
       if (response.data.message === "Email Already Exists!") {
         message.info(response.data.message);
         return;

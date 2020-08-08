@@ -11,7 +11,6 @@ import {
   Tooltip,
   Badge,
   notification,
-  Empty,
 } from "antd";
 import {
   LoginOutlined,
@@ -31,7 +30,6 @@ import alertSound from "../../Audio/alert.mp3";
 import "./Navbar.css";
 import logo from "../../Images/logo1.png";
 import Server from "../../ServerPath";
-import LazyLoad from "react-lazyload";
 const { Paragraph } = Typography;
 const notificationSound = new Audio(alertSound);
 class Navbar extends Component {

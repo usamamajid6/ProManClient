@@ -14,7 +14,6 @@ import {
   message,
   Empty,
   Tooltip,
-  Typography,
 } from "antd";
 import { connect } from "react-redux";
 import {
@@ -22,7 +21,6 @@ import {
   PlusCircleOutlined,
   CloseCircleOutlined,
 } from "@ant-design/icons";
-import ProgressBar from "react-animated-progress-bar";
 import { addComment } from "../../../Actions/addCommentAction";
 import { getTaskData } from "../../../Actions/TaskDataAction";
 import { updateTaskStatus } from "../../../Actions/UpdateTaskStatusAction";
@@ -36,12 +34,8 @@ import "./ViewTaskDetails.css";
 import Server from "../../../ServerPath";
 import io from "socket.io-client";
 import moment from "moment";
-import FileViewer from "react-file-viewer";
-import { CustomErrorComponent } from "custom-error";
 const socket = io.connect(Server);
 const { TextArea } = Input;
-const { Paragraph } = Typography;
-const type = "png";
 class ViewTaskDetails extends Component {
   state = {
     loader: false,
@@ -839,14 +833,7 @@ class ViewTaskDetails extends Component {
             active={this.state.loader}
             spinner
             text="Loading...!"
-          >
-            <FileViewer
-              fileType={this.state.file_type}
-              filePath={this.state.file_path}
-              errorComponent={CustomErrorComponent}
-              onError={this.onError}
-            />
-          </LoadingOverlay>
+          ></LoadingOverlay>
         </Modal>
       </LoadingOverlay>
     );

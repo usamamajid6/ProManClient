@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import Navbar from "../Navbar/Navbar";
 import { verifyUser } from "../../Actions/VerifyUserAction";
 import { connect } from "react-redux";
 import { message } from "antd";
