@@ -161,7 +161,6 @@ class Profile extends Component {
               minHeight: "100vh",
             }),
           }}
-          
           active={this.state.loader}
           spinner
           text="Processing..."

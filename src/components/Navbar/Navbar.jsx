@@ -27,6 +27,7 @@ import { getUserData } from "../../Actions/userDataAction";
 import { getNotifications } from "../../Actions/GetNotificationsAction";
 import { markNotificationsAsRead } from "../../Actions/MarkNotificationsAsReadAction";
 import alertSound from "../../Audio/alert.mp3";
+import { motion } from "framer-motion";
 import "./Navbar.css";
 import logo from "../../Images/logo1.png";
 import Server from "../../ServerPath";
@@ -329,7 +330,13 @@ class Navbar extends Component {
           <Col span={1}></Col>
           <Col span={4}>
             <div className="navItem">
-              <img
+              <motion.img
+                // drag
+                // dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                // dragTransition={{ bounceStiffness: 600, bounceDamping: 10 }}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ ease: "linear", duration: 1, delay: 1 }}
                 onClick={() => {
                   this.props.history.push("/");
                 }}
@@ -347,6 +354,7 @@ class Navbar extends Component {
     );
   }
 }
+
 
 const mapStateToProps = (state) => ({
   updateOrNotNavbarState: state.updateOrNotNavbar,

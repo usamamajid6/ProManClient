@@ -35,7 +35,7 @@ import {
   BarcodeOutlined,
   CloseCircleOutlined,
   PlusCircleOutlined,
-  MessageOutlined,
+  CommentOutlined,
 } from "@ant-design/icons";
 import alertSound from "../../Audio/alert.mp3";
 import Sidebar from "react-sidebar";
@@ -260,7 +260,7 @@ class ProjectDashboard extends Component {
         _id: parseInt(this.props.project_id.data),
       });
       // await this.props.getProjectData({
-      //   _id: 2,
+      //   _id: 1,
       // });
     } catch (error) {}
     this.setState({
@@ -611,7 +611,7 @@ class ProjectDashboard extends Component {
                 });
               }}
             >
-              <MessageOutlined className="chatButtonIcon" />
+              <CommentOutlined className="chatButtonIcon" />
               Chat
             </Button>
           </Badge>
@@ -738,6 +738,7 @@ class ProjectDashboard extends Component {
             task={this.state.view_task}
             user_id={this.state.user_id}
             leader_id={this.state.project_data.leader._id}
+            project_members={this.state.project_data.members}
           />
         </Modal>
 

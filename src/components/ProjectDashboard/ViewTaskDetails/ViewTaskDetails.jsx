@@ -14,12 +14,18 @@ import {
   message,
   Empty,
   Tooltip,
+  DatePicker,
+  Typography,
+  Dropdown,
 } from "antd";
 import { connect } from "react-redux";
 import {
   InboxOutlined,
   PlusCircleOutlined,
   CloseCircleOutlined,
+  FormOutlined,
+  CloseOutlined,
+  CheckOutlined,
 } from "@ant-design/icons";
 import { addComment } from "../../../Actions/addCommentAction";
 import { getTaskData } from "../../../Actions/TaskDataAction";
@@ -29,6 +35,8 @@ import { addSubTask } from "../../../Actions/AddSubTaskAction";
 import { updateSubTaskStatus } from "../../../Actions/UpdateSubTaskStatusAction";
 import { subscribeTheTask } from "../../../Actions/AddSubscriberAction";
 import { unsubscribeTheTask } from "../../../Actions/RemoveSubscriberAction";
+import { updateTask } from "../../../Actions/UpdateTaskAction";
+import { addMemberToTask } from "../../../Actions/AddMemberToTaskAction";
 import LoadingOverlay from "react-loading-overlay";
 import "./ViewTaskDetails.css";
 import Server from "../../../ServerPath";
@@ -36,6 +44,7 @@ import io from "socket.io-client";
 import moment from "moment";
 const socket = io.connect(Server);
 const { TextArea } = Input;
+const { Paragraph } = Typography;
 class ViewTaskDetails extends Component {
   state = {
     loader: false,
@@ -50,11 +59,19 @@ class ViewTaskDetails extends Component {
     project_id: null,
     user_id: null,
     leader_id: null,
+    project_members: [],
+    members_can_be_added_to_task: [],
     add_subtask_modal: false,
     percentage_of_sub_tasks_completion: 0,
     files_view_modal: false,
     file_path: "",
     file_type: "",
+    edit_name: false,
+    edit_description: false,
+    edit_due_date: false,
+    edited_name: "",
+    edited_description: "",
+    edited_due_date: "",
   };
 
   commentFormRef = React.createRef();
@@ -66,6 +83,7 @@ class ViewTaskDetails extends Component {
       task_id: this.props.task._id,
       project_id: this.props.project_id,
       leader_id: this.props.leader_id,
+      project_members: this.props.project_members,
     });
     socket.emit("joinTheTaskRoom", { _id: this.props.task._id });
     socket.on("updateTaskData", () => {
@@ -82,10 +100,16 @@ class ViewTaskDetails extends Component {
     }
     let percentage_of_sub_tasks_completion =
       (total_done_sub_tasks * 100) / total_sub_tasks;
+
+    const members_can_be_added_to_task = this.props.project_members.filter(
+      ({ _id: id1 }) =>
+        !this.props.task.members.some(({ _id: id2 }) => id2 === id1)
+    );
     this.setState({
       percentage_of_sub_tasks_completion: parseInt(
         percentage_of_sub_tasks_completion
       ),
+      members_can_be_added_to_task,
     });
   };
 
@@ -106,10 +130,16 @@ class ViewTaskDetails extends Component {
       }
       let percentage_of_sub_tasks_completion =
         (total_done_sub_tasks * 100) / total_sub_tasks;
+
+      const members_can_be_added_to_task = this.state.project_members.filter(
+        ({ _id: id1 }) =>
+          !this.state.task.members.some(({ _id: id2 }) => id2 === id1)
+      );
       this.setState({
         percentage_of_sub_tasks_completion: parseInt(
           percentage_of_sub_tasks_completion
         ),
+        members_can_be_added_to_task,
       });
     } catch (e) {
       console.log(e);
@@ -469,6 +499,129 @@ class ViewTaskDetails extends Component {
     console.log(e, "error in file-viewer");
   };
 
+  handleUpdateTask = async (name, description, due_date, what_changes) => {
+    let data = {
+      _id: this.state.task_id,
+      name,
+      description,
+      due_date,
+      what_changes,
+      project_id: this.state.project_id,
+    };
+    try {
+      this.setState({ loader: true });
+      await this.props.updateTask(data);
+      const response = this.props.updateTaskResponse;
+      this.tellServerToUpdateData();
+      // message.success(response.message);
+      console.log(response);
+      this.setState({ loader: false });
+    } catch (e) {
+      this.setState({ loader: false });
+      message.error("Some Problem Occur!");
+    }
+  };
+
+  handelUpdateTaskName = async () => {
+    if (this.state.edited_name === "") {
+      message.warning("Name Cannot be empty!");
+      return;
+    }
+    if (this.state.edited_name === this.state.task.name) {
+      return;
+    }
+    await this.handleUpdateTask(
+      this.state.edited_name,
+      this.state.task.description,
+      this.state.task.due_date,
+      "name"
+    );
+  };
+
+  handelUpdateTaskDescription = async () => {
+    if (this.state.edited_description === "") {
+      message.warning("Description Cannot be empty!");
+      return;
+    }
+    if (this.state.edited_description === this.state.task.description) {
+      return;
+    }
+    await this.handleUpdateTask(
+      this.state.task.name,
+      this.state.edited_description,
+      this.state.task.due_date,
+      "description"
+    );
+  };
+
+  handelUpdateTaskDueDate = async () => {
+    if (this.state.edited_due_date === "") {
+      message.warning("Due Date Cannot be empty!");
+      return;
+    }
+    if (this.state.edited_due_date === this.state.task.due_date) {
+      return;
+    }
+    await this.handleUpdateTask(
+      this.state.task.name,
+      this.state.task.description,
+      this.state.edited_due_date,
+      "due_date"
+    );
+  };
+
+  handleAddMember = async (member_id) => {
+    let data = {
+      _id: this.state.task_id,
+      member_id,
+      project_id: this.state.project_id,
+    };
+    try {
+      this.setState({ loader: true });
+      await this.props.addMemberToTask(data);
+      const response = this.props.addMemberToTaskResponse;
+      this.tellServerToUpdateData();
+      console.log(response);
+      message.success("Member Added Successfully!");
+      this.setState({ loader: false });
+    } catch (e) {
+      this.setState({ loader: false });
+      message.error("Some Problem Occur!");
+    }
+  };
+
+  membersDropdownToAdd = () => {
+    if (this.state.members_can_be_added_to_task.length !== 0) {
+      return (
+        <div className="membersDropdownToAddContainer">
+          {this.state.members_can_be_added_to_task.map((member) => {
+            return (
+              <div
+                id={member._id}
+                className="membersDropdownToAddContainerItem"
+                onClick={() => {
+                  this.handleAddMember(member._id);
+                }}
+              >
+                <Paragraph ellipsis>
+                  <Tooltip title={member.member.name}>
+                    {member.member.name}
+                  </Tooltip>
+                </Paragraph>
+              </div>
+            );
+          })}
+        </div>
+      );
+    } else {
+      return (
+        <div className="membersDropdownToAddContainerEmpty">
+          No Member(s) To Add
+        </div>
+      );
+    }
+  };
+
   render() {
     return (
       <LoadingOverlay
@@ -495,22 +648,218 @@ class ViewTaskDetails extends Component {
           <Col span={24} className="statusContainer">
             <span>
               <b className="titleStyle">
-                {moment(this.state.task.due_date).format("llll")}
-                ( <TimeAgo date={this.state.task.due_date} />)
+                {!this.state.edit_due_date ? (
+                  <span>
+                    {moment(this.state.task.due_date).format("llll")}
+                    ( <TimeAgo date={this.state.task.due_date} />)
+                  </span>
+                ) : (
+                  <DatePicker
+                    allowClear={false}
+                    placeholder="Due Date"
+                    showTime={{ format: "HH:mm" }}
+                    value={moment(this.state.edited_due_date)}
+                    onChange={(e) => {
+                      this.setState({
+                        edited_due_date: e._d,
+                      });
+                    }}
+                  />
+                )}
               </b>
+              <Button
+                disabled={
+                  this.state.task.status === "done" ||
+                  this.state.user_id !== this.state.leader_id
+                }
+                type="link"
+                style={{
+                  fontSize: "1.4rem",
+                  lineHeight: "1.4rem",
+                  color: "darkslategray",
+                }}
+              >
+                {!this.state.edit_due_date ? (
+                  <Tooltip title="Update Due Date" placement="top">
+                    <FormOutlined
+                      onClick={() => {
+                        this.setState({
+                          edited_due_date: this.state.task.due_date,
+                          edit_due_date: true,
+                        });
+                      }}
+                    />
+                  </Tooltip>
+                ) : (
+                  <span>
+                    <Tooltip title="Cancel" placement="top">
+                      <CloseOutlined
+                        onClick={() => {
+                          this.setState({ edit_due_date: false });
+                        }}
+                        style={{ marginRight: "0.5rem" }}
+                      />
+                    </Tooltip>
+                    <Tooltip title="Ok" placement="top">
+                      <CheckOutlined
+                        onClick={async () => {
+                          await this.handelUpdateTaskDueDate();
+                          this.setState({ edit_due_date: false });
+                        }}
+                      />
+                    </Tooltip>
+                  </span>
+                )}
+              </Button>
             </span>
           </Col>
           <Col span={16} className="colDesign">
             <Row className="viewTaskDetails">
               <Col span={24} className="otherContainers">
-                <b className="titleStyle">Name: </b>
-                <div className="innerContainers"> {this.state.task.name} </div>
+                <b className="titleStyle">
+                  Name:
+                  <Button
+                    disabled={
+                      this.state.task.status === "done" ||
+                      this.state.user_id !== this.state.leader_id
+                    }
+                    type="link"
+                    style={{
+                      float: "right",
+                      marginRight: "0.5rem",
+                      fontSize: "1.4rem",
+                      lineHeight: "1.4rem",
+                      color: "darkslategray",
+                    }}
+                  >
+                    {!this.state.edit_name ? (
+                      <Tooltip title="Edit Task's Name" placement="top">
+                        <FormOutlined
+                          onClick={() => {
+                            this.setState({
+                              edited_name: this.state.task.name,
+                              edit_name: true,
+                            });
+                          }}
+                        />
+                      </Tooltip>
+                    ) : (
+                      <span>
+                        <Tooltip title="Cancel" placement="top">
+                          <CloseOutlined
+                            onClick={() => {
+                              this.setState({ edit_name: false });
+                            }}
+                            style={{ marginRight: "0.5rem" }}
+                          />
+                        </Tooltip>
+                        <Tooltip title="Ok" placement="top">
+                          <CheckOutlined
+                            onClick={async () => {
+                              await this.handelUpdateTaskName();
+                              this.setState({ edit_name: false });
+                            }}
+                          />
+                        </Tooltip>
+                      </span>
+                    )}
+                  </Button>
+                </b>
+                {!this.state.edit_name ? (
+                  <div className="innerContainers">{this.state.task.name}</div>
+                ) : (
+                  <div className="innerContainers">
+                    <Input
+                      bordered={false}
+                      value={this.state.edited_name}
+                      onChange={(e) => {
+                        this.setState({ edited_name: e.target.value });
+                      }}
+                      onPressEnter={async () => {
+                        await this.handelUpdateTaskName();
+                        this.setState({ edit_name: false });
+                      }}
+                    />
+                  </div>
+                )}
               </Col>
               <Col span={24} className="otherContainers">
-                <b className="titleStyle">Description: </b>
-                <div className="innerContainers">
-                  {this.state.task.description}
-                </div>
+                <b className="titleStyle">
+                  Description:
+                  <Button
+                    disabled={
+                      this.state.task.status === "done" ||
+                      this.state.user_id !== this.state.leader_id
+                    }
+                    type="link"
+                    style={{
+                      float: "right",
+                      marginRight: "0.5rem",
+                      fontSize: "1.4rem",
+                      lineHeight: "1.4rem",
+                      color: "darkslategray",
+                    }}
+                  >
+                    {!this.state.edit_description ? (
+                      <Tooltip title="Edit Task's Description" placement="top">
+                        <FormOutlined
+                          onClick={() => {
+                            this.setState({
+                              edited_description: this.state.task.description,
+                              edit_description: true,
+                            });
+                          }}
+                        />
+                      </Tooltip>
+                    ) : (
+                      <span>
+                        <Tooltip title="Cancel" placement="top">
+                          <CloseOutlined
+                            onClick={() => {
+                              this.setState({ edit_description: false });
+                            }}
+                            style={{ marginRight: "0.5rem" }}
+                          />
+                        </Tooltip>
+                        <Tooltip title="Ok" placement="top">
+                          <CheckOutlined
+                            onClick={async () => {
+                              await this.handelUpdateTaskDescription();
+                              this.setState({ edit_description: false });
+                            }}
+                          />
+                        </Tooltip>
+                      </span>
+                    )}
+                  </Button>
+                </b>
+                {!this.state.edit_description ? (
+                  <div className="innerContainers">
+                    <Paragraph
+                      ellipsis={{ rows: 4, expandable: true, symbol: "more" }}
+                      style={{
+                        padding: "0",
+                        margin: "0",
+                        textAlign: "justify",
+                      }}
+                    >
+                      {this.state.task.description}
+                    </Paragraph>
+                  </div>
+                ) : (
+                  <div className="innerContainers">
+                    <Input.TextArea
+                      rows={4}
+                      bordered={false}
+                      value={this.state.edited_description}
+                      onChange={(e) => {
+                        this.setState({
+                          edited_description: e.target.value,
+                        });
+                      }}
+                    />
+                  </div>
+                )}
               </Col>
               <Col span={24} className="subTaskContainer">
                 <Row>
@@ -519,7 +868,13 @@ class ViewTaskDetails extends Component {
                   </Col>
                   <Col span={12}>
                     <Button
-                      disabled={this.state.task.status === "done"}
+                      disabled={
+                        this.state.task.status === "done" ||
+                        !this.ifFound(
+                          this.state.task.members,
+                          this.state.user_id
+                        )
+                      }
                       className="addSubTaskButton"
                       type="link"
                       onClick={this.addSubTask}
@@ -653,7 +1008,27 @@ class ViewTaskDetails extends Component {
           <Col span={8} className="colDesign">
             <Row className="viewTaskDetails">
               <Col span={24} className="otherContainers">
-                <b className="titleStyle">Members: </b>
+                <Row style={{ justifyContent: "center", alignItems: "center" }}>
+                  <Col span={12}>
+                    <b className="titleStyle">Members: </b>
+                  </Col>
+                  <Col span={12}>
+                    <Dropdown
+                      trigger={["click"]}
+                      overlay={this.membersDropdownToAdd()}
+                      placement="topCenter"
+                      disabled={
+                        this.state.task.status === "done" ||
+                        this.state.user_id !== this.state.leader_id
+                      }
+                    >
+                      <Button className="addMemberButton" type="link">
+                        <PlusCircleOutlined />
+                      </Button>
+                    </Dropdown>
+                  </Col>
+                </Row>
+
                 <ul style={{ paddingLeft: "1rem" }}>
                   {this.state.task.members.map((members) => {
                     return (
@@ -849,6 +1224,8 @@ const mapStateToProps = (state) => ({
   updateSubTaskStatusResponse: state.updateSubTaskStatus,
   subscribeTheTaskResponse: state.subscribeTheTask,
   unsubscribeTheTaskResponse: state.unsubscribeTheTask,
+  updateTaskResponse: state.updateTask,
+  addMemberToTaskResponse: state.addMemberToTask,
 });
 
 const mapDispatchToProps = {
@@ -860,6 +1237,8 @@ const mapDispatchToProps = {
   updateSubTaskStatus,
   subscribeTheTask,
   unsubscribeTheTask,
+  updateTask,
+  addMemberToTask,
 };
 ViewTaskDetails = connect(mapStateToProps, mapDispatchToProps)(ViewTaskDetails);
 

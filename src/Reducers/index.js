@@ -33,7 +33,8 @@ import updateProject from "./UpdateProjectDataReducer";
 import updateOrNotNavbar from "./UpdateOrNotNavbarReducer";
 import getNotifications from "./GetNotificationsReducer";
 import markNotificationsAsRead from "./MarkNotificationsAsReadReducer";
-
+import updateTask from "./UpdateTaskReducer";
+import addMemberToTask from './AddMemberToTaskReducer';
 export default combineReducers({
   counter,
   UUCW,
@@ -69,4 +70,6 @@ export default combineReducers({
   updateOrNotNavbar,
   getNotifications,
   markNotificationsAsRead,
+  updateTask,
+  addMemberToTask
 });
