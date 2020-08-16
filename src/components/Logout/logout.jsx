@@ -1,12 +1,13 @@
-import React, { Component } from "react";
+import { Component } from "react";
 class logout extends Component {
   state = {};
   componentDidMount = () => {
     sessionStorage.clear();
+    localStorage.clear();
     this.props.history.push("/");
   };
   render() {
-    return <div></div>;
+    return null;
   }
 }
 

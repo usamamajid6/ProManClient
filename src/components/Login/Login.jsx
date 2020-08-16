@@ -19,10 +19,10 @@ const validateMessages = {
   },
 };
 
-
 class Login extends Component {
   state = {
     loader: false,
+    remember_me: false,
   };
   onFinish = async (values) => {
     try {
@@ -33,7 +33,11 @@ class Login extends Component {
       message.success(response.message);
       if (response.message !== "Email OR Password are incorrect!") {
         await this.props.saveUserData(response.data);
-        sessionStorage.setItem("userId", response.data.result._id);
+        if (this.state.remember_me) {
+          localStorage.setItem("userId", response.data.result._id);
+        } else {
+          sessionStorage.setItem("userId", response.data.result._id);
+        }
         this.props.history.push("/userDashboard");
       }
     } catch (e) {
@@ -57,7 +61,11 @@ class Login extends Component {
       this.setState({ loader: false });
       message.success(response.message);
       this.props.saveUserData(response.data);
-      sessionStorage.setItem("userId", response.data.result._id);
+      if (this.state.remember_me) {
+        localStorage.setItem("userId", response.data.result._id);
+      } else {
+        sessionStorage.setItem("userId", response.data.result._id);
+      }
       this.props.history.push("/userDashboard");
     } catch (error) {
       this.setState({ loader: false });
@@ -76,7 +84,11 @@ class Login extends Component {
       this.setState({ loader: false });
       message.success(response.message);
       this.props.saveUserData(response.data);
-      sessionStorage.setItem("userId", response.data.result._id);
+      if (this.state.remember_me) {
+        localStorage.setItem("userId", response.data.result._id);
+      } else {
+        sessionStorage.setItem("userId", response.data.result._id);
+      }
       this.props.history.push("/userDashboard");
     } catch (error) {
       this.setState({ loader: false });
@@ -99,7 +111,6 @@ class Login extends Component {
           spinner
           text="Processing....!"
         >
-          {" "}
           <div className="Login">
             <Row className="mainDiv">
               <Col lg={8} md={6} sm={2} xs={1}></Col>
@@ -157,7 +168,13 @@ class Login extends Component {
 
                       <Col span={24}>
                         <Form.Item name="remember" valuePropName="checked">
-                          <Checkbox>Remember me</Checkbox>
+                          <Checkbox
+                            onChange={(e) => {
+                              this.setState({ remember_me: e.target.checked });
+                            }}
+                          >
+                            Remember me
+                          </Checkbox>
                         </Form.Item>
                       </Col>
 

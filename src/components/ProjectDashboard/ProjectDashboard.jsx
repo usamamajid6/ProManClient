@@ -214,7 +214,7 @@ class ProjectDashboard extends Component {
 
   componentDidMount = async () => {
     document.addEventListener("mousedown", this.handleClickOnScreen, false);
-    if (!sessionStorage.getItem("userId")) {
+    if (!(sessionStorage.getItem("userId") || localStorage.getItem("userId"))) {
       this.props.history.push("/login");
       return;
     }
@@ -223,7 +223,9 @@ class ProjectDashboard extends Component {
       return;
     }
     this.setState({ loader: true });
-    const user_id = parseInt(sessionStorage.getItem("userId"));
+    const user_id = parseInt(
+      sessionStorage.getItem("userId") || localStorage.getItem("userId")
+    );
     this.setState({ user_id });
     await this.updateData();
 

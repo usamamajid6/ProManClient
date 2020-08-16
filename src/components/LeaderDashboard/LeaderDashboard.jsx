@@ -54,7 +54,7 @@ import "react-orgchart/index.css";
 import Tree from "react-tree-graph";
 import "react-tree-graph/dist/style.css";
 
-const {  Sider, Content } = Layout;
+const { Sider, Content } = Layout;
 const { TextArea } = Input;
 const { Option } = Select;
 const socket = io.connect(Server);
@@ -217,7 +217,7 @@ class LeaderDashboard extends Component {
   updateFormRef = React.createRef();
 
   componentDidMount = async () => {
-    if (!sessionStorage.getItem("userId")) {
+    if (!(sessionStorage.getItem("userId") || localStorage.getItem("userId"))) {
       this.props.history.push("/login");
       return;
     }
@@ -226,7 +226,9 @@ class LeaderDashboard extends Component {
       return;
     }
     this.setState({ loader: true });
-    const user_id = parseInt(sessionStorage.getItem("userId"));
+    const user_id = parseInt(
+      sessionStorage.getItem("userId") || localStorage.getItem("userId")
+    );
     this.setState({ user_id });
     await this.updateData();
     this.setState({ loader: false });

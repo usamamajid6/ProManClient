@@ -34,7 +34,7 @@ class Profile extends Component {
   };
 
   componentDidMount = async () => {
-    if (!sessionStorage.getItem("userId")) {
+    if (!(sessionStorage.getItem("userId") || localStorage.getItem("userId"))) {
       this.props.history.push("/login");
       return;
     }
@@ -50,7 +50,9 @@ class Profile extends Component {
   loadUserData = async () => {
     try {
       await this.props.getUserData({
-        _id: parseInt(sessionStorage.getItem("userId")),
+        _id: parseInt(
+          sessionStorage.getItem("userId") || localStorage.getItem("userId")
+        ),
       });
     } catch (error) {
       message.info("Some Problem Occur!");

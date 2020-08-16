@@ -47,25 +47,23 @@ class Navbar extends Component {
   };
 
   componentDidMount = async () => {
-    if (!sessionStorage.getItem("userId")) {
-      // this.props.history.push("/login");
-      this.setState({
-        login_status: false,
-      });
-      // return;
-    } else {
+    if (sessionStorage.getItem("userId") || localStorage.getItem("userId")) {
       await this.loadData();
       this.setState({
         interval: setInterval(async () => {
           await this.loadNotifications();
         }, 2000),
       });
+    } else {
+      this.setState({
+        login_status: false,
+      });
     }
   };
 
   componentDidUpdate = async () => {
     if (this.props.updateOrNotNavbarState) {
-      if (sessionStorage.getItem("userId")) {
+      if (sessionStorage.getItem("userId") || localStorage.getItem("userId")) {
         await this.loadData();
         this.props.updateOrNotNavbar(false);
       }
@@ -83,12 +81,16 @@ class Navbar extends Component {
   loadData = async () => {
     try {
       await this.props.getUserData({
-        _id: parseInt(sessionStorage.getItem("userId")),
+        _id: parseInt(
+          sessionStorage.getItem("userId") || localStorage.getItem("userId")
+        ),
       });
       this.setState({
         login_status: true,
         userData: this.props.userData,
-        user_id: parseInt(sessionStorage.getItem("userId")),
+        user_id: parseInt(
+          sessionStorage.getItem("userId") || localStorage.getItem("userId")
+        ),
       });
       if (!this.state.userData.data.result.isVerified) {
         this.props.history.push("/notVerified");
@@ -103,7 +105,7 @@ class Navbar extends Component {
   };
 
   loadNotifications = async () => {
-    if (sessionStorage.getItem("userId")) {
+    if (sessionStorage.getItem("userId") || localStorage.getItem("userId")) {
       try {
         this.setState({ notification_loader: true });
         await this.props.getNotifications({
@@ -354,7 +356,6 @@ class Navbar extends Component {
     );
   }
 }
-
 
 const mapStateToProps = (state) => ({
   updateOrNotNavbarState: state.updateOrNotNavbar,

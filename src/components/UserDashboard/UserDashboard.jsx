@@ -36,7 +36,7 @@ import { addMemberToTeam } from "../../Actions/AddMemberToTeamAction";
 import LoadingOverlay from "react-loading-overlay";
 import Server from "../../ServerPath";
 import Navbar from "../Navbar/Navbar";
-const {  Content, Sider } = Layout;
+const { Content, Sider } = Layout;
 const { SubMenu } = Menu;
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
@@ -65,14 +65,16 @@ class UserDashboard extends Component {
   };
 
   componentDidMount = async () => {
-    if (!sessionStorage.getItem("userId")) {
+    if (!(sessionStorage.getItem("userId") || localStorage.getItem("userId"))) {
       this.props.history.push("/login");
       return;
     }
     this.setState({ loader: true });
     try {
       await this.props.getUserData({
-        _id: parseInt(sessionStorage.getItem("userId")),
+        _id: parseInt(
+          sessionStorage.getItem("userId") || localStorage.getItem("userId")
+        ),
       });
     } catch (error) {
       message.info("Some Problem Occur!");
