@@ -260,6 +260,9 @@ class ProjectDashboard extends Component {
     try {
       await this.props.getProjectData({
         _id: parseInt(this.props.project_id.data),
+        user_id: parseInt(
+          sessionStorage.getItem("userId") || localStorage.getItem("userId")
+        ),
       });
       // await this.props.getProjectData({
       //   _id: 1,

@@ -154,6 +154,9 @@ class UAW extends Component {
                   name="uaw"
                   initialValues={{
                     remember: true,
+                    simple_actor: 2,
+                    average_actor: 5,
+                    complex_actor: 4,
                   }}
                   onFinish={this.onFinish}
                   onFinishFailed={this.onFinishFailed}

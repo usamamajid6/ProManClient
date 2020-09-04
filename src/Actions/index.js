@@ -36,7 +36,6 @@ export const changeUUCWResultStatus = (status) => {
   };
 };
 
-
 // UAW Actions
 
 export const SAVE_UAW_RESULT = "SAVE_UAW_RESULT";
@@ -55,8 +54,6 @@ export const changeUAWResultStatus = (status) => {
     payload: status,
   };
 };
-
-
 
 // TCF Actions
 
@@ -77,8 +74,6 @@ export const changeTCFResultStatus = (status) => {
   };
 };
 
-
-
 // ECF Actions
 
 export const SAVE_ECF_RESULT = "SAVE_ECF_RESULT";
@@ -98,7 +93,6 @@ export const changeECFResultStatus = (status) => {
   };
 };
 
-
 // UCP Calculation Actions
 
 export const SAVE_UCP_RESULT = "SAVE_UCP_RESULT";
@@ -114,6 +108,25 @@ export const saveUCPResult = (result) => {
 export const changeUCPResultStatus = (status) => {
   return {
     type: UCP_RESULT_STATUS,
+    payload: status,
+  };
+};
+
+// UCP Calculation Per UCP Cost Actions
+
+export const SAVE_UCP_COST_RESULT = "SAVE_UCP_COST_RESULT";
+export const UCP_COST_RESULT_STATUS = "UCP_COST_RESULT_STATUS";
+
+export const saveUCPCostResult = (result) => {
+  return {
+    type: SAVE_UCP_COST_RESULT,
+    payload: result,
+  };
+};
+
+export const changeUCPCostResultStatus = (status) => {
+  return {
+    type: UCP_COST_RESULT_STATUS,
     payload: status,
   };
 };

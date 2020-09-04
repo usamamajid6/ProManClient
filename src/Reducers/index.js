@@ -5,6 +5,7 @@ import UAW from "./UCPReducers/UAWReducer";
 import TCF from "./UCPReducers/TCFReducer";
 import ECF from "./UCPReducers/ECFReducer";
 import UCP from "./UCPReducers/UCPReducer";
+import UCPCost from "./UCPReducers/UCPCostReducer";
 import loginUser from "./LoginReducer";
 import registerUser from "./RegisterReducer";
 import userData from "./userDataReducer";
@@ -34,7 +35,7 @@ import updateOrNotNavbar from "./UpdateOrNotNavbarReducer";
 import getNotifications from "./GetNotificationsReducer";
 import markNotificationsAsRead from "./MarkNotificationsAsReadReducer";
 import updateTask from "./UpdateTaskReducer";
-import addMemberToTask from './AddMemberToTaskReducer';
+import addMemberToTask from "./AddMemberToTaskReducer";
 export default combineReducers({
   counter,
   UUCW,
@@ -42,6 +43,7 @@ export default combineReducers({
   TCF,
   ECF,
   UCP,
+  UCPCost,
   loginUser,
   registerUser,
   userData,
@@ -71,5 +73,5 @@ export default combineReducers({
   getNotifications,
   markNotificationsAsRead,
   updateTask,
-  addMemberToTask
+  addMemberToTask,
 });

@@ -22,79 +22,79 @@ class TCF extends Component {
         factor: "T1",
         description: "Distributed System",
         weight: 2.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "T2",
         description: "Response Time/Performance Objectives",
         weight: 1.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "T3",
         description: "End-User Efficiency",
         weight: 1.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "T4",
         description: "Internal Processing Complexity",
         weight: 1.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "T5",
         description: "Code Reusability",
         weight: 1.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "T6",
         description: "Easy To Install",
         weight: 0.5,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "T7",
         description: "Easy To Use",
         weight: 0.5,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "T8",
         description: "Portability To Other Platforms",
         weight: 2.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "T9",
         description: "System Maintenance",
         weight: 1.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "T10",
         description: "Concurrent/Parallel Processing",
         weight: 1.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "T11",
         description: "Security Features",
         weight: 1.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "T12",
         description: "Access For Third Parties",
         weight: 1.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "T13",
         description: "End User Training",
         weight: 1.0,
-        rating: 0,
+        rating: 5,
       },
     ],
     tf: "To Be Calculated!",
@@ -167,6 +167,7 @@ class TCF extends Component {
                         render={(value, record, index) => {
                           return (
                             <Form.Item
+                              initialValue={5}
                               name={record.factor}
                               rules={[
                                 {

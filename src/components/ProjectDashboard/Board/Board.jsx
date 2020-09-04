@@ -125,6 +125,7 @@ class Board extends Component {
   };
 
   displayBoard = () => {
+    
     return this.state.data.map((taskList, index) => {
       return (
         <div className="taskList">
@@ -153,7 +154,7 @@ class Board extends Component {
           </div>
           <div className="tasks">
             {this.displayTasks(taskList, index)}
-            {index === 0 || index === 1 || index === 2 ? (
+            {index === 0 || index === 1 || index === 2 || index === 3 ? (
               <Button
                 onClick={() => {
                   this.props.onAddNewTaskClick(taskList._id);

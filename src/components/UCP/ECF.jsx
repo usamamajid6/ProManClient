@@ -27,49 +27,49 @@ class ECF extends Component {
         factor: "E1",
         description: "Familiarity With Development Process Used",
         weight: 1.5,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "E2",
         description: "Application Experience",
         weight: 0.5,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "E3",
         description: "Object-Oriented Experience Of Team",
         weight: 1.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "E4",
         description: "Lead Analyst Capability",
         weight: 0.5,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "E5",
         description: "Motivation Of The Team",
         weight: 1.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "E6",
         description: "Stability Of Requirements",
         weight: 2.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "E7",
         description: "Part-Time Staff",
         weight: -1.0,
-        rating: 0,
+        rating: 5,
       },
       {
         factor: "E8",
         description: "Difficult Programming Language",
         weight: -1.0,
-        rating: 0,
+        rating: 5,
       },
     ],
     ef: "To Be Calculated!",
@@ -110,7 +110,7 @@ class ECF extends Component {
                   onFinish={this.onFinish}
                   onFinishFailed={this.onFinishFailed}
                 >
-                  <Form.Item className="formItem" >
+                  <Form.Item className="formItem">
                     <Table
                       size="small"
                       dataSource={this.state.tableData}
@@ -142,6 +142,7 @@ class ECF extends Component {
                         render={(value, record, index) => {
                           return (
                             <Form.Item
+                              initialValue={5}
                               name={record.factor}
                               rules={[
                                 {
@@ -178,7 +179,6 @@ class ECF extends Component {
                   </Form.Item>
                   <div className="result">
                     <div className="resultActual">
-                      {" "}
                       Total EF : {this.state.ef}
                     </div>
                     <div className="resultActual">ECF =1.4 + (-0.03 x EF)</div>

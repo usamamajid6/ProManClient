@@ -157,6 +157,9 @@ class UUCW extends Component {
                   name="uucw"
                   initialValues={{
                     remember: true,
+                    simple_use_case: 3,
+                    average_use_case: 45,
+                    complex_use_case: 6,
                   }}
                   onFinish={this.onFinish}
                   onFinishFailed={this.onFinishFailed}

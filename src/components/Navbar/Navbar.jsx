@@ -71,6 +71,7 @@ class Navbar extends Component {
   };
 
   componentWillUnmount = () => {
+    console.log("Navbar component will unmount!");
     clearInterval(
       this.setState({
         interval: clearInterval(this.state.interval),
@@ -317,6 +318,9 @@ class Navbar extends Component {
   };
 
   displayNotification = (name, description) => {
+    console.log("====================================");
+    console.log("Display Notification Called!");
+    console.log("====================================");
     notification.info({
       message: name,
       description,

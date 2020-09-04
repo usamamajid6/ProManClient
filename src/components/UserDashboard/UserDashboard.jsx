@@ -113,7 +113,7 @@ class UserDashboard extends Component {
     }
     this.setState({
       userData: this.props.userData.data.result,
-      projects: this.props.userData.data.projects,
+      // projects: this.props.userData.data.projects,
       orignalProjectsList: this.props.userData.data.projects,
       teams: this.props.userData.data.teams,
     });
@@ -268,17 +268,17 @@ class UserDashboard extends Component {
       leader_id: parseInt(this.state.userData._id),
       team_id: values.team,
     };
-    const ucp_result = this.props.ucp.result;
+    const ucp_cost_result = this.props.ucpCost.result;
     if (
       values.project_type === "software" &&
-      ucp_result === "To Be Calculated!"
+      ucp_cost_result === "To Be Calculated!"
     ) {
-      message.error("UCP Must Be Calculated First Then Proceed!");
+      message.error("UCP Cost Must Be Calculated First Then Proceed!");
       return;
     }
 
-    if (this.props.ucp_result !== "To Be Calculated!") {
-      data.cost = this.props.ucp_result;
+    if (this.props.ucp_cost_result !== "To Be Calculated!") {
+      data.cost = ucp_cost_result;
     } else {
       data.cost = "No Info!";
     }
@@ -540,7 +540,7 @@ class UserDashboard extends Component {
 
           <Col span={24}>
             <Modal
-              width="60vw"
+              width="70vw"
               visible={this.state.add_project_modal}
               onOk={this.handleAddProjectModalOk}
               onCancel={this.handleAddProjectModalOk}
@@ -735,6 +735,7 @@ class UserDashboard extends Component {
                 text="Creating The Team..."
               >
                 <Form
+                  scrollToFirstError
                   name="add_team"
                   className="addTeamContainer"
                   initialValues={{
@@ -759,7 +760,6 @@ class UserDashboard extends Component {
                       >
                         <Input
                           className="formInputAddTeam"
-                          // prefix={<UserOutlined className="site-form-item-icon" />}
                           placeholder="Team Name..."
                         />
                       </Form.Item>
@@ -778,7 +778,6 @@ class UserDashboard extends Component {
                         <TextArea
                           rows={4}
                           className="formInputAddTeam"
-                          // prefix={<LockOutlined className="site-form-item-icon" />}
                           placeholder="Description..."
                         />
                       </Form.Item>
@@ -1014,6 +1013,7 @@ const mapStateToProps = (state) => ({
   addTeam: state.addTeam,
   userByEmail: state.userByEmail,
   addMemberToTeamResponse: state.addMemberToTeam,
+  ucpCost: state.UCPCost,
 });
 
 const mapDispatchToProps = {
