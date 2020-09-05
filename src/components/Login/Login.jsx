@@ -69,7 +69,7 @@ class Login extends Component {
       this.props.history.push("/userDashboard");
     } catch (error) {
       this.setState({ loader: false });
-      message.error("Some Problem Occur!");
+      // message.error("Some Problem Occur!");
     }
   };
 
@@ -92,7 +92,7 @@ class Login extends Component {
       this.props.history.push("/userDashboard");
     } catch (error) {
       this.setState({ loader: false });
-      message.error("Some Problem Occur!");
+      // message.error("Some Problem Occur!");
     }
   };
 

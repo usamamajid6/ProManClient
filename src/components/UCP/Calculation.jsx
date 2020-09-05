@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Row, Col, Form, Input, InputNumber, Button } from "antd";
+import { Row, Col, Form, InputNumber, Button } from "antd";
 import { connect } from "react-redux";
 import {
   saveUCPResult,

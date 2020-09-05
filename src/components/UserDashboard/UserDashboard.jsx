@@ -90,7 +90,7 @@ class UserDashboard extends Component {
     this.setState({ loader: false });
     this.setState({
       interval: setInterval(async () => {
-        await this.updateUserData();
+        // await this.updateUserData();
       }, 2000),
     });
   };
@@ -113,7 +113,7 @@ class UserDashboard extends Component {
     }
     this.setState({
       userData: this.props.userData.data.result,
-      // projects: this.props.userData.data.projects,
+      projects: this.props.userData.data.projects,
       orignalProjectsList: this.props.userData.data.projects,
       teams: this.props.userData.data.teams,
     });
@@ -476,7 +476,7 @@ class UserDashboard extends Component {
                   <SubMenu
                     key="addMembersToTeam"
                     icon={<TeamOutlined />}
-                    title="Add Members To Team"
+                    title="Teams"
                   >
                     {this.displayTeamsForAddingMembersAndTeamDetails()}
                   </SubMenu>

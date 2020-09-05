@@ -165,6 +165,11 @@ class Board extends Component {
               >
                 Add New Task
               </Button>
+              // <div>
+              //   <br/>
+              //   <br/>
+              //   <br/>
+              // </div>
             ) : (
               <Button
                 onClick={() => {

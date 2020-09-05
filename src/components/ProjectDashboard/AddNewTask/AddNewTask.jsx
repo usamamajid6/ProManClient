@@ -120,7 +120,7 @@ class AddNewTask extends Component {
                     <Option value="0">No Prerequsite</Option>
                     {this.props.project_data.data.taskList.map(
                       (taskList, index) =>
-                        index === 0 || index === 1 || index === 2
+                        index === 0 || index === 1 || index === 2 || index === 3
                           ? taskList.tasks.map((tasks) => {
                               return (
                                 <Option value={tasks._id}>{tasks.name}</Option>
