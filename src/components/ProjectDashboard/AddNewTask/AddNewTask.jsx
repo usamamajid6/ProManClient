@@ -121,12 +121,12 @@ class AddNewTask extends Component {
                     {this.props.project_data.data.taskList.map(
                       (taskList, index) =>
                         index === 0 || index === 1 || index === 2 || index === 3
-                          ? taskList.tasks.map((tasks) => {
+                          ? null
+                          : taskList.tasks.map((tasks) => {
                               return (
                                 <Option value={tasks._id}>{tasks.name}</Option>
                               );
                             })
-                          : null
                     )}
                   </Select>
                 </Form.Item>
