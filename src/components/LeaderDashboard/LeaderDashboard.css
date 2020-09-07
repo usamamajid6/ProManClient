@@ -212,6 +212,7 @@
   display: inline-block;
   color: black;
   cursor: pointer;
+  margin: 0 1rem;
 }
 
 #initechOrgChart{

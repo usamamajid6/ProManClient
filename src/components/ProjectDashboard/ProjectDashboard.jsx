@@ -16,6 +16,7 @@ import {
   message,
   Avatar,
   Badge,
+  Typography,
 } from "antd";
 import Navbar from "../Navbar/Navbar";
 import LoadingOverlay from "react-loading-overlay";
@@ -47,6 +48,7 @@ import moment from "moment";
 import io from "socket.io-client";
 const socket = io.connect(Server);
 const { Panel } = Collapse;
+const { Paragraph } = Typography;
 const notificationSound = new Audio(alertSound);
 const columns = [
   {
@@ -634,12 +636,15 @@ class ProjectDashboard extends Component {
               text="Fetching Data ..."
             >
               <Row>
-                <Col span={4}>
-                  <div className="projectTitle">
-                    {this.state.project_data.name}
+                <Col span={8}>
+                  <div>
+                    <Paragraph ellipsis className="projectTitle">
+                      {this.state.project_data.name}
+                    </Paragraph>
+                    {/* {this.state.project_data.name} */}
                   </div>
                 </Col>
-                <Col span={8}></Col>
+                <Col span={4}></Col>
                 <Col span={6} className="leaderButton">
                   {this.displayLeaderButton()}
                 </Col>

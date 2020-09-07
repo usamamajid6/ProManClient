@@ -140,9 +140,9 @@ class Navbar extends Component {
           }
         }
       } catch (e) {
-        console.log("====================================");
-        console.log("Some Problem Occur!", e);
-        console.log("====================================");
+        // console.log("====================================");
+        // console.log("Some Problem Occur!", e);
+        // console.log("====================================");
         this.setState({ notification_loader: false });
       }
     }

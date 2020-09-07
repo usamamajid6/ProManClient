@@ -47,6 +47,9 @@ class AddNewTask extends Component {
   };
 
   componentDidMount = () => {};
+  componentWillUnmount = () => {
+    this.cle
+  };
 
   render() {
     return (
@@ -123,6 +126,13 @@ class AddNewTask extends Component {
                         index === 0 || index === 1 || index === 2 || index === 3
                           ? null
                           : taskList.tasks.map((tasks) => {
+                              console.log(
+                                "===================================="
+                              );
+                              console.log(tasks);
+                              console.log(
+                                "===================================="
+                              );
                               return (
                                 <Option value={tasks._id}>{tasks.name}</Option>
                               );
