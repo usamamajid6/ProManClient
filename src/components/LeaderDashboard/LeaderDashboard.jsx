@@ -780,8 +780,8 @@ class LeaderDashboard extends Component {
                       <div className="custom-container">
                         <Tree
                           data={hierarichal_task}
-                          height={500}
-                          width={1000}
+                          height={1000}
+                          width={3000}
                           svgProps={{
                             className: "custom",
                             // transform: "rotate(90)",

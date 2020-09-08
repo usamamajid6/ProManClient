@@ -35,6 +35,9 @@ class Board extends Component {
     });
   };
 
+  componentWillUnmount = () => {
+    this.setState({});
+  };
   // static getDerivedStateFromProps(nextProps, prevState) {
   //   if (nextProps !== prevState) {
   //     return ({ total: nextProps.total }) // <- this is setState equivalent
@@ -125,7 +128,6 @@ class Board extends Component {
   };
 
   displayBoard = () => {
-    
     return this.state.data.map((taskList, index) => {
       return (
         <div className="taskList">
@@ -165,12 +167,12 @@ class Board extends Component {
               >
                 Add New Task
               </Button>
+            ) : (
               // <div>
               //   <br/>
               //   <br/>
               //   <br/>
               // </div>
-            ) : (
               <Button
                 onClick={() => {
                   this.props.onAddNewTaskClick(taskList._id);

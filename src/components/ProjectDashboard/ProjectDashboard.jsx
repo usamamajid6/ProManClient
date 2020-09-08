@@ -21,7 +21,10 @@ import {
 import Navbar from "../Navbar/Navbar";
 import LoadingOverlay from "react-loading-overlay";
 import { connect } from "react-redux";
-import { getProjectData } from "../../Actions/projectDataAction";
+import {
+  getProjectData,
+  clearProjectData,
+} from "../../Actions/projectDataAction";
 import { getChatsByProjectId } from "../../Actions/ChatsDataAction";
 import { addMemberToProject } from "../../Actions/AddMemberToProjectAction";
 import { getUserByEmail } from "../../Actions/GetUserByEmailAction";
@@ -179,6 +182,28 @@ const columns = [
   },
 ];
 
+const initialState = {
+  project_data: {
+    leader: {},
+    name: "",
+    members: [],
+  },
+  data: [],
+  view_type: "board",
+  sidebar_status: false,
+  add_new_task_list_modal: false,
+  interval: null,
+  task_list_id_to_add: null,
+  view_task: {},
+  user_id: null,
+  project_timeline: [],
+  chats: [],
+  add_member_to_project_modal: false,
+  member_data_for_add_member_to_project: {},
+  loader: false,
+  unReadChatMessages: 0,
+};
+
 class ProjectDashboard extends Component {
   state = {
     project_data: {
@@ -206,6 +231,8 @@ class ProjectDashboard extends Component {
 
   componentWillUnmount = () => {
     socket.emit("leaveTheProjectRoom", this.state.project_data);
+    this.props.clearProjectData();
+    this.setState({});
   };
 
   handleClickOnScreen = (e) => {
@@ -965,6 +992,7 @@ const maptDispatchToProps = {
   addMemberToProject,
   getUserByEmail,
   setProjectId,
+  clearProjectData,
 };
 
 ProjectDashboard = connect(

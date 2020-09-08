@@ -48,7 +48,6 @@ class AddNewTask extends Component {
 
   componentDidMount = () => {};
   componentWillUnmount = () => {
-    this.cle
   };
 
   render() {
