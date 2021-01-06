@@ -11,7 +11,7 @@
     "@trendmicro/react-sidenav": "^0.5.0",
     "animate.css": "^4.1.0",
     "antd": "^4.2.5",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "craco-less": "^1.17.0",
     "custom-error": "^0.2.1",
     "jsonwebtoken": "^8.5.1",
