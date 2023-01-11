@@ -14,7 +14,7 @@
     "axios": "^0.19.2",
     "craco-less": "^1.17.0",
     "custom-error": "^0.2.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "less": "^3.11.2",
     "minimap-react": "^1.1.2",
     "moment": "^2.27.0",
